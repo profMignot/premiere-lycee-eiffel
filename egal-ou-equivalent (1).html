@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Égal ou équivalent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Kalam:wght@400;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{
+  --paper:#F4F6FA; --card:#FFFFFF; --ink:#18212E; --muted:#586477; --line:#D6DCE6;
+  --eq:#1D5FC4; --eq-soft:#E4EDFB; --eqv:#8C2B8F; --eqv-soft:#F4E6F4;
+  --ok:#1C7A45; --ok-soft:#E3F3EA; --bad:#B8342A; --bad-soft:#FBE7E5;
+  --copy:#FCFDFF; --seyes-fine:#DCE6F5; --seyes-strong:#A9BEDF; --margin:#E59A9A;
+  --focus:#1D5FC4; --r-eq:#8DB8F7; --r-eqv:#E7A6E4;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-math:"STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --f-hand:"Kalam", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#11161F; --card:#19212D; --ink:#E6EBF2; --muted:#9AA6B8; --line:#2D394B;
+    --eq:#7EAEF5; --eq-soft:#1D2D48; --eqv:#DB8FD8; --eqv-soft:#35213A;
+    --ok:#56C98F; --ok-soft:#173327; --bad:#F2806F; --bad-soft:#3A1F1C;
+    --copy:#1B2432; --seyes-fine:#243248; --seyes-strong:#34507A; --margin:#7A3E46;
+    --focus:#7EAEF5; --r-eq:#1D5FC4; --r-eqv:#8C2B8F;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#11161F; --card:#19212D; --ink:#E6EBF2; --muted:#9AA6B8; --line:#2D394B;
+  --eq:#7EAEF5; --eq-soft:#1D2D48; --eqv:#DB8FD8; --eqv-soft:#35213A;
+  --ok:#56C98F; --ok-soft:#173327; --bad:#F2806F; --bad-soft:#3A1F1C;
+  --copy:#1B2432; --seyes-fine:#243248; --seyes-strong:#34507A; --margin:#7A3E46;
+  --focus:#7EAEF5; --r-eq:#1D5FC4; --r-eqv:#8C2B8F;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;margin:0;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:780px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h2{font-size:1.55rem;font-weight:800}
+h3{font-size:1.08rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+
+/* math */
+.m{font-family:var(--f-math);font-size:1.18em;white-space:normal;word-spacing:.08em}
+.sy{font-weight:600;padding:0 .12em}
+.sy.e{color:var(--eq)}
+.sy.v{color:var(--eqv);font-size:1.2em;line-height:1}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.15;margin:0 .15em}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em}
+.frac>span:last-child{padding:0 .2em}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px}
+nav.top .in{max-width:780px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+nav.top a{text-decoration:none;color:var(--muted);font-size:.85rem;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--card);font-variant-numeric:tabular-nums;white-space:nowrap}
+nav.top a b{color:var(--ink)}
+nav.top .brand{font-family:var(--f-display);font-weight:800;margin-right:auto;font-size:1rem}
+
+/* hero */
+header.hero{padding-block:40px 28px;display:grid;gap:14px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hero h1{font-size:clamp(2.4rem,8vw,4rem);font-weight:800;letter-spacing:-.02em}
+.hero h1 .e{color:var(--eq);font-family:var(--f-math)}
+.hero h1 .v{color:var(--eqv);font-family:var(--f-math)}
+.hero p{max-width:62ch;font-size:1.05rem}
+
+section{padding-block:34px;border-top:1px solid var(--line);display:grid;gap:18px}
+.sec-head{display:grid;gap:6px}
+.sec-head .num{font-family:var(--f-display);font-weight:800;color:var(--muted);font-size:.9rem;letter-spacing:.06em}
+.sec-head p{max-width:64ch}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1.5px solid var(--line);background:var(--card);border-radius:8px;padding:7px 14px;font-weight:700}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.fb{border-radius:8px;padding:10px 12px;font-size:.96rem}
+.fb.ok{background:var(--ok-soft);color:var(--ink);border-left:4px solid var(--ok)}
+.fb.bad{background:var(--bad-soft);color:var(--ink);border-left:4px solid var(--bad)}
+.fb strong.okc{color:var(--ok)}
+.fb strong.badc{color:var(--bad)}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+
+/* essentiel */
+.rule{border-radius:12px;padding:16px 18px;display:grid;gap:8px}
+.rule.e{background:var(--eq-soft)}
+.rule.v{background:var(--eqv-soft)}
+.rule .big{font-family:var(--f-math);font-size:2.6rem;line-height:1;font-weight:600}
+.rule.e .big{color:var(--eq)}
+.rule.v .big{color:var(--eqv)}
+.rule .ex{font-family:var(--f-math);font-size:1.1rem}
+.question{background:var(--card);border:1.5px dashed var(--muted);border-radius:12px;padding:16px 18px;display:grid;gap:14px}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.case{display:grid;gap:8px;align-content:start;padding-left:14px;border-left:3px solid var(--line)}
+.case.e{border-left-color:var(--eq)}
+.case.v{border-left-color:var(--eqv)}
+.case-t{font-family:var(--f-display);font-weight:600;font-size:1.05rem}
+.case-ex{font-size:1.05rem}
+
+/* machine */
+.machine{display:grid;gap:14px}
+.machine label{font-weight:700}
+.machine input[type=number]{font:inherit;font-family:var(--f-math);font-size:1.2rem;width:6em;padding:4px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+td,th{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+th{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.m{font-size:1.1rem}
+.tag{display:inline-block;font-weight:700;font-size:.85rem;border-radius:999px;padding:1px 10px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)}
+
+/* lignes de rédaction */
+.lines{display:grid;gap:4px}
+.line{display:grid;grid-template-columns:92px 1fr;align-items:center;gap:10px;min-height:44px;border-radius:8px;padding:2px 6px}
+.line.ok{background:var(--ok-soft)}
+.line.bad{background:var(--bad-soft)}
+.gap{display:flex;gap:4px}
+.gap button{width:40px;height:36px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);font-family:var(--f-math);font-size:1.25rem;font-weight:600;line-height:1}
+.gap button.e{color:var(--eq)}
+.gap button.v{color:var(--eqv)}
+.gap button[aria-pressed="true"].e{background:var(--eq);color:var(--card);border-color:var(--eq)}
+.gap button[aria-pressed="true"].v{background:var(--eqv);color:var(--card);border-color:var(--eqv)}
+.block+.block{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+.block-label{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+
+/* copie Seyès */
+.copie{border-radius:4px;border:1px solid var(--line);padding:18px 16px 18px 58px;position:relative;
+  background-color:var(--copy);
+  background-image:
+    linear-gradient(90deg, transparent 44px, var(--margin) 44px, var(--margin) 46px, transparent 46px),
+    linear-gradient(var(--seyes-strong) 1px, transparent 1px),
+    linear-gradient(var(--seyes-fine) 1px, transparent 1px);
+  background-size:100% 100%, 100% 48px, 100% 12px;
+  display:grid;gap:10px}
+.copie .who{font-family:var(--f-hand);font-size:1rem;color:var(--muted)}
+.copie .consigne{font-family:var(--f-hand);font-weight:700;font-size:1.1rem}
+.copie .line{grid-template-columns:52px 1fr;min-height:48px}
+.copie .txt{font-family:var(--f-hand);font-size:1.3rem;line-height:1.3}
+.copie .txt .sy{font-family:var(--f-math)}
+.conn{width:42px;height:38px;border:1.5px dashed var(--muted);border-radius:8px;background:transparent;font-family:var(--f-math);font-size:1.35rem;font-weight:600;line-height:1}
+.conn.e{color:var(--eq)}
+.conn.v{color:var(--eqv)}
+
+/* bilan */
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.score{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:2px}
+.score .v{font-family:var(--f-display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.score .l{font-size:.85rem;color:var(--muted)}
+.retenir{background:var(--ink);color:var(--paper);border-radius:12px;padding:20px 22px;display:grid;gap:12px}
+.retenir h3{font-size:1.25rem}
+.retenir ol{margin:0;padding-left:1.3em;display:grid;gap:8px}
+.retenir .sy.e{color:var(--r-eq)}
+.retenir .sy.v{color:var(--r-eqv)}
+
+@media (max-width:480px){
+  .line{grid-template-columns:86px 1fr}
+  nav.top .brand{width:100%}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fb{animation:pop .18s ease-out}
+  @keyframes pop{from{transform:translateY(-3px);opacity:.4}to{transform:none;opacity:1}}
+}
+
+/* lignes d'équivalence (déclic) */
+.dl{display:grid;gap:4px;font-family:var(--f-math);font-size:1.18em}
+.dl>div{display:grid;grid-template-columns:1.5em 1fr;align-items:baseline}
+.dl .c{font-weight:600}
+.fb .dl{font-size:1.05em;margin-top:6px}
+.rule .dl{font-size:1.1rem}
+/* copies */
+.copy-card{display:grid;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.copy-head{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line)}
+.copy-head .chip{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 10px;background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+.copy-head .who{font-weight:700}
+.sujet{padding:12px 16px;border-bottom:1px solid var(--line);background:var(--paper)}
+.sujet .m{font-size:1.1em}
+.copy-card .copie{border:0;border-radius:0}
+.copy-foot{padding:12px 16px;display:grid;gap:10px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+
+<nav class="top" aria-label="Sections">
+  <div class="in">
+    <span class="brand">= ou ⇔ ?</span>
+    <a href="#declic">1 · Déclic <b id="n-declic">0/6</b></a>
+    <a href="#essentiel">2 · L'essentiel</a>
+    <a href="#tri">3 · Choisir <b id="n-tri">0/15</b></a>
+    <a href="#copies">4 · Copies <b id="n-copies">0/12</b></a>
+    <a href="#bilan">Bilan</a>
+  </div>
+</nav>
+
+<div class="wrap">
+<header class="hero">
+  <span class="eyebrow">Remédiation · Première générale</span>
+  <h1><span class="e">=</span> ou <span class="v">⇔</span>&nbsp;?</h1>
+  <p>Deux symboles, deux rôles. Le signe <strong>égal</strong> relie deux <em>expressions</em> qui ont la même valeur. Le signe <strong>équivalent</strong> relie deux <em>équations</em> qui ont les mêmes solutions. Tu vas apprendre à choisir le bon symbole, puis à corriger des copies.</p>
+</header>
+
+<section id="declic">
+  <div class="sec-head">
+    <span class="num">ÉTAPE 1</span>
+    <h2>Déclic : ces rédactions sont-elles correctes&nbsp;?</h2>
+    <p class="muted">Les calculs sont justes. On regarde uniquement l'usage des symboles <span class="m"><span class="sy e">=</span></span> et <span class="m"><span class="sy v">⇔</span></span>.</p>
+  </div>
+  <div id="declic-list" class="grid2"></div>
+</section>
+
+<section id="essentiel">
+  <div class="sec-head">
+    <span class="num">ÉTAPE 2</span>
+    <h2>L'essentiel</h2>
+  </div>
+  <div class="grid2">
+    <div class="rule e">
+      <span class="big">=</span>
+      <h3>Entre deux expressions</h3>
+      <p>Une expression est un <strong>calcul</strong>, avec ou sans x. On écrit <span class="m"><span class="sy e">=</span></span> quand on la réécrit sous une autre forme qui a la même valeur.</p>
+      <div class="dl" id="rule-ex-e"></div>
+      <p class="muted">On l'utilise pour calculer, développer, factoriser, réduire, calculer une image f(a). Une étape par ligne, et le <span class="m"><span class="sy e">=</span></span> en début de ligne.</p>
+    </div>
+    <div class="rule v">
+      <span class="big">⇔</span>
+      <h3>Entre deux équations</h3>
+      <p>Une équation est un <strong>problème</strong> : on cherche les valeurs de x qui la rendent vraie. On écrit <span class="m"><span class="sy v">⇔</span></span> entre deux équations qui ont exactement les mêmes solutions.</p>
+      <div class="dl" id="rule-ex"></div>
+      <p class="muted">On l'utilise pour résoudre. Une équation par ligne, et le <span class="m"><span class="sy v">⇔</span></span> toujours en début de ligne.</p>
+    </div>
+  </div>
+  <div class="question">
+    <p><strong>Avant d'écrire un symbole, demande-toi : qu'est-ce que je suis en train de transformer&nbsp;?</strong></p>
+    <div class="cases">
+      <div class="case e">
+        <p class="case-t">Une expression → <span class="m"><span class="sy e">=</span></span>, à la ligne</p>
+        <p>Je ne cherche pas x. Je réécris la même expression sous une autre forme : je développe, je factorise, je réduis ou je calcule. Chaque étape a la même valeur que la précédente : je passe à la ligne et je commence la ligne par <span class="m"><span class="sy e">=</span></span>.</p>
+        <div class="case-ex" id="case-ex-e"></div>
+      </div>
+      <div class="case v">
+        <p class="case-t">Une équation → <span class="m"><span class="sy v">⇔</span></span>, à la ligne</p>
+        <p>J'ai un problème à résoudre : je cherche x. À chaque étape, j'écris une nouvelle équation, plus simple, qui a exactement les mêmes solutions. Je passe à la ligne et je commence la ligne par <span class="m"><span class="sy v">⇔</span></span>.</p>
+        <div class="case-ex" id="case-ex"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tri">
+  <div class="sec-head">
+    <span class="num">ÉTAPE 3</span>
+    <h2>Choisis le bon symbole</h2>
+    <p class="muted">Pour chaque ligne, choisis le symbole qui la relie à la ligne du dessus, puis vérifie. Le score compte ta première vérification.</p>
+  </div>
+  <div id="tri-list" style="display:grid;gap:16px"></div>
+</section>
+
+<section id="copies">
+  <div class="sec-head">
+    <span class="num">ÉTAPE 4</span>
+    <h2>Corrige les copies</h2>
+    <p class="muted">Les calculs sont justes, mais les symboles en début de ligne sont parfois faux. Clique sur un symbole pour le changer, puis vérifie la copie.</p>
+  </div>
+  <div id="copies-list" style="display:grid;gap:22px"></div>
+</section>
+
+<section id="bilan">
+  <div class="sec-head">
+    <span class="num">BILAN</span>
+    <h2>Ton score</h2>
+  </div>
+  <div class="scores" id="scores"></div>
+  <div class="fb ok" id="bilan-msg"></div>
+  <div class="retenir">
+    <h3>À retenir</h3>
+    <ol>
+      <li><span class="m"><span class="sy e">=</span></span> relie deux <strong>expressions</strong> de même valeur. C'est l'outil du calcul : développer, factoriser, réduire, calculer f(a). Une étape par ligne, le <span class="m"><span class="sy e">=</span></span> en début de ligne.</li>
+      <li><span class="m"><span class="sy v">⇔</span></span> relie deux <strong>équations</strong> qui ont les mêmes solutions. C'est l'outil de la résolution : une équation par ligne, et le <span class="m"><span class="sy v">⇔</span></span> en début de ligne.</li>
+      <li>On n'enchaîne jamais « 2x + 3 = 7 = 2x = 4 » : une ligne comme celle-ci affirme que 7 = 4.</li>
+    </ol>
+  </div>
+  <div class="row"><button class="btn" id="reset">Tout recommencer</button></div>
+</section>
+</div>
+
+<script>
+(function(){
+  function fmt(s){
+    return s
+      .replace(/=/g,'\u0002').replace(/⇔/g,'\u0001')
+      .replace(/\u0002/g,'<span class="sy e">=</span>')
+      .replace(/\u0001/g,'<span class="sy v">⇔</span>');
+  }
+  // lignes de rédaction : une ligne commençant par "⇔ " met le symbole en marge
+  function lines(arr){
+    return '<div class="dl">'+arr.map(l=>{
+      if(l.startsWith('⇔ ')) return '<div><span class="c sy v">⇔</span><span>'+fmt(l.slice(2))+'</span></div>';
+      if(l.startsWith('= ')) return '<div><span class="c sy e">=</span><span>'+fmt(l.slice(2))+'</span></div>';
+      return '<div><span></span><span>'+fmt(l)+'</span></div>';
+    }).join('')+'</div>';
+  }
+  const E='=', V='⇔';
+  const sym={'=':'e','⇔':'v'};
+
+  document.getElementById('rule-ex').outerHTML=lines(['2x + 3 = 7','⇔ 2x = 4','⇔ x = 2']);
+  document.getElementById('case-ex').innerHTML=lines(['3x − 1 = 8','⇔ 3x = 9','⇔ x = 3']);
+  document.getElementById('rule-ex-e').outerHTML=lines(['(x + 1)²','= x² + 2x + 1']);
+  document.getElementById('case-ex-e').innerHTML=lines(['A = (x + 1)²','= x² + 2x + 1']);
+
+  const score={declic:{got:0,total:6}, tri:{got:0,total:0}, copies:{got:0,total:0}};
+  const done=new Set();
+  function setScore(){
+    for(const k in score){ document.getElementById('n-'+k).textContent=score[k].got+'/'+score[k].total; }
+    const names={declic:'Déclic',tri:'Choisir le symbole',copies:'Copies corrigées'};
+    let g=0,t=0,html='';
+    for(const k in score){ g+=score[k].got; t+=score[k].total;
+      html+='<div class="score"><span class="v">'+score[k].got+' / '+score[k].total+'</span><span class="l">'+names[k]+'</span></div>'; }
+    html+='<div class="score"><span class="v">'+g+' / '+t+'</span><span class="l">Total</span></div>';
+    document.getElementById('scores').innerHTML=html;
+    const msg=document.getElementById('bilan-msg');
+    if(done.size===0){ msg.className='fb ok'; msg.textContent='Fais les étapes 1 à 4 : ton score s\'affiche ici au fur et à mesure.'; return; }
+    const p=g/t;
+    if(p>=0.85){msg.className='fb ok'; msg.innerHTML='<strong class="okc">Très bien.</strong> Tu distingues bien les expressions et les équations. Garde le réflexe : une équation par ligne, ⇔ en début de ligne.';}
+    else if(p>=0.6){msg.className='fb ok'; msg.innerHTML='<strong class="okc">C\'est en bonne voie.</strong> Relis l\'étape 2 et refais les exercices où tu t\'es trompé.';}
+    else {msg.className='fb bad'; msg.innerHTML='<strong class="badc">À retravailler.</strong> Reprends l\'étape 2 : est-ce que je transforme une expression (=) ou est-ce que je cherche x dans une équation (⇔ à la ligne) ?';}
+  }
+
+  // ---------- 1. Déclic ----------
+  const declic=[
+    {l:['3(x + 2) − x','= 3x + 6 − x','= 2x + 6'], ok:true,
+     fb:'On ne cherche pas x : on réécrit la même expression. Chaque ligne commence par =, c\'est le bon symbole.'},
+    {l:['2x + 3 = 7','= 2x = 4','= x = 2'], ok:false,
+     fb:'Cette rédaction affirme que 7 = 2x = 4 = x = 2, donc que 7 = 4 ! Pour résoudre, on écrit une équation par ligne :',
+     fix:['2x + 3 = 7','⇔ 2x = 4','⇔ x = 2']},
+    {l:['(x + 1)²','⇔ x² + 2x + 1'], ok:false,
+     fb:'(x + 1)² et x² + 2x + 1 sont des expressions, pas des équations. Elles ont la même valeur : on écrit',
+     fix:['(x + 1)²','= x² + 2x + 1']},
+    {l:['5x − 1 = 9','⇔ 5x = 10','⇔ x = 2'], ok:true,
+     fb:'Chaque ligne est une équation, et elles ont toutes la même solution. Le ⇔ est bien utilisé, en début de ligne.'},
+    {l:['x² − 4 = 0','⇔ (x − 2)(x + 2)','⇔ x = 2 ou x = −2'], ok:false,
+     fb:'(x − 2)(x + 2) seul n\'est pas une équation : il manque « = 0 ». Il faut écrire :',
+     fix:['x² − 4 = 0','⇔ (x − 2)(x + 2) = 0','⇔ x = 2 ou x = −2']},
+    {l:['f(3) = 2 × 3² − 3 × 3','⇔ 18 − 9','⇔ 9'], ok:false,
+     fb:'Ici f(x) = 2x² − 3x. f(3) est un nombre : on le calcule avec =, sans ⇔. On écrit :',
+     fix:['f(3) = 2 × 3² − 3 × 3','= 18 − 9','= 9']}
+  ];
+  function renderDeclic(){
+    const box=document.getElementById('declic-list'); box.innerHTML='';
+    declic.forEach((d,i)=>{
+      const c=document.createElement('div'); c.className='card';
+      c.innerHTML=lines(d.l)+'<div class="row"><button class="btn" data-a="1">Correct</button><button class="btn" data-a="0">Incorrect</button></div><div class="fb-slot" aria-live="polite"></div>';
+      c.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+        const good=((b.dataset.a==='1')===d.ok);
+        c.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+        const id='declic'+i;
+        if(!done.has(id)){ done.add(id); if(good) score.declic.got++; setScore(); }
+        c.querySelector('.fb-slot').innerHTML='<div class="fb '+(good?'ok':'bad')+'"><strong class="'+(good?'okc':'badc')+'">'+(good?'Bien vu.':'Pas tout à fait.')+'</strong> '+(d.ok?'Cette rédaction est correcte. ':'Cette rédaction est incorrecte. ')+fmt(d.fb)+(d.fix?lines(d.fix):'')+'</div>';
+      }));
+      box.appendChild(c);
+    });
+  }
+
+  // ---------- 3. Tri ----------
+  const tri=[
+    {titre:'Développer (2x − 3)²', blocks:[{items:['(2x − 3)²','(2x)² − 2 × 2x × 3 + 3²','4x² − 12x + 9'], ans:[E,E]}]},
+    {titre:'Résoudre 4x − 5 = 2x + 1', blocks:[{items:['4x − 5 = 2x + 1','2x − 5 = 1','2x = 6','x = 3'], ans:[V,V,V]}]},
+    {titre:'Soit f(x) = 3x² − 2x. Calculer f(−2)', blocks:[{items:['f(−2)','3 × (−2)² − 2 × (−2)','12 + 4','16'], ans:[E,E,E]}]},
+    {titre:'Résoudre 3(x − 2) − (x + 4) = 0', blocks:[{items:['3(x − 2) − (x + 4) = 0','3x − 6 − x − 4 = 0','2x − 10 = 0','x = 5'], ans:[V,V,V]}]},
+    {titre:'Soit A(x) = (x + 2)² − 9. Factoriser A(x), puis résoudre A(x) = 0', blocks:[
+      {label:'Factorisation', items:['A(x)','(x + 2)² − 3²','(x + 2 − 3)(x + 2 + 3)','(x − 1)(x + 5)'], ans:[E,E,E]},
+      {label:'Résolution', items:['A(x) = 0','(x − 1)(x + 5) = 0','x − 1 = 0 ou x + 5 = 0','x = 1 ou x = −5'], ans:[V,V,V]}
+    ]}
+  ];
+  function gapButtons(){ return '<div class="gap"><button class="e" aria-pressed="false" data-s="=" aria-label="égal">=</button><button class="v" aria-pressed="false" data-s="⇔" aria-label="équivalent">⇔</button></div>'; }
+  function renderTri(){
+    const box=document.getElementById('tri-list'); box.innerHTML=''; score.tri.total=0;
+    tri.forEach((ex,k)=>{
+      const c=document.createElement('div'); c.className='card';
+      let h='<h3>'+fmt(ex.titre)+'</h3>';
+      ex.blocks.forEach((b,bi)=>{
+        h+='<div class="block">'+(b.label?'<div class="block-label">'+b.label+'</div>':'')+'<div class="lines">';
+        b.items.forEach((it,i)=>{
+          h+='<div class="line" data-b="'+bi+'" data-i="'+i+'">'+(i===0?'<span></span>':gapButtons())+'<span class="m">'+fmt(it)+'</span></div>';
+          if(i>0) score.tri.total++;
+        });
+        h+='</div></div>';
+      });
+      h+='<div class="row"><button class="btn primary">Vérifier</button></div><div class="fb-slot" aria-live="polite"></div>';
+      c.innerHTML=h;
+      c.querySelectorAll('.gap').forEach(g=>g.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>{
+        g.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===btn?'true':'false'));
+        g.closest('.line').classList.remove('ok','bad');
+      })));
+      c.querySelector('.btn.primary').addEventListener('click',()=>{
+        let good=0,tot=0,missing=0;
+        c.querySelectorAll('.line').forEach(l=>{
+          const i=+l.dataset.i; if(i===0) return;
+          const b=ex.blocks[+l.dataset.b]; tot++;
+          const sel=l.querySelector('button[aria-pressed="true"]');
+          if(!sel){missing++; l.classList.remove('ok','bad'); return;}
+          const ok=sel.dataset.s===b.ans[i-1]; if(ok) good++;
+          l.classList.toggle('ok',ok); l.classList.toggle('bad',!ok);
+        });
+        const slot=c.querySelector('.fb-slot');
+        if(missing){ slot.innerHTML='<div class="fb bad">Choisis un symbole pour chaque ligne avant de vérifier ('+missing+' manquant'+(missing>1?'s':'')+').</div>'; return; }
+        const id='tri'+k;
+        if(!done.has(id)){ done.add(id); score.tri.got+=good; setScore(); }
+        let expl=good===tot?'<strong class="okc">Parfait.</strong> ':'<strong class="badc">'+good+' sur '+tot+'.</strong> Les lignes en rouge sont à revoir. ';
+        expl+=ex.blocks.map(b=>(b.label?b.label+' : ':'')+(b.ans[0]===E?'on ne cherche pas x, on réécrit la même expression, donc =.':'on cherche x : chaque ligne est une équation qui a les mêmes solutions, donc ⇔ en début de ligne.')).join(' ');
+        slot.innerHTML='<div class="fb '+(good===tot?'ok':'bad')+'">'+expl+'</div>';
+      });
+      box.appendChild(c);
+    });
+  }
+
+  // ---------- 4. Copies ----------
+  const copies=[
+    {who:'Léa', tag:'Résoudre', consigne:'Résoudre dans ℝ : 3(x − 1) + 2 = x + 5.',
+      items:['3(x − 1) + 2 = x + 5','3x − 3 + 2 = x + 5','3x − 1 = x + 5','2x = 6','x = 3'], start:[E,E,V,E], ans:[V,V,V,V],
+      expl:'Chaque ligne est une équation : on les relie toutes par ⇔, en début de ligne.'},
+    {who:'Tom', tag:'Développer', consigne:'Développer et réduire B = (x + 3)(2x − 1).',
+      items:['B = (x + 3)(2x − 1)','2x² − x + 6x − 3','2x² + 5x − 3'], start:[V,V], ans:[E,E],
+      expl:'Tom calcule B : chaque ligne est une expression égale à B, donc =. Il n\'y a rien à résoudre.'},
+    {who:'Inès', tag:'Question a) · Forme canonique', consigne:'a) Soit f(x) = x² − 6x + 5. Écrire f(x) sous forme canonique.',
+      items:['f(x) = x² − 6x + 5','(x − 3)² − 9 + 5','(x − 3)² − 4'], start:[V,E], ans:[E,E],
+      expl:'On transforme l\'expression f(x) : chaque ligne a la même valeur que f(x), donc =.'},
+    {who:'Inès', tag:'Question b) · Résoudre', consigne:'b) En utilisant f(x) = (x − 3)² − 4, résoudre f(x) = 0.',
+      items:['f(x) = 0','(x − 3)² − 4 = 0','(x − 3)² = 4','x − 3 = 2 ou x − 3 = −2','x = 5 ou x = 1'], start:[E,E,V,E], ans:[V,V,V,V],
+      expl:'On résout l\'équation f(x) = 0 : chaque ligne est une équation, donc ⇔ en début de ligne.'}
+  ];
+  function renderCopies(){
+    const box=document.getElementById('copies-list'); box.innerHTML=''; score.copies.total=0;
+    copies.forEach((cp,k)=>{
+      const card=document.createElement('div'); card.className='copy-card';
+      let h='<div class="copy-head"><span class="who">Copie de '+cp.who+'</span><span class="chip">'+cp.tag+'</span></div>';
+      h+='<div class="sujet"><span class="m">'+fmt(cp.consigne)+'</span></div>';
+      h+='<div class="copie"><div class="lines">';
+      cp.items.forEach((it,i)=>{
+        let conn='<span></span>';
+        if(i>0){ const s=cp.start[i-1]; conn='<button class="conn '+sym[s]+'" data-s="'+s+'" aria-label="Symbole : '+(s===E?'égal':'équivalent')+'. Cliquer pour changer.">'+s+'</button>'; score.copies.total++; }
+        h+='<div class="line" data-i="'+i+'">'+conn+'<span class="txt">'+fmt(it)+'</span></div>';
+      });
+      h+='</div></div><div class="copy-foot"><div class="row"><button class="btn primary">Vérifier la copie</button></div><div class="fb-slot" aria-live="polite"></div></div>';
+      card.innerHTML=h;
+      card.querySelectorAll('.conn').forEach(btn=>btn.addEventListener('click',()=>{
+        const n=btn.dataset.s===E?V:E; btn.dataset.s=n; btn.textContent=n; btn.className='conn '+sym[n];
+        btn.setAttribute('aria-label','Symbole : '+(n===E?'égal':'équivalent')+'. Cliquer pour changer.');
+        btn.closest('.line').classList.remove('ok','bad');
+      }));
+      card.querySelector('.btn.primary').addEventListener('click',()=>{
+        let good=0,tot=0;
+        card.querySelectorAll('.line').forEach(l=>{
+          const i=+l.dataset.i; if(i===0) return; tot++;
+          const ok=l.querySelector('.conn').dataset.s===cp.ans[i-1];
+          if(ok) good++; l.classList.toggle('ok',ok); l.classList.toggle('bad',!ok);
+        });
+        const id='copie'+k;
+        if(!done.has(id)){ done.add(id); score.copies.got+=good; setScore(); }
+        card.querySelector('.fb-slot').innerHTML='<div class="fb '+(good===tot?'ok':'bad')+'">'+(good===tot?'<strong class="okc">Copie corrigée.</strong> ':'<strong class="badc">'+good+' symbole'+(good>1?'s':'')+' juste'+(good>1?'s':'')+' sur '+tot+'.</strong> Les lignes en rouge sont encore fausses. ')+fmt(cp.expl)+'</div>';
+      });
+      box.appendChild(card);
+    });
+  }
+
+  function init(){
+    score.declic.got=0; score.tri.got=0; score.copies.got=0; done.clear();
+    renderDeclic(); renderTri(); renderCopies(); setScore();
+  }
+  document.getElementById('reset').addEventListener('click',()=>{ init(); window.scrollTo({top:0,behavior:'smooth'}); });
+  init();
+})();
+</script>
+
+</body>
+</html>
