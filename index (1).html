@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Mathématiques — Première</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+  :root{
+    --bg:#eef2f2; --surface:#ffffff; --ink:#14232a; --ink-soft:#4c5f64; --line:#d3dedb;
+    --accent:#0e766c; --accent-ink:#ffffff; --accent-soft:#dcecea;
+    --shadow:0 1px 2px rgba(20,35,42,.05), 0 8px 22px rgba(20,35,42,.07);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0e1618; --surface:#16211f; --ink:#e9f1ee; --ink-soft:#aabcb8; --line:#2b3a37;
+      --accent:#57bcac; --accent-ink:#06231f; --accent-soft:#183531;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 26px rgba(0,0,0,.38);
+      color-scheme:dark;
+    }
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--bg); color:var(--ink); margin:0; padding:0 16px 60px;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.55;}
+  .wrap{max-width:760px; margin:0 auto;}
+  header{padding:28px 0 14px;}
+  .eyebrow{font-size:.76rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--accent);}
+  h1{margin:4px 0 0; font-size:1.7rem; font-family:Georgia,serif; font-weight:600;}
+  header p{margin:6px 0 0; color:var(--ink-soft);}
+
+  .tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 0 20px;}
+  .tab{font:inherit; font-weight:700; font-size:1rem; cursor:pointer; padding:16px 8px; border-radius:14px;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
+  .tab .n{display:block; font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-top:2px;}
+  .tab[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+  .tab[aria-pressed="true"] .n{color:var(--accent-ink);}
+  .tab:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+  ul{list-style:none; margin:0; padding:0; display:grid; gap:10px;}
+  li a{display:flex; justify-content:space-between; align-items:center; gap:10px; text-decoration:none; color:inherit;
+    background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--accent);
+    border-radius:12px; padding:14px 16px; box-shadow:var(--shadow); font-weight:600;}
+  li a::after{content:"\2192"; color:var(--ink-soft);}
+  li a:hover{border-color:var(--accent);}
+  li a:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+  .msg{padding:18px; background:var(--surface); border:1px solid var(--line); border-radius:12px; color:var(--ink-soft);}
+  @media (max-width:460px){ h1{font-size:1.4rem;} .tab{font-size:.9rem; padding:14px 4px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Lycée Gustave Eiffel · Première</div>
+    <h1>Mathématiques — Première</h1>
+    <p>Choisis une rubrique pour accéder aux ressources.</p>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="list"><div class="msg">Chargement…</div></div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CONFIG = { owner:"profMignot", repo:"premiere-lycee-eiffel", branch:"main" };
+
+  var RUBRIQUES = [
+    { id:"cours",  label:"Cours",        folders:["cours","lecons","lecon"],                          kw:/cours|lecon|leçon/ },
+    { id:"exos",   label:"Exercices",    folders:["exercices","exercice","exos","exo"],               kw:/exo|exercice/ },
+    { id:"remed",  label:"Remédiations", folders:["remediations","remediation","remed"],              kw:/remed|remédi/ }
+  ];
+
+  var items = [];
+  var current = "cours";
+  var tabsEl = document.getElementById("tabs");
+  var listEl = document.getElementById("list");
+
+  function rubriqueOf(path){
+    var p = path.toLowerCase(), segs = p.split("/");
+    for(var s=0; s<segs.length-1; s++){
+      for(var i=0;i<RUBRIQUES.length;i++){
+        if(RUBRIQUES[i].folders.indexOf(segs[s]) !== -1) return RUBRIQUES[i].id;
+      }
+    }
+    for(var j=0;j<RUBRIQUES.length;j++){
+      if(RUBRIQUES[j].kw.test(p)) return RUBRIQUES[j].id;
+    }
+    return "exos"; // par défaut : tout fichier appartient à une rubrique
+  }
+
+  function prettyName(path){
+    var base = path.split("/").pop().replace(/\.html?$/i, "");
+    try{ base = decodeURIComponent(base); }catch(e){}
+    base = base.replace(/[_-]+/g," ").replace(/\s+/g," ").trim();
+    return base ? base.charAt(0).toUpperCase()+base.slice(1) : "Ressource";
+  }
+  function encodePath(p){ return p.split("/").map(encodeURIComponent).join("/"); }
+  function esc(s){ return s.replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); }
+
+  function renderTabs(){
+    tabsEl.innerHTML = RUBRIQUES.map(function(r){
+      var n = items.filter(function(a){return a.r===r.id;}).length;
+      return '<button class="tab" type="button" data-id="'+r.id+'" aria-pressed="'+(current===r.id)+'">'+r.label+
+             '<span class="n">'+n+'</span></button>';
+    }).join("");
+    Array.prototype.forEach.call(tabsEl.querySelectorAll(".tab"), function(b){
+      b.addEventListener("click", function(){ current = b.dataset.id; renderTabs(); renderList(); });
+    });
+  }
+
+  function renderList(){
+    var shown = items.filter(function(a){ return a.r===current; })
+      .sort(function(a,b){ return a.name.localeCompare(b.name,"fr",{numeric:true}); });
+    if(!shown.length){ listEl.innerHTML = '<div class="msg">Rien ici pour l\'instant.</div>'; return; }
+    listEl.innerHTML = "<ul>" + shown.map(function(a){
+      return '<li><a href="'+encodePath(a.path)+'">'+esc(a.name)+'</a></li>';
+    }).join("") + "</ul>";
+  }
+
+  function build(paths){
+    items = paths.map(function(p){ return { path:p, name:prettyName(p), r:rubriqueOf(p) }; });
+    renderTabs(); renderList();
+  }
+
+  var url = "https://api.github.com/repos/"+CONFIG.owner+"/"+CONFIG.repo+"/git/trees/"+CONFIG.branch+"?recursive=1";
+  fetch(url, { headers:{ "Accept":"application/vnd.github+json" } })
+    .then(function(r){ if(!r.ok) throw new Error("http"); return r.json(); })
+    .then(function(data){
+      var paths = (data.tree||[])
+        .filter(function(e){ return e.type==="blob" && /\.html?$/i.test(e.path); })
+        .map(function(e){ return e.path; })
+        .filter(function(p){ var l=p.toLowerCase(); return l!=="index.html" && l.split("/").pop().indexOf(".")!==0; });
+      build(paths);
+    })
+    .catch(function(){
+      listEl.innerHTML = '<div class="msg">Impossible de charger la liste. Réessaie dans quelques minutes.</div>';
+    });
+})();
+</script>
+</body>
+</html>
