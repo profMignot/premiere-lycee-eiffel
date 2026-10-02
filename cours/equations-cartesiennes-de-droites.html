@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Équations cartésiennes d’une droite</title>
+<style>
+:root{
+  --blue:#2457a6; --blue-l:#e8f0fb;
+  --orange:#d9622b; --orange-l:#fdf0e8;
+  --green:#1f7a4d; --green-l:#e6f5ec;
+  --red:#b3261e; --red-l:#fdecea;
+  --ink:#1d2433; --muted:#5b6678; --line:#d5dce8; --bg:#f6f8fc; --card:#fff;
+  --bg2:#fafbfd; --rem:#f1f3f7; --remb:#8b94a5; --remt:#4a5365; --act:#fffdf4; --actb:#efd48a; --tag:#efd48a; --tagt:#5b4300;
+  --okt:#14502f; --kot:#7a1a14; --btnl:#fff; --acc:#2457a6;
+}
+@media (prefers-color-scheme: dark){
+  .btn:not(.ghost):not(.kb),.num,nav.toc a:hover,.btn.kb[aria-pressed=true]{color:#0b1220!important}
+  :root{
+    --blue:#8bb8ff; --blue-l:#1d2b45; --orange:#ff9d68; --orange-l:#3b2a1f;
+    --green:#5fd49b; --green-l:#17332a; --red:#ff8d84; --red-l:#3b2020;
+    --ink:#e7ebf3; --muted:#a3aec2; --line:#334058; --bg:#10141c; --card:#1a2030;
+    --bg2:#212840; --rem:#252c3d; --remb:#7c879c; --remt:#c4cbd9; --act:#262418; --actb:#6f5e22; --tag:#6f5e22; --tagt:#fff3c4;
+    --okt:#b8f0d3; --kot:#ffd0cc; --btnl:#1a2030; --acc:#8bb8ff;
+  }
+}
+/* les figures restent sur fond blanc : on y rétablit les couleurs claires */
+.graph{--blue:#2457a6;--orange:#d9622b;--green:#1f7a4d;--red:#b3261e;--ink:#1d2433;--muted:#5b6678}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;overflow-x:hidden;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);background:var(--bg);color:var(--ink);font:17px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header.hero{background:linear-gradient(135deg,#2457a6,#3b7dd8);color:#fff;padding:2.2rem 1rem 1.8rem;text-align:center}
+.hero h1{margin:0 0 .3rem;font-size:clamp(1.6rem,5vw,2.3rem)}
+.hero p{margin:0;opacity:.92}
+nav.toc{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);display:flex;gap:.4rem;overflow-x:auto;padding:.5rem .8rem}
+nav.toc a{flex:none;text-decoration:none;color:var(--blue);background:var(--blue-l);border-radius:999px;padding:.15rem .8rem;font-weight:600;font-size:.92rem;white-space:nowrap}
+nav.toc a:hover{background:var(--blue);color:#fff}
+@media(min-width:760px){nav.toc{justify-content:center}}
+main{max-width:860px;margin:0 auto;padding:.6rem 1rem 3rem}
+section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.1rem 1.2rem 1.4rem;margin:1.2rem 0;box-shadow:0 1px 3px rgba(20,40,80,.05)}
+section>h2{margin:.1rem 0 .8rem;font-size:1.3rem;color:var(--blue);display:flex;gap:.7rem;align-items:center;line-height:1.3}
+section>h2 .num{flex:none;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:1.05rem}
+h3{margin:1.4rem 0 .3rem;font-size:1.05rem;color:var(--ink)}
+p{margin:.45rem 0}
+.box{border-left:5px solid;border-radius:10px;padding:.55rem 1rem .6rem;margin:.9rem 0}
+.box .ttl{font-weight:700;margin-bottom:.1rem}
+.def{background:var(--blue-l);border-color:var(--blue)}
+.def .ttl{color:var(--blue)}
+.prop{background:var(--orange-l);border-color:var(--orange)}
+.prop .ttl{color:var(--orange)}
+.meth{background:var(--green-l);border-color:var(--green)}
+.meth .ttl{color:var(--green)}
+.rem{background:var(--rem);border-color:var(--remb)}
+.rem .ttl{color:var(--remt)}
+.m{font-family:"Cambria Math",Cambria,"STIX Two Text",Georgia,"Times New Roman",serif;font-size:1.06em;white-space:nowrap}
+.m i{font-style:italic}
+.m i.pt{margin-right:.2em}
+.nt{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:.92em}
+.eq{display:block;text-align:center;font-size:1.2em;margin:.5rem 0}
+.vec{position:relative;display:inline-block;line-height:1;padding-top:.14em;margin-right:.16em}
+.vec::before{content:"";position:absolute;left:.08em;right:-.04em;top:0;border-top:1.3px solid currentColor}
+.vec::after{content:"";position:absolute;right:-.04em;top:.65px;width:.2em;height:.2em;border-top:1.3px solid currentColor;border-right:1.3px solid currentColor;transform:translateY(-50%) rotate(45deg)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.15;margin:0 .1em}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em}
+.frac>span:last-child{padding:0 .2em}
+.lines{margin:.5rem 0;padding:.5rem .9rem;background:var(--bg2);border:1px solid var(--line);border-radius:10px;display:inline-block;max-width:100%;overflow-x:auto}
+.lines>div{white-space:nowrap}
+.lines .cont{padding-left:2.2em}
+ul,ol{margin:.4rem 0;padding-left:1.4rem}
+li{margin:.2rem 0}
+/* graphiques */
+.graph{display:block;width:100%;height:auto;margin:.6rem auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.graph .gr{stroke:#e4e9f1;stroke-width:1}
+.graph .ax{stroke:#5b6678;stroke-width:2}
+.graph .tk{font:12px system-ui,sans-serif;fill:#5b6678}
+.graph .ln{stroke-width:3.4;stroke-linecap:round}
+.graph .dash{stroke:#5b6678;stroke-width:2.2;stroke-dasharray:5 4}
+.graph .pl{font:600 18px Georgia,serif;fill:var(--ink);font-style:italic}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:.8rem;margin:.6rem 0}
+.figs figure{margin:0;text-align:center;font-size:.92rem}
+.figs figcaption{margin-top:.2rem}
+.legend{font-size:.95rem;color:var(--muted);text-align:center}
+.dot{display:inline-block;width:.8em;height:.8em;border-radius:50%;vertical-align:middle;margin-right:.25em}
+/* explorateur */
+.explo{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:.8rem;margin:1rem 0}
+.explo .ctrls{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:.4rem 0}
+.explo label{display:block;font-size:.95rem}
+.explo input[type=range]{width:100%}
+.explo .out{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.4rem .8rem;min-height:4.2rem;font-size:1.1rem}
+/* exercices interactifs */
+.act{background:var(--act);border:2px solid var(--actb);border-radius:14px;padding:.8rem 1rem 1rem;margin:1rem 0;position:relative}
+.act .tag{display:inline-block;background:var(--tag);color:var(--tagt);font-weight:700;font-size:.82rem;border-radius:999px;padding:.05rem .7rem;margin-bottom:.3rem}
+.act .q p:first-child{margin-top:.2rem}
+.fields{margin:.5rem 0 .2rem;line-height:2.5}
+.f{display:inline-flex;align-items:center;gap:.35rem;margin-right:.6rem}
+.f input[type=text]{min-height:46px;width:4.8em;font:inherit;font-size:1rem;padding:.25rem .4rem;border:2px solid var(--line);border-radius:8px;text-align:center;background:var(--card);color:var(--ink)}
+.f input[type=text]:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(36,87,166,.18)}
+.opts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.3rem 0}
+.opt{min-height:46px;display:flex;align-items:center;gap:.45rem;background:var(--card);border:2px solid var(--line);border-radius:10px;padding:.3rem .8rem;cursor:pointer;line-height:1.4}
+.opt:has(input:checked){border-color:var(--blue);background:var(--blue-l)}
+.opt input{accent-color:var(--blue);width:1.1rem;height:1.1rem}
+.btns{display:flex;flex-wrap:wrap;gap:.5rem;margin:.6rem 0 .2rem}
+.btn{font:inherit;font-size:1rem;font-weight:600;cursor:pointer;border:2px solid var(--blue);background:var(--blue);color:#fff;border-radius:10px;padding:.35rem .9rem;min-height:46px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--btnl);color:var(--blue)}
+.btn.ghost:hover{background:var(--blue-l)}
+:root:not(.x) .btn{color:#fff}
+.btn.ghost,.btn.kb{color:var(--blue)}
+.btn.kb{color:var(--orange)}
+.btn:disabled{opacity:.4;cursor:default}
+.btns.kbtns{justify-content:center}
+.btn.kb{min-width:3.4rem;background:var(--btnl);color:var(--orange);border-color:var(--orange)}
+.btn.kb[aria-pressed=true]{background:var(--orange);color:#fff}
+.cons-svg svg{cursor:crosshair;touch-action:manipulation}
+.fb{margin-top:.5rem;border-radius:10px;padding:.0rem .8rem}
+.fb.ok{background:var(--green-l);border:1px solid var(--green);color:var(--okt);padding:.45rem .8rem}
+.fb.ko{background:var(--red-l);border:1px solid var(--red);color:var(--kot);padding:.45rem .8rem}
+.solbox{margin-top:.6rem;background:var(--card);border:1px dashed var(--muted);border-radius:10px;padding:.3rem .9rem}
+.solbox::before{content:"Correction";display:block;font-weight:700;color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.2rem}
+.reveal ol,.reveal ul{list-style:none;padding:0}
+.rs{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--green);border-radius:10px;padding:.35rem .9rem;margin:.5rem 0}
+details{margin:.7rem 0;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:.4rem .9rem}
+summary{cursor:pointer;font-weight:600;color:var(--blue)}
+@media(max-width:600px){
+  body{font-size:16.5px;line-height:1.65}
+  main{padding:.3rem .5rem 2rem}
+  section{padding:.8rem .75rem 1rem;border-radius:14px;margin:.8rem 0}
+  section>h2{font-size:1.15rem}
+  .box{padding:.5rem .75rem .55rem}
+  .act{padding:.65rem .7rem .8rem}
+  .explo{padding:.55rem}
+  .fields{line-height:2.9}
+  .f input[type=text]{width:4.2em}
+  header.hero{padding:1.4rem .8rem 1.2rem}
+  .eq{font-size:1.08em}
+  .graph .tk{font-size:17px}
+  .graph .pl{font-size:24px}
+}
+footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Équations cartésiennes d’une droite</h1>
+  <p>Cours en 6 étapes · avec des exercices interactifs</p>
+</header>
+
+<nav class="toc" aria-label="Plan du cours">
+  <a href="#s1">1 · Réduite</a>
+  <a href="#s2">2 · Vecteur dir.</a>
+  <a href="#s3">3 · Coord. de AB</a>
+  <a href="#s4">4 · (−b ; a)</a>
+  <a href="#s5">5 · Méthode</a>
+  <a href="#s6">6 · Exercices</a>
+</nav>
+
+<main>
+<noscript><p><b>Ce cours utilise JavaScript pour les exercices interactifs : active-le pour pouvoir les faire.</b></p></noscript>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <h2><span class="num">1</span>De l’équation réduite à l’équation cartésienne</h2>
+
+  <div class="box rem">
+    <div class="ttl">Rappel (classe de seconde)</div>
+    <p>Dans un repère, une droite <i>d</i> possède une équation réduite :</p>
+    <ul>
+      <li>si elle n’est pas verticale : <span class="m">y = mx + p</span> (<i>m</i> est le coefficient directeur, <i>p</i> l’ordonnée à l’origine) ;</li>
+      <li>si elle est verticale : <span class="m">x = k</span>.</li>
+    </ul>
+  </div>
+
+  <div class="box def">
+    <div class="ttl">Définition</div>
+    <p>Toute droite du plan admet une équation de la forme</p>
+    <span class="m eq">ax + by + c = 0</span>
+    <p>où <span class="m">a</span>, <span class="m">b</span> et <span class="m">c</span> sont trois réels, avec <span class="m">a</span> et <span class="m">b</span> <b>non tous les deux nuls</b>. C’est une <b>équation cartésienne</b> de la droite.</p>
+  </div>
+
+  <div class="box meth">
+    <div class="ttl">Méthode</div>
+    <p>Pour passer d’une équation réduite à une équation cartésienne, on <b>passe tous les termes dans le même membre</b>, de façon que l’autre membre soit égal à 0. S’il y a des fractions, on multiplie d’abord par le dénominateur.</p>
+  </div>
+
+  <h3>Exemple</h3>
+  <p>La droite <i>d</i> a pour équation réduite <span class="m">y = 2x + 3</span>.</p>
+  <div class="lines m">
+    <div>y = 2x + 3</div>
+    <div class="cont">⇔ 0 = 2x − y + 3</div>
+    <div class="cont">⇔ 2x − y + 3 = 0</div>
+  </div>
+  <p>Donc <span class="m">2x − y + 3 = 0</span> est une équation cartésienne de <i>d</i> : ici <span class="m">a = 2</span>, <span class="m">b = −1</span> et <span class="m">c = 3</span>.</p>
+
+  <div class="box rem">
+    <div class="ttl">Remarques</div>
+    <ul>
+      <li><b>L’équation cartésienne n’est pas unique.</b> En multipliant par un réel non nul, on obtient une autre équation de la même droite : <span class="m">4x − 2y + 6 = 0</span> décrit la même droite que <span class="m">2x − y + 3 = 0</span>.</li>
+      <li><b>Droite verticale</b> <span class="m">x = 4</span> : elle s’écrit <span class="m">x − 4 = 0</span>, avec <span class="m">a = 1</span>, <span class="m">b = 0</span>, <span class="m">c = −4</span>.</li>
+      <li><b>Droite horizontale</b> <span class="m">y = 3</span> : elle s’écrit <span class="m">y − 3 = 0</span>, avec <span class="m">a = 0</span>, <span class="m">b = 1</span>, <span class="m">c = −3</span>.</li>
+    </ul>
+  </div>
+
+  <h3>À toi de jouer</h3>
+  <div class="act"><span class="tag">Exercice interactif 1</span><div id="ex1a"></div></div>
+  <div class="act"><span class="tag">Exercice interactif 2</span><div id="ex1b"></div></div>
+  <div class="act"><span class="tag">Exercice interactif 3 · droite verticale ou horizontale</span><div id="ex1c"></div></div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <h2><span class="num">2</span>Vecteur directeur d’une droite</h2>
+
+  <div class="box def">
+    <div class="ttl">Définition</div>
+    <p>Soit <i>d</i> une droite. Un <b>vecteur directeur</b> de <i>d</i> est un vecteur <b>non nul</b> <span class="m"><span class="vec">u</span></span> qui a <b>la même direction que <i>d</i></b> : on peut le représenter par une flèche « posée » sur <i>d</i>.</p>
+  </div>
+
+  <div class="box rem">
+    <div class="ttl">Rappel</div>
+    <p>Les coordonnées <span class="m">(x ; y)</span> d’un vecteur indiquent un déplacement : <i>x</i> unités horizontalement (vers la droite si <span class="m">x &gt; 0</span>, vers la gauche sinon) puis <i>y</i> unités verticalement (vers le haut si <span class="m">y &gt; 0</span>, vers le bas sinon).</p>
+  </div>
+
+  <h3>Construire un vecteur directeur</h3>
+  <p><b>Problème :</b> on donne une droite <i>d</i> et on veut <b>construire un vecteur directeur de <i>d</i></b>, c’est-à-dire une flèche qui a la même direction que <i>d</i>.<br>
+  <b>Méthode :</b> 1) on place un point <b>A</b> sur <i>d</i> ; 2) à partir de A, on se déplace le long de la droite en comptant les unités : horizontalement, puis verticalement ; 3) on trace la flèche. Clique sur « Suivant » pour voir la construction.</p>
+  <div class="explo" id="build">
+    <div id="build-graph"></div>
+    <div class="out" id="build-txt" aria-live="polite"></div>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="b-prev">← Précédent</button>
+      <button type="button" class="btn" id="b-next">Suivant →</button>
+    </div>
+  </div>
+
+  <div class="box prop">
+    <div class="ttl">À retenir (1)</div>
+    <p>Si <span class="m"><span class="vec">u</span></span> est un vecteur directeur de <i>d</i>, alors <b>tout vecteur</b> <span class="m">k<span class="vec">u</span></span> (avec <span class="m">k ≠ 0</span>) en est un aussi : une droite a une infinité de vecteurs directeurs, tous <b>colinéaires</b> (multiples les uns des autres).</p>
+  </div>
+  <p><b>Exemple.</b> Choisis une valeur de <span class="m">k</span> : le vecteur <span class="m">k<span class="vec">u</span></span> (en orange) s’allonge, se raccourcit ou se retourne, mais il garde la direction de <i>d</i>.</p>
+  <div class="explo" id="stretch">
+    <div id="stretch-graph"></div>
+    <div class="btns kbtns" id="stretch-btns"></div>
+    <div class="out" id="stretch-txt" aria-live="polite"></div>
+  </div>
+
+  <div class="box prop">
+    <div class="ttl">À retenir (2)</div>
+    <p>Une droite est entièrement déterminée par <b>un point</b> et <b>un vecteur directeur</b>.</p>
+  </div>
+  <p><b>Exemple.</b> La droite <i>d</i> passe par <span class="m">A(1 ; −1)</span> et a pour vecteur directeur <span class="m"><span class="vec">u</span>(2 ; 1)</span>.</p>
+  <div class="explo" id="det">
+    <div id="det-graph"></div>
+    <div class="out" id="det-txt" aria-live="polite"></div>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="d-prev">← Précédent</button>
+      <button type="button" class="btn" id="d-next">Suivant →</button>
+    </div>
+  </div>
+
+  <h3>À toi de construire</h3>
+  <div class="act"><span class="tag">Construction · un point et un vecteur</span><div id="cons"></div></div>
+
+  <h3>À toi de jouer</h3>
+  <div class="act"><span class="tag">Exercice interactif 1 · lecture graphique</span><div id="ex2a"></div></div>
+  <div class="act"><span class="tag">Exercice interactif 2 · vrai ou faux</span><div id="ex2b"></div></div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <h2><span class="num">3</span>Coordonnées d’un vecteur défini par deux points</h2>
+
+  <div class="box prop">
+    <div class="ttl">Propriété</div>
+    <p>Dans un repère, si <span class="m">A(x<sub>A</sub> ; y<sub>A</sub>)</span> et <span class="m">B(x<sub>B</sub> ; y<sub>B</sub>)</span>, alors le vecteur <span class="m"><span class="vec">AB</span></span> a pour coordonnées</p>
+    <span class="m eq"><span class="vec">AB</span> ( x<sub>B</sub> − x<sub>A</sub> ; y<sub>B</sub> − y<sub>A</sub> )</span>
+    <p>Moyen mnémotechnique : <b>arrivée − départ</b>, pour chaque coordonnée.</p>
+  </div>
+
+  <h3>Exemple rédigé ligne par ligne</h3>
+  <p>On donne <span class="m">A(2 ; −3)</span> et <span class="m">B(5 ; 1)</span>. Calculons les coordonnées de <span class="m"><span class="vec">AB</span></span>.</p>
+  <div class="lines m">
+    <div><span class="vec">AB</span> ( x<sub>B</sub> − x<sub>A</sub> ; y<sub>B</sub> − y<sub>A</sub> )</div>
+    <div><span class="vec">AB</span> ( 5 − 2 ; 1 − (−3) )</div>
+    <div><span class="vec">AB</span> ( 3 ; 4 )</div>
+  </div>
+  <div id="g3"></div>
+  <p class="legend">Pour aller de A à B : 3 unités vers la droite, puis 4 vers le haut.</p>
+
+    <h3>À toi de jouer</h3>
+  <div class="act"><span class="tag">Exercice interactif 1</span><div id="ex3a"></div></div>
+  <div class="act"><span class="tag">Exercice interactif 2</span><div id="ex3b"></div></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <h2><span class="num">4</span>Vecteur directeur à partir d’une équation cartésienne</h2>
+
+  <div class="box prop">
+    <div class="ttl">Propriété</div>
+    <p>Si une droite <i>d</i> a pour équation cartésienne <span class="m">ax + by + c = 0</span>, alors le vecteur</p>
+    <span class="m eq"><span class="vec">v</span> ( −b ; a )</span>
+    <p>est un vecteur directeur de <i>d</i>.</p>
+  </div>
+
+  <h3>Exemple</h3>
+  <p>La droite <i>d</i> a pour équation <span class="m">3x − 2y + 5 = 0</span>. Ici <span class="m">a = 3</span> et <span class="m">b = −2</span>, donc</p>
+  <div class="lines m">
+    <div><span class="vec">v</span> ( −b ; a )</div>
+    <div><span class="vec">v</span> ( −(−2) ; 3 )</div>
+    <div><span class="vec">v</span> ( 2 ; 3 )</div>
+  </div>
+  <div id="g4"></div>
+  <p class="legend">Le vecteur <span class="m"><span class="vec">v</span>(2 ; 3)</span> a bien la direction de la droite : 2 unités à droite, 3 vers le haut.</p>
+
+  <div class="box rem">
+    <div class="ttl">Cas particuliers</div>
+    <ul>
+      <li>Équation réduite <span class="m">y = mx + p</span> : elle s’écrit <span class="m">mx − y + p = 0</span>, donc <span class="m"><span class="vec">v</span>(1 ; m)</span> est directeur.</li>
+      <li>Droite verticale <span class="m">x − 4 = 0</span> : <span class="m">a = 1</span>, <span class="m">b = 0</span>, donc <span class="m"><span class="vec">v</span>(0 ; 1)</span>.</li>
+    </ul>
+  </div>
+  <h3>À toi de jouer</h3>
+  <div class="act"><span class="tag">Exemple interactif 1</span><div id="ex4a"></div></div>
+  <div class="act"><span class="tag">Exemple interactif 2 · coefficients négatifs</span><div id="ex4b"></div></div>
+  <div class="act"><span class="tag">Exemple interactif 3 · cas particuliers</span><div id="ex4c"></div></div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <h2><span class="num">5</span>Méthode : trouver une équation cartésienne</h2>
+
+  <div class="box meth">
+    <div class="ttl">Méthode</div>
+    <p>On connaît <b>un vecteur directeur</b> <span class="m"><span class="vec">u</span>(α ; β)</span> de <i>d</i> et <b>un point</b> A de <i>d</i>.</p>
+    <ol>
+      <li>Avec la propriété de l’étape 4, <span class="m"><span class="vec">v</span>(−b ; a)</span> est directeur : on en déduit facilement <span class="m">a</span> et <span class="m">b</span>. On écrit <span class="m">ax + by + c = 0</span>, avec <i>c</i> encore inconnu.</li>
+      <li>Le point A appartient à <i>d</i> : ses coordonnées vérifient l’équation. On les remplace dans <span class="m">ax + by + c = 0</span> et on <b>résout pour trouver <i>c</i></b>.</li>
+    </ol>
+    <p>Si l’énoncé donne <b>deux points</b> A et B, on commence par calculer <span class="m"><span class="vec">AB</span></span> (étape 3), qui sert de vecteur directeur.</p>
+  </div>
+
+  <h3>Exemple pas à pas</h3>
+  <p>Trouver une équation cartésienne de la droite <i>d</i> qui passe par <span class="m">A(2 ; −1)</span> et dont un vecteur directeur est <span class="m"><span class="vec">u</span>(3 ; 4)</span>.</p>
+  <div class="reveal">
+    <div class="rs"><b>Étape 1.</b> On cherche <span class="m">a</span> et <span class="m">b</span> : <span class="m"><span class="vec">v</span>(−b ; a)</span> doit être égal (ou colinéaire) à <span class="m"><span class="vec">u</span>(3 ; 4)</span>. On prend <span class="m">−b = 3</span> et <span class="m">a = 4</span>, donc <span class="m">a = 4</span> et <span class="m">b = −3</span>.</div>
+    <div class="rs"><b>Étape 2.</b> L’équation est de la forme <span class="m">4x − 3y + c = 0</span>.</div>
+    <div class="rs"><b>Étape 3.</b> Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :<br><div class="lines m"><div>4 × 2 − 3 × (−1) + c = 0</div><div class="cont">8 + 3 + c = 0</div><div class="cont">c = −11</div></div></div>
+    <div class="rs"><b>Étape 4.</b> Une équation cartésienne de <i>d</i> est <span class="m">4x − 3y − 11 = 0</span>.</div>
+    <div class="rs"><b>Vérification.</b> Le point <span class="m">B(5 ; 3)</span> (obtenu en ajoutant <span class="m"><span class="vec">u</span></span> à A) doit aussi être sur <i>d</i> : <span class="m">4 × 5 − 3 × 3 − 11 = 20 − 9 − 11 = 0</span> ✔.</div>
+  </div>
+  <div id="g5"></div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <h2><span class="num">6</span>Exercices</h2>
+  <p>Chaque exercice est généré au hasard : clique sur « Nouvel exercice » autant de fois que tu veux pour t’entraîner. L’équation d’une droite n’étant pas unique, toute équation correcte est acceptée.</p>
+
+  <div class="act"><span class="tag">Exercice 1 · guidé</span><div id="ex6a"></div></div>
+  <div class="act"><span class="tag">Exercice 2 · avec deux points</span><div id="ex6b"></div></div>
+  <div class="act"><span class="tag">Exercice 3 · appartenance d’un point</span><div id="ex6c"></div></div>
+  <div class="act"><span class="tag">Exercice 4 · sans aide</span><div id="ex6d"></div></div>
+  <div class="act"><span class="tag">Exercice 5 · droite verticale ou horizontale</span><div id="ex6e"></div></div>
+</section>
+</main>
+
+<footer>Cours sur les équations cartésiennes de droites</footer>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- outils ---------- */
+const MIN='\u2212';
+const $=(s,r=document)=>r.querySelector(s);
+const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[ri(0,a.length-1)];
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=ri(0,i);const t=a[i];a[i]=a[j];a[j]=t;}return a;};
+const eq0=(x,y)=>Math.abs(x-y)<1e-9;
+const fmt=n=>String(n).replace('.',',').replace('-',MIN);
+const par=n=>n<0?'('+fmt(n)+')':fmt(n);
+const coords=(x,y)=>'('+fmt(x)+' ; '+fmt(y)+')';
+const coordsS=(x,y)=>'( '+fmt(x)+' ; '+fmt(y)+' )';
+const vec=n=>'<span class="vec">'+n+'</span>';
+const frac=(n,d)=>'<span class="frac"><span>'+n+'</span><span>'+d+'</span></span>';
+const M=s=>'<span class="m">'+s+'</span>';
+
+function term(c,v,first){
+  if(c===0)return '';
+  const abs=Math.abs(c);
+  const body=v?(abs===1?v:abs+v):String(abs);
+  if(first)return (c<0?MIN:'')+body;
+  return ' '+(c<0?MIN:'+')+' '+body;
+}
+function expr(a,b,c){
+  let s=term(a,'x',true);
+  s+=term(b,'y',s==='');
+  s+=term(c,'',s==='');
+  return s;
+}
+const eqC=(a,b,c)=>expr(a,b,c)+' = 0';
+
+function parse(str){
+  if(str==null)return NaN;
+  const s=String(str).trim().replace(/\s+/g,'').replace(/[\u2212\u2013\u2014]/g,'-').replace(',','.');
+  if(s==='')return NaN;
+  const m=s.match(/^([-+]?\d*\.?\d+)\/([-+]?\d*\.?\d+)$/);
+  if(m){const d=parseFloat(m[2]);return d===0?NaN:parseFloat(m[1])/d;}
+  if(!/^[-+]?\d*\.?\d+$/.test(s))return NaN;
+  return parseFloat(s);
+}
+
+/* lettres en italique dans les éléments .m */
+function typeset(root){
+  root.querySelectorAll('.m').forEach(el=>{
+    const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);
+    const nodes=[];let n;
+    while((n=w.nextNode()))nodes.push(n);
+    nodes.forEach(t=>{
+      if(!/[A-Za-z]/.test(t.nodeValue)||t.parentNode.nodeName==='I'||t.parentNode.className==='nt')return;
+      const f=document.createDocumentFragment();
+      const parts=t.nodeValue.split(/([A-Za-z])/);
+      parts.forEach((p,k)=>{
+        if(!p)return;
+        if(/^[A-Za-z]$/.test(p)){const i=document.createElement('i');i.textContent=p;if(/[A-Z]/.test(p)&&/^\(/.test(parts[k+1]||''))i.className='pt';f.appendChild(i);}
+        else f.appendChild(document.createTextNode(p));
+      });
+      t.parentNode.replaceChild(f,t);
+    });
+  });
+}
+
+/* ---------- repère ---------- */
+function grid(o){
+  const s=o.s||26,x0=o.xmin,x1=o.xmax,y0=o.ymin,y1=o.ymax;
+  const W=(x1-x0)*s,H=(y1-y0)*s;
+  const X=x=>+((x-x0)*s).toFixed(2),Y=y=>+((y1-y)*s).toFixed(2);
+  let g='';
+  for(let i=Math.ceil(x0);i<=x1;i++)g+='<line class="gr" x1="'+X(i)+'" y1="0" x2="'+X(i)+'" y2="'+H+'"/>';
+  for(let j=Math.ceil(y0);j<=y1;j++)g+='<line class="gr" x1="0" y1="'+Y(j)+'" x2="'+W+'" y2="'+Y(j)+'"/>';
+  const hasX=y0<=0&&y1>=0,hasY=x0<=0&&x1>=0;
+  if(hasY)g+='<line class="ax" x1="'+X(0)+'" y1="0" x2="'+X(0)+'" y2="'+H+'"/>';
+  if(hasX)g+='<line class="ax" x1="0" y1="'+Y(0)+'" x2="'+W+'" y2="'+Y(0)+'"/>';
+  const ty=hasX?Y(0)+12:H-3,tx=hasY?X(0)-4:3;
+  for(let i=Math.ceil(x0);i<=x1;i++)if(i!==0)g+='<text class="tk" x="'+X(i)+'" y="'+ty+'" text-anchor="middle">'+fmt(i)+'</text>';
+  for(let j=Math.ceil(y0);j<=y1;j++)if(j!==0)g+='<text class="tk" x="'+tx+'" y="'+(Y(j)+3.5)+'" text-anchor="'+(hasY?'end':'start')+'">'+fmt(j)+'</text>';
+  if(hasX&&hasY)g+='<text class="tk" x="'+(X(0)-4)+'" y="'+(Y(0)+12)+'" text-anchor="end">O</text>';
+  (o.segs||[]).forEach(q=>{g+='<line class="dash" x1="'+X(q.x1)+'" y1="'+Y(q.y1)+'" x2="'+X(q.x2)+'" y2="'+Y(q.y2)+'"/>';});
+  (o.lines||[]).forEach(l=>{
+    let p1,p2;
+    if(l.b!==0){p1=[x0-1,(-l.a*(x0-1)-l.c)/l.b];p2=[x1+1,(-l.a*(x1+1)-l.c)/l.b];}
+    else{const x=-l.c/l.a;p1=[x,y0-1];p2=[x,y1+1];}
+    g+='<line class="ln" style="stroke:'+(l.color||'var(--blue)')+(l.w?';stroke-width:'+l.w:'')+'" x1="'+X(p1[0])+'" y1="'+Y(p1[1])+'" x2="'+X(p2[0])+'" y2="'+Y(p2[1])+'"/>';
+  });
+  (o.vectors||[]).forEach(v=>{
+    const ax=X(v.x1),ay=Y(v.y1),bx=X(v.x2),by=Y(v.y2);
+    const dx=bx-ax,dy=by-ay,L=Math.hypot(dx,dy);
+    if(L<1)return;
+    const ux=dx/L,uy=dy/L,h=12,bxh=bx-h*ux,byh=by-h*uy,px=-uy*h*.42,py=ux*h*.42;
+    const col=v.color||'var(--blue)';
+    g+='<line style="stroke:'+col+';stroke-width:2.6;stroke-linecap:round" x1="'+ax+'" y1="'+ay+'" x2="'+bxh.toFixed(2)+'" y2="'+byh.toFixed(2)+'"/>';
+    g+='<polygon style="fill:'+col+'" points="'+bx+','+by+' '+(bxh+px).toFixed(2)+','+(byh+py).toFixed(2)+' '+(bxh-px).toFixed(2)+','+(byh-py).toFixed(2)+'"/>';
+    if(v.label){
+      let nx=-uy,ny=ux;if(ny>0.001||(Math.abs(ny)<=0.001&&nx>0)){nx=-nx;ny=-ny;}
+      const mx=bx+ux*16+nx*20,my=by+uy*16+ny*20+6;
+      g+='<text class="pl" text-anchor="middle" style="fill:'+col+'" x="'+mx.toFixed(1)+'" y="'+my.toFixed(1)+'">'+v.label+'</text>';
+      const hw=Math.max(6,String(v.label).replace(/[^0-9A-Za-z]/g,'').length*5.2),ly=(my-20).toFixed(1);g+='<line x1="'+(mx-hw).toFixed(1)+'" y1="'+ly+'" x2="'+(mx+hw).toFixed(1)+'" y2="'+ly+'" style="stroke:'+col+';stroke-width:2"/><polyline points="'+(mx+hw-3.5).toFixed(1)+','+(my-23.5).toFixed(1)+' '+(mx+hw).toFixed(1)+','+ly+' '+(mx+hw-3.5).toFixed(1)+','+(my-16.5).toFixed(1)+'" style="fill:none;stroke:'+col+';stroke-width:2"/>';
+    }
+  });
+  (o.texts||[]).forEach(q=>{
+    g+='<text class="pl" x="'+X(q.x)+'" y="'+Y(q.y)+'" text-anchor="'+(q.mid?'middle':'start')+'" style="fill:'+(q.c||'var(--ink)')+'">'+q.t+'</text>';
+    if(q.vec){var vx=X(q.x),vy=Y(q.y)-22,cl=q.c||'var(--ink)';g+='<line x1="'+(vx+1)+'" y1="'+vy+'" x2="'+(vx+13)+'" y2="'+vy+'" style="stroke:'+cl+';stroke-width:2"/><polyline points="'+(vx+8)+','+(vy-3.5)+' '+(vx+13)+','+vy+' '+(vx+8)+','+(vy+3.5)+'" style="fill:none;stroke:'+cl+';stroke-width:2"/>';}
+  });
+  (o.points||[]).forEach(p=>{
+    const px=X(p.x),py=Y(p.y),cl=p.color||'var(--ink)',h=3.6;
+    const cr=(st)=>'<line x1="'+(px-h)+'" y1="'+(py-h)+'" x2="'+(px+h)+'" y2="'+(py+h)+'" style="'+st+'"/><line x1="'+(px-h)+'" y1="'+(py+h)+'" x2="'+(px+h)+'" y2="'+(py-h)+'" style="'+st+'"/>';
+    g+=cr('stroke:#fff;stroke-width:3.4;stroke-linecap:round;opacity:.9')+cr('stroke:'+cl+';stroke-width:1.2;stroke-linecap:round');
+    if(p.label){
+      /* étiquette à côté de l'objet : décalée perpendiculairement à la droite / au vecteur, du côté haut-gauche */
+      let tx=0,ty=-1;
+      const ref=(o.lines||[])[0],rv=(o.vectors||[])[0];
+      if(ref){tx=ref.a;ty=-ref.b;}
+      else if(rv){const dx=rv.x2-rv.x1,dy=rv.y2-rv.y1;tx=-dy;ty=-dx;}
+      const n=Math.hypot(tx,ty)||1;tx/=n;ty/=n;
+      if(ty>0.001||(Math.abs(ty)<=0.001&&tx>0)){tx=-tx;ty=-ty;}
+      g+='<text class="pl" text-anchor="middle" x="'+(px+tx*15).toFixed(1)+'" y="'+(py+ty*15+6).toFixed(1)+'">'+p.label+'</text>';
+    }
+  });
+  return '<svg class="graph" viewBox="0 0 '+W+' '+H+'" style="max-width:'+(o.maxw||Math.round(W*1.45))+'px" role="img" aria-label="'+(o.alt||'Repère')+'">'+g+'</svg>';
+}
+const lineThrough=(P,dx,dy,color)=>({a:dy,b:-dx,c:-(dy*P.x-dx*P.y),color});
+
+/* ---------- moteur d’exercices ---------- */
+let uid=0;
+function mountEx(root,gen){
+  const id='ex'+(++uid);
+  let cur;
+  function render(){
+    cur=gen();
+    const fields=cur.fields.map((f,i)=>{
+      if(f.type==='choice'||f.type==='multi'){
+        const t=f.type==='choice'?'radio':'checkbox';
+        return '<div class="opts">'+f.options.map((o,j)=>'<label class="opt"><input type="'+t+'" name="'+id+'-'+i+'" value="'+j+'"><span>'+o+'</span></label>').join('')+'</div>';
+      }
+      return '<label class="f">'+(f.label||'')+'<input type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" data-i="'+i+'">'+(f.after||'')+'</label>'+(f.br?'<br>':'');
+    }).join('');
+    root.innerHTML='<div class="q">'+cur.question+'</div><div class="fields">'+fields+'</div>'+
+      '<div class="btns"><button type="button" class="btn check">Vérifier</button><button type="button" class="btn ghost sol">Correction</button><button type="button" class="btn ghost new">Nouvel exercice ↻</button></div>'+
+      '<div class="fb" aria-live="polite"></div><div class="solbox" hidden></div>';
+    typeset(root);
+    const fb=$('.fb',root),sb=$('.solbox',root);
+    const values=()=>cur.fields.map((f,i)=>{
+      if(f.type==='choice'){const c=root.querySelector('input[name="'+id+'-'+i+'"]:checked');return c?+c.value:null;}
+      if(f.type==='multi')return Array.from(root.querySelectorAll('input[name="'+id+'-'+i+'"]:checked')).map(c=>+c.value);
+      return root.querySelector('input[data-i="'+i+'"]').value;
+    });
+    $('.check',root).onclick=()=>{
+      const r=cur.check(values());
+      fb.className='fb '+(r.ok?'ok':'ko');
+      fb.innerHTML=(r.ok?'✅ ':'❌ ')+r.msg;
+      typeset(fb);
+    };
+    $('.sol',root).onclick=()=>{
+      if(sb.hidden){sb.innerHTML=cur.solution;typeset(sb);sb.hidden=false;}else sb.hidden=true;
+    };
+    $('.new',root).onclick=render;
+    if(cur.onChange){root.querySelectorAll('input[type=checkbox]').forEach(function(c){c.addEventListener('change',function(){cur.onChange(root,values());});});cur.onChange(root,values());}
+    root.querySelectorAll('input[type=text]').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter')$('.check',root).click();}));
+  }
+  render();
+}
+
+const abcFields=()=>[{label:M('a =')},{label:M('b =')},{label:M('c =')}];
+const vecFields=name=>[{label:M(vec(name)+' ('),},{label:M(';'),after:M(')')}];
+const NEEDNUM='Complète toutes les cases avec des nombres (entiers, ou fractions du type 3/4).';
+
+/* équation proportionnelle à [a0,b0,c0] ? */
+function checkEq(v,abc,integer){
+  const a0=abc[0],b0=abc[1],c0=abc[2];
+  const A=parse(v[0]),B=parse(v[1]),C=parse(v[2]);
+  if(isNaN(A)||isNaN(B)||isNaN(C))return{ok:false,msg:NEEDNUM};
+  if(A===0&&B===0&&C===0)return{ok:false,msg:'Les trois nombres ne peuvent pas être tous nuls.'};
+  const prop=eq0(A*b0,B*a0)&&eq0(A*c0,C*a0)&&eq0(B*c0,C*b0);
+  if(!prop)return{ok:false,msg:'Ce n’est pas la bonne droite. Passe tous les termes dans le même membre (l’autre membre doit valoir 0) et surveille les signes.'};
+  if(integer&&!(Number.isInteger(A)&&Number.isInteger(B)&&Number.isInteger(C)))return{ok:false,msg:'C’est la bonne droite, mais on demande des <b>coefficients entiers</b> : multiplie par le dénominateur.'};
+  const same=eq0(A,a0)&&eq0(B,b0)&&eq0(C,c0);
+  return{ok:true,msg:same?'Bravo !':'Bravo ! Ton équation est proportionnelle à '+M(eqC(a0,b0,c0))+' : c’est la même droite (une équation cartésienne n’est pas unique).'};
+}
+const onLine=(a,b,c,P)=>eq0(a*P.x+b*P.y+c,0);
+
+/* ---------- étape 1 ---------- */
+function genRed1(){
+  let m;do{m=ri(-4,4);}while(m===0);
+  const p=ri(-6,6);
+  return{
+    question:'<p>La droite <i>d</i> a pour équation réduite '+M('y = '+expr(m,0,p))+'. Donne une équation cartésienne de <i>d</i>, c’est-à-dire des nombres '+M('a')+', '+M('b')+', '+M('c')+' tels que '+M('ax + by + c = 0')+'.</p>',
+    fields:abcFields(),
+    check:v=>checkEq(v,[m,-1,p],false),
+    solution:'<p>On passe tout dans le même membre :</p><div class="lines m"><div>y = '+expr(m,0,p)+'</div><div class="cont">⇔ 0 = '+expr(m,-1,p)+'</div><div class="cont">⇔ '+eqC(m,-1,p)+'</div></div><p>Donc '+M('a = '+fmt(m))+', '+M('b = −1')+' et '+M('c = '+fmt(p))+'.</p>'
+  };
+}
+function genRed2(){
+  let n,d;do{d=pick([2,3,4]);n=ri(-5,5);}while(n===0||gcd(Math.abs(n),d)!==1);
+  const p=ri(-4,4);
+  const rhs=(n<0?MIN+' ':'')+frac(Math.abs(n),d)+'x'+(p>0?' + '+p:p<0?' '+MIN+' '+(-p):'');
+  return{
+    question:'<p>La droite <i>d</i> a pour équation réduite '+M('y = '+rhs)+'. Donne une équation cartésienne de <i>d</i> avec des <b>coefficients entiers</b>.</p>',
+    fields:abcFields(),
+    check:v=>checkEq(v,[n,-d,d*p],true),
+    solution:'<p>On multiplie par '+d+' pour supprimer la fraction, puis on passe tout dans le même membre :</p><div class="lines m"><div>'+d+'y = '+expr(n,0,d*p)+'</div><div class="cont">⇔ 0 = '+expr(n,-d,d*p)+'</div></div><p>Une équation cartésienne est '+M(eqC(n,-d,d*p))+'.</p>'
+  };
+}
+
+function genRed3(){
+  const vert=Math.random()<.5;
+  let k;do{k=ri(-6,6);}while(k===0);
+  return{
+    question:'<p>La droite <i>d</i> a pour équation réduite '+M((vert?'x':'y')+' = '+fmt(k))+'. Donne une équation cartésienne de <i>d</i>, c’est-à-dire des nombres '+M('a')+', '+M('b')+', '+M('c')+' tels que '+M('ax + by + c = 0')+'.</p>',
+    fields:abcFields(),
+    check:v=>checkEq(v,vert?[1,0,-k]:[0,1,-k],false),
+    solution:'<p>On passe tout dans le même membre :</p><div class="lines m"><div>'+(vert?'x':'y')+' = '+fmt(k)+'</div><div class="cont">⇔ '+eqC(vert?1:0,vert?0:1,-k)+'</div></div><p>Donc '+M('a = '+(vert?1:0))+', '+M('b = '+(vert?0:1))+' et '+M('c = '+fmt(-k))+'. C’est une droite '+(vert?'<b>verticale</b>':'<b>horizontale</b>')+'.</p>'
+  };
+}
+
+/* ---------- étape 2 ---------- */
+function genRead(){
+  let dx,dy;do{dx=ri(-3,3);dy=ri(-3,3);}while(dx===0&&dy===0);
+  const A={x:ri(-3,3),y:ri(-3,3)},B={x:A.x+dx,y:A.y+dy};
+  const svg=grid({xmin:-7,xmax:7,ymin:-7,ymax:7,s:24,lines:[lineThrough(A,dx,dy)],points:[{x:A.x,y:A.y,label:'A'},{x:B.x,y:B.y,label:'B'}],alt:'Droite d passant par les points A et B'});
+  const dirTxt=(dx===0?'0 unité horizontalement':Math.abs(dx)+' unité(s) vers la '+(dx>0?'droite':'gauche'))+' et '+(dy===0?'0 unité verticalement':Math.abs(dy)+' unité(s) vers le '+(dy>0?'haut':'bas'));
+  return{
+    question:'<p>Voici une droite <i>d</i>. Les points A et B sont deux points de <i>d</i> situés sur des nœuds du quadrillage. Lis sur le graphique un vecteur directeur de <i>d</i>.</p>'+svg,
+    fields:vecFields('u'),
+    check:v=>{
+      const x=parse(v[0]),y=parse(v[1]);
+      if(isNaN(x)||isNaN(y))return{ok:false,msg:NEEDNUM};
+      if(x===0&&y===0)return{ok:false,msg:'Un vecteur directeur doit être <b>non nul</b>.'};
+      if(eq0(x*dy-y*dx,0))return{ok:true,msg:'Bravo ! '+(eq0(x,dx)&&eq0(y,dy)?'C’est le vecteur obtenu en allant de A vers B.':'Ton vecteur est colinéaire à celui qu’on lit de A vers B : il convient aussi.')};
+      return{ok:false,msg:'Ce vecteur n’a pas la direction de <i>d</i>. Pars de A et va vers B : de combien te déplaces-tu horizontalement, puis verticalement ?'};
+    },
+    solution:'<p>De A à B, on se déplace de '+dirTxt+' : '+M(vec('u')+coords(dx,dy))+' est un vecteur directeur de <i>d</i>. Tous ses multiples non nuls conviennent aussi, par exemple '+M(coords(2*dx,2*dy))+'.</p>'
+  };
+}
+function genQcm(){
+  let dx,dy;do{dx=ri(-2,2);dy=ri(-2,2);}while((dx===0&&dy===0)||gcd(Math.abs(dx),Math.abs(dy))!==1);
+  const P={x:ri(-1,1),y:ri(-1,1)};
+  const ks=shuffle([1,-1,2,-2]).slice(0,2);
+  const good=ks.map(k=>[k*dx,k*dy]);
+  const cand=[[dx,-dy],[dy,dx],[-dy,dx],[dx+1,dy],[dx,dy+1],[2*dx,dy],[dx,2*dy]].filter(c=>!(c[0]===0&&c[1]===0)&&c[0]*dy-c[1]*dx!==0);
+  const uniq=[];cand.forEach(c=>{if(!uniq.some(u=>u[0]===c[0]&&u[1]===c[1]))uniq.push(c);});
+  const bad=shuffle(uniq).slice(0,2);
+  const names=['u','v','w','t'],cols=['var(--orange)','var(--green)','#8e44ad','#c0392b'];
+  const opts=shuffle(good.map(v=>({v:v,ok:true})).concat(bad.map(v=>({v:v,ok:false})))).map((o,i)=>({v:o.v,ok:o.ok,n:names[i],c:cols[i]}));
+  const base=lineThrough(P,dx,dy);
+  function fig(sel){
+    const o={xmin:-6,xmax:6,ymin:-6,ymax:6,s:44,maxw:640,lines:[base],points:[{x:P.x,y:P.y},{x:P.x+dx,y:P.y+dy}],vectors:[],alt:'Une droite d'};
+    sel.forEach(function(i){const q=opts[i];o.vectors.push({x1:P.x,y1:P.y,x2:P.x+q.v[0],y2:P.y+q.v[1],color:q.c,label:q.n});});
+    return grid(o);
+  }
+  const okIdx=opts.map((o,i)=>o.ok?i:-1).filter(i=>i>=0);
+  return{
+    question:'<p>Voici une droite <i>d</i>. Coche <b>tous</b> les vecteurs directeurs de <i>d</i> parmi ceux proposés : chaque vecteur coché apparaît sur la figure, à partir d’un point de <i>d</i>.</p><div class="qfig">'+fig([])+'</div>',
+    fields:[{type:'multi',options:opts.map(o=>M('<span style="color:'+o.c+'">'+vec(o.n)+'</span>'+coords(o.v[0],o.v[1])))}],
+    onChange:function(root,v){root.querySelector('.qfig').innerHTML=fig(v[0]);},
+    check:v=>{
+      const sel=v[0];
+      const missed=okIdx.filter(i=>sel.indexOf(i)<0).length;
+      const extra=sel.filter(i=>okIdx.indexOf(i)<0).length;
+      if(!missed&&!extra)return{ok:true,msg:'Bravo ! Les vecteurs cochés ont bien la direction de la droite : ils sont tous colinéaires à un vecteur lu sur le graphique.'};
+      let m='Pas tout à fait. ';
+      if(missed)m+='Tu as oublié '+missed+' vecteur'+(missed>1?'s':'')+' directeur'+(missed>1?'s':'')+'. ';
+      if(extra)m+='Tu as coché '+extra+' vecteur'+(extra>1?'s':'')+' qui n’en '+(extra>1?'sont':'est')+' pas : regarde '+(extra>1?'leur':'sa')+' direction sur la figure. ';
+      return{ok:false,msg:m+'Un vecteur est directeur s’il est un multiple non nul d’un vecteur lu sur le graphique.'};
+    },
+    solution:'<p>Entre les deux croix de la droite, on se déplace de '+M(fmt(dx))+' horizontalement et de '+M(fmt(dy))+' verticalement : on lit '+M(coords(dx,dy))+'. Les vecteurs directeurs sont ses multiples non nuls : '+opts.filter(o=>o.ok).map(o=>M(vec(o.n)+coords(o.v[0],o.v[1]))).join(' et ')+'. Les autres n’ont pas la direction de <i>d</i>.</p>'
+  };
+}
+
+/* ---------- étape 3 ---------- */
+function genCoord(n1,n2,reverse,forceNeg){
+  let S,T;
+  do{
+    S={x:ri(-5,5),y:ri(-5,5)};T={x:ri(-5,5),y:ri(-5,5)};
+  }while((S.x===T.x&&S.y===T.y)||(forceNeg&&!(S.x<0&&S.y<0)));
+  const SN=reverse?n2:n1,TN=reverse?n1:n2;
+  const first=reverse?{n:TN,p:T}:{n:SN,p:S},second=reverse?{n:SN,p:S}:{n:TN,p:T};
+  const rx=T.x-S.x,ry=T.y-S.y;
+  const name=SN+TN;
+  return{
+    question:'<p>Dans un repère, on donne '+M(first.n+coords(first.p.x,first.p.y))+' et '+M(second.n+coords(second.p.x,second.p.y))+'. Calcule les coordonnées du vecteur '+M(vec(name))+'.</p>',
+    fields:vecFields(name),
+    check:v=>{
+      const x=parse(v[0]),y=parse(v[1]);
+      if(isNaN(x)||isNaN(y))return{ok:false,msg:NEEDNUM};
+      if(eq0(x,rx)&&eq0(y,ry))return{ok:true,msg:'Bravo ! '+M(vec(name)+coords(rx,ry))+'.'};
+      if(eq0(x,-rx)&&eq0(y,-ry))return{ok:false,msg:'Tu as calculé le vecteur dans l’autre sens. Rappel : <b>arrivée − départ</b>, et ici le vecteur va de '+SN+' vers '+TN+'.'};
+      return{ok:false,msg:'Ce n’est pas ça. Écris '+M('x<sub>'+TN+'</sub> − x<sub>'+SN+'</sub>')+' et '+M('y<sub>'+TN+'</sub> − y<sub>'+SN+'</sub>')+', avec des parenthèses autour des nombres négatifs.'};
+    },
+    solution:'<div class="lines m"><div>'+vec(name)+' ( x<sub>'+TN+'</sub> − x<sub>'+SN+'</sub> ; y<sub>'+TN+'</sub> − y<sub>'+SN+'</sub> )</div><div>'+vec(name)+' ( '+fmt(T.x)+' − '+par(S.x)+' ; '+fmt(T.y)+' − '+par(S.y)+' )</div><div>'+vec(name)+' '+coordsS(rx,ry)+'</div></div>'
+  };
+}
+
+/* ---------- étape 4 ---------- */
+function genDir(type){
+  let a,b,c;
+  if(type===1){a=ri(1,5);b=ri(1,5);c=ri(-6,6)||3;}
+  else if(type===2){a=ri(-5,-1);b=ri(-5,-1);c=ri(-6,6)||-2;}
+  else{
+    if(Math.random()<.5){a=ri(1,5)*pick([1,-1]);b=0;}else{a=0;b=ri(1,5)*pick([1,-1]);}
+    c=ri(-6,6)||4;
+  }
+  const vx=-b,vy=a;
+  return{
+    question:'<p>La droite <i>d</i> a pour équation cartésienne '+M(eqC(a,b,c))+'. Donne un vecteur directeur de <i>d</i>.</p>',
+    fields:vecFields('v'),
+    check:v=>{
+      const x=parse(v[0]),y=parse(v[1]);
+      if(isNaN(x)||isNaN(y))return{ok:false,msg:NEEDNUM};
+      if(x===0&&y===0)return{ok:false,msg:'Un vecteur directeur doit être <b>non nul</b>.'};
+      if(eq0(x,vx)&&eq0(y,vy))return{ok:true,msg:'Bravo ! '+M(vec('v')+'(−b ; a) = '+coords(vx,vy))+'.'};
+      if(eq0(a*x+b*y,0))return{ok:true,msg:'Correct ! La réponse « directe » est '+M(vec('v')+'(−b ; a) = '+coords(vx,vy))+', mais tout multiple non nul convient aussi.'};
+      if(eq0(x,a)&&eq0(y,b))return{ok:false,msg:'Attention : '+M('(a ; b)')+' n’est pas un vecteur directeur. La propriété donne '+M('(−b ; a)')+'.'};
+      return{ok:false,msg:'Relis la propriété : '+M(vec('v')+'(−b ; a)')+'. Quelles sont les valeurs de '+M('a')+' et de '+M('b')+' ? Attention aux signes (et aux coefficients égaux à 1, −1 ou 0).'};
+    },
+    solution:'<p>Ici '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'. Donc :</p><div class="lines m"><div>'+vec('v')+' ( −b ; a )</div><div>'+vec('v')+' ( −'+par(b)+' ; '+fmt(a)+' )</div><div>'+vec('v')+' '+coordsS(vx,vy)+'</div></div>'
+  };
+}
+
+/* ---------- étape 6 ---------- */
+function genGuided(){
+  const A={x:ri(-4,4),y:ri(-4,4)};
+  let al,be;do{al=ri(-4,4);be=ri(-4,4);}while(al===0||be===0);
+  const a=be,b=-al,val=a*A.x+b*A.y,c=-val;
+  return{
+    question:'<p>La droite <i>d</i> passe par '+M('A'+coords(A.x,A.y))+' et a pour vecteur directeur '+M(vec('u')+coords(al,be))+'.</p><p>1) Avec '+M(vec('v')+'(−b ; a)')+', trouve '+M('a')+' et '+M('b')+'. &nbsp; 2) Utilise A pour trouver '+M('c')+'.</p>',
+    fields:abcFields(),
+    check:v=>{
+      const A1=parse(v[0]),B1=parse(v[1]),C1=parse(v[2]);
+      if(isNaN(A1)||isNaN(B1)||isNaN(C1))return{ok:false,msg:NEEDNUM};
+      const abOk=!(A1===0&&B1===0)&&eq0(A1*al+B1*be,0);
+      const cOk=abOk&&onLine(A1,B1,C1,A);
+      if(abOk&&cOk)return{ok:true,msg:'Bravo ! Une équation de <i>d</i> est '+M(eqC(A1,B1,C1))+'.'};
+      if(!abOk)return{ok:false,msg:'Les nombres '+M('a')+' et '+M('b')+' ne conviennent pas. Rappel : '+M(vec('v')+'(−b ; a)')+' doit avoir les coordonnées de '+M(vec('u'))+' : la 1<sup>re</sup> coordonnée de '+M(vec('u'))+' est égale à '+M('−b')+', la 2<sup>e</sup> est égale à '+M('a')+'.'};
+      return{ok:false,msg:'Tes nombres '+M('a')+' et '+M('b')+' conviennent ✔. Mais '+M('c')+' est faux : remplace '+M('x')+' et '+M('y')+' par les coordonnées de A dans '+M('ax + by + c = 0')+' et résous.'};
+    },
+    solution:'<p>On veut '+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>L’équation est '+M(expr(a,b,0)+' + c = 0')+'. Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">'+fmt(val)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div><p>Équation : '+M(eqC(a,b,c))+'.</p>'
+  };
+}
+function genTwoPts(){
+  let A,B;do{A={x:ri(-4,4),y:ri(-4,4)};B={x:ri(-4,4),y:ri(-4,4)};}while(A.x===B.x&&A.y===B.y);
+  const rx=B.x-A.x,ry=B.y-A.y,a=ry,b=-rx,c=-(a*A.x+b*A.y);
+  const flds=vecFields('AB');flds[1].br=true;
+  return{
+    question:'<p>On donne '+M('A'+coords(A.x,A.y))+' et '+M('B'+coords(B.x,B.y))+'.</p><p>1) Calcule les coordonnées de '+M(vec('AB'))+'. &nbsp; 2) Donne une équation cartésienne de la droite (AB).</p>',
+    fields:flds.concat(abcFields()),
+    check:v=>{
+      const x=parse(v[0]),y=parse(v[1]),A1=parse(v[2]),B1=parse(v[3]),C1=parse(v[4]);
+      if([x,y,A1,B1,C1].some(isNaN))return{ok:false,msg:NEEDNUM};
+      const vOk=eq0(x,rx)&&eq0(y,ry);
+      const eOk=!(A1===0&&B1===0)&&onLine(A1,B1,C1,A)&&onLine(A1,B1,C1,B);
+      if(vOk&&eOk)return{ok:true,msg:'Bravo ! '+M(vec('AB')+coords(rx,ry))+' et une équation de (AB) est '+M(eqC(A1,B1,C1))+'.'};
+      let m=vOk?'Les coordonnées de '+M(vec('AB'))+' sont justes ✔. ':'Les coordonnées de '+M(vec('AB'))+' sont fausses (arrivée − départ). ';
+      m+=eOk?'Ton équation est juste ✔.':'Ton équation n’est pas celle de la droite (AB) : '+(vOk?'vérifie que A et B vérifient bien ton équation.':'corrige d’abord le vecteur '+M(vec('AB'))+', il sert de vecteur directeur.');
+      return{ok:false,msg:m};
+    },
+    solution:'<div class="lines m"><div>'+vec('AB')+' ( x<sub>B</sub> − x<sub>A</sub> ; y<sub>B</sub> − y<sub>A</sub> )</div><div>'+vec('AB')+' ( '+fmt(B.x)+' − '+par(A.x)+' ; '+fmt(B.y)+' − '+par(A.y)+' )</div><div>'+vec('AB')+' '+coordsS(rx,ry)+'</div></div><p>Donc '+M('−b = '+fmt(rx))+' et '+M('a = '+fmt(ry))+' : '+M('a = '+fmt(a))+', '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite (AB), donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p><p>Équation : '+M(eqC(a,b,c))+'. <i>(Vérifie avec B.)</i></p>'
+  };
+}
+function genMember(){
+  let a,b;do{a=ri(-4,4);b=ri(-4,4);}while(a===0||b===0);
+  const P={x:ri(-4,4),y:ri(-4,4)};
+  const on=Math.random()<.5;
+  let c=-(a*P.x+b*P.y);
+  if(!on)c+=pick([-2,-1,1,2]);
+  const val=a*P.x+b*P.y+c;
+  return{
+    question:'<p>La droite <i>d</i> a pour équation '+M(eqC(a,b,c))+'. Le point '+M('M'+coords(P.x,P.y))+' appartient-il à <i>d</i> ?</p>',
+    fields:[{type:'choice',options:['Oui','Non']}],
+    check:v=>{
+      if(v[0]===null)return{ok:false,msg:'Choisis une réponse.'};
+      const ans=v[0]===0;
+      if(ans===on)return{ok:true,msg:'Bravo ! En remplaçant, on trouve '+M(fmt(val))+(on?', c’est bien 0.':', ce n’est pas 0.')};
+      return{ok:false,msg:'Remplace '+M('x')+' et '+M('y')+' par les coordonnées de M dans '+M('ax + by + c')+' : obtiens-tu 0 ?'};
+    },
+    solution:'<p>On remplace '+M('x')+' et '+M('y')+' par les coordonnées de M :</p><div class="lines m"><div>'+par(a)+' × '+par(P.x)+' + '+par(b)+' × '+par(P.y)+' + '+par(c)+' = '+fmt(val)+'</div></div><p>'+(on?'Le résultat est 0 : M appartient à <i>d</i>.':'Le résultat n’est pas 0 : M n’appartient pas à <i>d</i>.')+'</p>'
+  };
+}
+function genFree(){
+  const A={x:ri(-4,4),y:ri(-4,4)};
+  let al,be;do{al=ri(-4,4);be=ri(-4,4);}while(al===0&&be===0);
+  const a=be,b=-al,val=a*A.x+b*A.y,c=-val;
+  return{
+    question:'<p>Donne une équation cartésienne de la droite <i>d</i> qui passe par '+M('A'+coords(A.x,A.y))+' et dont un vecteur directeur est '+M(vec('u')+coords(al,be))+'.</p>',
+    fields:abcFields(),
+    check:v=>{
+      const A1=parse(v[0]),B1=parse(v[1]),C1=parse(v[2]);
+      if(isNaN(A1)||isNaN(B1)||isNaN(C1))return{ok:false,msg:NEEDNUM};
+      const abOk=!(A1===0&&B1===0)&&eq0(A1*al+B1*be,0);
+      if(!abOk)return{ok:false,msg:'La direction n’est pas la bonne : '+M(vec('v')+'(−b ; a)')+' doit être colinéaire à '+M(vec('u'))+'.'};
+      if(!onLine(A1,B1,C1,A))return{ok:false,msg:'La direction est bonne ✔, mais A ne vérifie pas ton équation : revois le calcul de '+M('c')+'.'};
+      return{ok:true,msg:'Bravo ! '+M(eqC(A1,B1,C1))+' est bien une équation de <i>d</i>.'};
+    },
+    solution:'<p>'+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+' (car '+M(vec('v')+'(−b ; a) = '+vec('u'))+'). Puis le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p><p>Équation : '+M(eqC(a,b,c))+'.</p>'
+  };
+}
+
+function genSpecial(){
+  const vert=Math.random()<.5;
+  const A={x:ri(-4,4),y:ri(-4,4)};
+  let t;do{t=ri(-4,4);}while(t===0);
+  const al=vert?0:t,be=vert?t:0;
+  const a=be,b=-al,c=-(a*A.x+b*A.y);
+  return{
+    question:'<p>Donne une équation cartésienne de la droite <i>d</i> qui passe par '+M('A'+coords(A.x,A.y))+' et dont un vecteur directeur est '+M(vec('u')+coords(al,be))+'.</p>',
+    fields:abcFields(),
+    check:v=>{
+      const A1=parse(v[0]),B1=parse(v[1]),C1=parse(v[2]);
+      if(isNaN(A1)||isNaN(B1)||isNaN(C1))return{ok:false,msg:NEEDNUM};
+      if(A1===0&&B1===0)return{ok:false,msg:'Les nombres '+M('a')+' et '+M('b')+' ne peuvent pas être tous les deux nuls.'};
+      if(!eq0(A1*al+B1*be,0))return{ok:false,msg:'La direction n’est pas la bonne : '+M(vec('v')+'(−b ; a)')+' doit être colinéaire à '+M(vec('u'))+'.'};
+      if(!onLine(A1,B1,C1,A))return{ok:false,msg:'La direction est bonne ✔, mais A ne vérifie pas ton équation : revois le calcul de '+M('c')+'.'};
+      return{ok:true,msg:'Bravo ! C’est une droite '+(vert?'verticale':'horizontale')+' : '+(vert?M('x = '+fmt(A.x)):M('y = '+fmt(A.y)))+'.'};
+    },
+    solution:'<p>'+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div><p>Équation : '+M(eqC(a,b,c))+'. Le vecteur directeur '+M(vec('u')+coords(al,be))+' est '+(vert?'vertical':'horizontal')+' : la droite est '+(vert?'<b>verticale</b>, d’équation '+M('x = '+fmt(A.x)):'<b>horizontale</b>, d’équation '+M('y = '+fmt(A.y)))+'.</p>'
+  };
+}
+
+/* ---------- construction d'un vecteur directeur (étape 2) ---------- */
+var buildStep=1;
+function build(){
+  var A={x:-1,y:1},U={x:3,y:2},B={x:A.x+U.x,y:A.y+U.y};
+  var o={xmin:-4,xmax:7,ymin:-2,ymax:5,s:44,maxw:760,lines:[],segs:[],vectors:[],points:[],texts:[],alt:'Construction d’un vecteur directeur'};
+  o.lines.push(lineThrough(A,U.x,U.y,'var(--blue)'));
+  o.texts.push({x:4.2,y:3.8,t:'d',c:'var(--blue)'});
+  var txt='<p><b>Étape 1 sur 3.</b> Voici une droite <i>d</i>. Nous allons construire un vecteur directeur de <i>d</i>.</p>';
+  if(buildStep>=2){
+    o.points.push({x:A.x,y:A.y,label:'A'});
+    txt='<p><b>Étape 2 sur 3.</b> On place un point <b>A</b> sur la droite <i>d</i> (de préférence en un point dont on lit facilement les coordonnées).</p>';
+  }
+  if(buildStep>=3){
+    o.segs.push({x1:A.x,y1:A.y,x2:B.x,y2:A.y},{x1:B.x,y1:A.y,x2:B.x,y2:B.y});
+    o.vectors.push({x1:A.x,y1:A.y,x2:B.x,y2:B.y,color:'var(--orange)'});
+    o.points.push({x:B.x,y:B.y,color:'var(--orange)'});
+    o.texts.push({x:A.x+U.x/2,y:A.y-0.5,t:'3',c:'var(--ink)',mid:1},{x:B.x+0.2,y:A.y+U.y/2-0.1,t:'2',c:'var(--ink)'},{x:A.x+0.45,y:A.y+1.25,t:'u',c:'var(--orange)',vec:1});
+    txt='<p><b>Étape 3 sur 3.</b> À partir de A, on se déplace de <b>3 unités vers la droite</b> puis de <b>2 unités vers le haut</b> : on arrive en un autre point de la droite <i>d</i>. On trace la flèche de A vers ce point : c’est un vecteur directeur de <i>d</i>, noté '+M(vec('u')+'(3 ; 2)')+'.</p>';
+  }
+  document.getElementById('build-graph').innerHTML=grid(o);
+  var t=document.getElementById('build-txt');t.innerHTML=txt;typeset(t);
+  document.getElementById('b-prev').disabled=buildStep<=1;
+  document.getElementById('b-next').disabled=buildStep>=3;
+}
+
+/* ---------- étirer un vecteur directeur : k·u ---------- */
+var stretchK=2;
+function stretch(){
+  var A={x:0,y:-1},U={x:2,y:1},k=stretchK;
+  var o={xmin:-6,xmax:7,ymin:-4,ymax:4,s:48,maxw:760,lines:[lineThrough(A,U.x,U.y,'var(--blue)')],vectors:[],points:[{x:A.x,y:A.y}],texts:[],alt:'Le vecteur ku garde la direction de la droite'};
+  if(k!==1)o.vectors.push({x1:A.x,y1:A.y,x2:A.x+k*U.x,y2:A.y+k*U.y,color:'var(--orange)',label:(k<0?MIN:'')+Math.abs(k)+'u'});
+  o.vectors.push({x1:A.x,y1:A.y,x2:A.x+U.x,y2:A.y+U.y,color:'var(--blue)',label:'u'});
+  document.getElementById('stretch-graph').innerHTML=grid(o);
+  var t=document.getElementById('stretch-txt');
+  var sens=k===1?'C’est le vecteur '+M(vec('u'))+' lui-même.':(k>0?'Même sens que '+M(vec('u'))+', '+(k>1?k+' fois plus long.':'plus court.'):'Sens opposé à '+M(vec('u'))+(Math.abs(k)>1?', '+Math.abs(k)+' fois plus long.':', même longueur.'));
+  var kn=(k<0?MIN:'')+(Math.abs(k)===1?'':Math.abs(k));
+  var calc=k===1?'':'<div class="lines m"><div>'+kn+vec('u')+' ( '+par(k)+' × '+U.x+' ; '+par(k)+' × '+U.y+' )</div><div><span class="nt">donc</span> '+kn+vec('u')+' '+coordsS(k*U.x,k*U.y)+'</div></div>';
+  t.innerHTML='<p>'+M('k = '+fmt(k))+' &nbsp;·&nbsp; '+M(vec('u')+coords(U.x,U.y))+'</p>'+calc+'<p>'+sens+' C’est encore un vecteur directeur de <i>d</i>.</p>';
+  typeset(t);
+  var bs=document.querySelectorAll('#stretch-btns .kb');
+  for(var i=0;i<bs.length;i++)bs[i].setAttribute('aria-pressed',+bs[i].getAttribute('data-k')===k?'true':'false');
+}
+
+/* ---------- un point et un vecteur déterminent une droite (exemple) ---------- */
+var detStep=1;
+function det(){
+  var A={x:1,y:-1},U={x:2,y:1},B={x:3,y:0};
+  var o={xmin:-3,xmax:7,ymin:-4,ymax:3,s:56,maxw:760,lines:[],vectors:[],points:[],texts:[],alt:'Droite définie par un point et un vecteur directeur'};
+  var txt='<p>On place le point <b>A</b>'+M('(1 ; −1)')+'.</p>';
+  o.points.push({x:A.x,y:A.y,label:'A'});
+  if(detStep>=2){
+    o.vectors.push({x1:A.x,y1:A.y,x2:B.x,y2:B.y,color:'var(--orange)',label:'u'});
+    o.segs=[{x1:A.x,y1:A.y,x2:B.x,y2:A.y},{x1:B.x,y1:A.y,x2:B.x,y2:B.y}];
+    o.points.push({x:B.x,y:B.y,color:'var(--orange)'});
+    txt='<p>À partir de A, on trace le vecteur '+M(vec('u')+'(2 ; 1)')+' : 2 vers la droite, 1 vers le haut. On arrive au point '+M('(3 ; 0)')+'.</p>';
+  }
+  if(detStep>=3){
+    o.lines.push(lineThrough(A,U.x,U.y,'var(--blue)'));
+    o.texts.push({x:5.1,y:2.0,t:'d',c:'var(--blue)'});
+    txt='<p>On trace la droite qui passe par A et par ce point : c’est la droite <i>d</i>, et il n’y en a <b>qu’une seule</b>.</p>';
+  }
+  document.getElementById('det-graph').innerHTML=grid(o);
+  var t=document.getElementById('det-txt');t.innerHTML=txt;typeset(t);
+  document.getElementById('d-prev').disabled=detStep<=1;
+  document.getElementById('d-next').disabled=detStep>=3;
+}
+
+/* ---------- construction d'une droite (exercice) ---------- */
+function mountCons(root){
+  var st;
+  function newEx(){
+    var A,U;
+    do{A={x:ri(-3,3),y:ri(-2,2)};U={x:ri(-3,3),y:ri(-3,3)};}while((U.x===0&&U.y===0)||gcd(Math.abs(U.x),Math.abs(U.y))!==1||Math.abs(U.x)+Math.abs(U.y)<2);
+    st={A:A,U:U,tries:[],done:false,shown:false,msg:''};
+  }
+  function fig(){
+    var o={xmin:-7,xmax:7,ymin:-5,ymax:5,s:46,maxw:760,lines:[],vectors:[],points:[{x:st.A.x,y:st.A.y,label:'A'}],texts:[],alt:'Repère pour construire la droite'};
+    st.tries.forEach(function(q){o.points.push({x:q.x,y:q.y,color:q.ok?'var(--green)':'var(--red)'});});
+    if(st.done||st.shown)o.lines.push(lineThrough(st.A,st.U.x,st.U.y,'var(--blue)'));
+    if(st.shown){o.points.push({x:st.A.x+st.U.x,y:st.A.y+st.U.y,color:'var(--green)'});}
+    return grid(o);
+  }
+  function draw(){
+    root.innerHTML='<div class="q"><p>Construis la droite <i>d</i> qui passe par '+M('A'+coords(st.A.x,st.A.y))+' et a pour vecteur directeur '+M(vec('u')+coords(st.U.x,st.U.y))+'.</p><p>Clique sur un nœud du quadrillage pour placer un deuxième point de <i>d</i>.</p></div>'+
+      '<div class="cons-svg">'+fig()+'</div><div class="fb'+(st.msg?(st.done?' ok':' ko'):'')+'" aria-live="polite">'+st.msg+'</div>'+
+      '<div class="btns"><button type="button" class="btn ghost sol">Correction</button><button type="button" class="btn ghost new">Nouvel exercice ↻</button></div>';
+    typeset(root);
+    var svg=root.querySelector('svg');
+    svg.addEventListener('click',function(e){
+      if(st.done)return;
+      var vb=svg.viewBox.baseVal,r=svg.getBoundingClientRect(),sc=vb.width/r.width;
+      var x=Math.round(-7+(e.clientX-r.left)*sc/46),y=Math.round(5-(e.clientY-r.top)*sc/46);
+      if(x===st.A.x&&y===st.A.y){st.msg='❌ C’est le point A : place un <b>autre</b> point de la droite.';draw();return;}
+      var cx=(x-st.A.x)*st.U.y-(y-st.A.y)*st.U.x;
+      var ok=cx===0;
+      st.tries.push({x:x,y:y,ok:ok});
+      if(ok){
+        st.done=true;
+        st.msg='✅ Bravo ! '+M(vec('AB')+coords(x-st.A.x,y-st.A.y))+' est colinéaire à '+M(vec('u')+coords(st.U.x,st.U.y))+' : le point '+M('B'+coords(x,y))+' est sur la droite. La voici.';
+      }else{
+        st.msg='❌ Ce point n’est pas sur la droite : à partir de A, il faut se déplacer comme '+M(vec('u')+coords(st.U.x,st.U.y))+' (ou un multiple de ce vecteur). Essaie encore.';
+      }
+      draw();
+    });
+    root.querySelector('.sol').onclick=function(){st.shown=true;st.done=true;st.msg='Correction : à partir de A, on se déplace de '+M(fmt(st.U.x))+' horizontalement et de '+M(fmt(st.U.y))+' verticalement, on arrive en '+M('B'+coords(st.A.x+st.U.x,st.A.y+st.U.y))+'. On trace la droite (AB).';draw();root.querySelector('.fb').className='fb ok';};
+    root.querySelector('.new').onclick=function(){newEx();draw();};
+  }
+  newEx();draw();
+}
+
+/* ---------- figures statiques ---------- */
+function figures(){
+  const A3={x:2,y:-3},B3={x:5,y:1};
+  $('#g3').innerHTML=grid({xmin:-1,xmax:7,ymin:-5,ymax:3,s:40,maxw:700,
+    segs:[{x1:2,y1:-3,x2:5,y2:-3},{x1:5,y1:-3,x2:5,y2:1}],
+    vectors:[{x1:A3.x,y1:A3.y,x2:B3.x,y2:B3.y,color:'var(--blue)'}],
+    points:[{x:2,y:-3,label:'A'},{x:5,y:1,label:'B'}],alt:'Vecteur AB'});
+  $('#g4').innerHTML=grid({xmin:-4,xmax:5,ymin:-2,ymax:6,s:40,maxw:700,
+    lines:[{a:3,b:-2,c:5,color:'var(--blue)'}],
+    vectors:[{x1:-1,y1:1,x2:1,y2:4,color:'var(--orange)'}],
+    points:[{x:-1,y:1},{x:1,y:4}],alt:'Droite 3x - 2y + 5 = 0 et son vecteur directeur'});
+  $('#g5').innerHTML=grid({xmin:-2,xmax:8,ymin:-4,ymax:6,s:40,maxw:720,
+    lines:[{a:4,b:-3,c:-11,color:'var(--blue)'}],
+    vectors:[{x1:2,y1:-1,x2:5,y2:3,color:'var(--orange)'}],
+    points:[{x:2,y:-1,label:'A'},{x:5,y:3,label:'B'}],alt:'Droite 4x - 3y - 11 = 0'});
+}
+
+/* ---------- révélation pas à pas ---------- */
+function reveals(){
+  document.querySelectorAll('.reveal').forEach(r=>{
+    const items=Array.prototype.slice.call(r.querySelectorAll(':scope>.rs'));
+    let n=1;
+    items.forEach((it,i)=>{it.hidden=i>=1;});
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='btn';btn.textContent='Étape suivante →';
+    btn.onclick=()=>{
+      if(n>=items.length){n=1;items.forEach((it,i)=>{it.hidden=i>=1;});btn.textContent='Étape suivante →';return;}
+      items[n].hidden=false;n++;
+      if(n>=items.length)btn.textContent='Recommencer ↺';
+    };
+    r.appendChild(btn);
+  });
+}
+
+/* ---------- démarrage ---------- */
+window.__cours={genRed1,genRed2,genRead,genQcm,genCoord,genDir,genGuided,genTwoPts,genMember,genFree,genRed3,genSpecial,parse,eqC,checkEq};
+if(typeof document!=='undefined'&&document.getElementById('s1')){
+  figures();
+  $('#b-prev').addEventListener('click',function(){if(buildStep>1){buildStep--;build();}});
+  $('#b-next').addEventListener('click',function(){if(buildStep<3){buildStep++;build();}});
+  build();
+  $('#d-prev').addEventListener('click',function(){if(detStep>1){detStep--;det();}});
+  $('#d-next').addEventListener('click',function(){if(detStep<3){detStep++;det();}});
+  det();
+  var kb=$('#stretch-btns');
+  [-2,-1,1,2,3].forEach(function(k){var b=document.createElement('button');b.type='button';b.className='btn kb';b.setAttribute('data-k',k);b.textContent='k = '+fmt(k);b.onclick=function(){stretchK=k;stretch();};kb.appendChild(b);});
+  stretch();
+  mountCons($('#cons'));
+  mountEx($('#ex1a'),genRed1);
+  mountEx($('#ex1b'),genRed2);
+  mountEx($('#ex1c'),genRed3);
+  mountEx($('#ex2a'),genRead);
+  mountEx($('#ex2b'),genQcm);
+  mountEx($('#ex3a'),()=>genCoord('A','B',false,false));
+  mountEx($('#ex3b'),()=>genCoord('E','F',true,true));
+  mountEx($('#ex4a'),()=>genDir(1));
+  mountEx($('#ex4b'),()=>genDir(2));
+  mountEx($('#ex4c'),()=>genDir(3));
+  mountEx($('#ex6a'),genGuided);
+  mountEx($('#ex6b'),genTwoPts);
+  mountEx($('#ex6c'),genMember);
+  mountEx($('#ex6d'),genFree);
+  mountEx($('#ex6e'),genSpecial);
+  reveals();
+  typeset(document);
+}
+})();
+</script>
+</body>
+</html>
