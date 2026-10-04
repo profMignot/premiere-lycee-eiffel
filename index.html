@@ -28,7 +28,7 @@
   h1{margin:4px 0 0; font-size:1.7rem; font-family:Georgia,serif; font-weight:600;}
   header p{margin:6px 0 0; color:var(--ink-soft);}
 
-  .tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:18px 0 20px;}
+  .tabs{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:18px 0 20px;}
   .tab{font:inherit; font-weight:700; font-size:1rem; cursor:pointer; padding:16px 8px; border-radius:14px;
     border:1px solid var(--line); background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
   .tab .n{display:block; font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-top:2px;}
@@ -44,6 +44,7 @@
   li a:hover{border-color:var(--accent);}
   li a:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
   .msg{padding:18px; background:var(--surface); border:1px solid var(--line); border-radius:12px; color:var(--ink-soft);}
+  @media (max-width:560px){ .tabs{grid-template-columns:repeat(2,1fr);} }
   @media (max-width:460px){ h1{font-size:1.4rem;} .tab{font-size:.9rem; padding:14px 4px;} }
 </style>
 </head>
@@ -67,6 +68,7 @@
   var RUBRIQUES = [
     { id:"cours",  label:"Cours",        folders:["cours","lecons","lecon"],                          kw:/cours|lecon|leçon/ },
     { id:"exos",   label:"Exercices",    folders:["exercices","exercice","exos","exo"],               kw:/exo|exercice/ },
+    { id:"auto",   label:"Automatismes", folders:["automatismes","automatisme"],                      kw:/automatisme/ },
     { id:"remed",  label:"Remédiations", folders:["remediations","remediation","remed"],              kw:/remed|remédi/ }
   ];
 
