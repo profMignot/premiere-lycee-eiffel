@@ -67,6 +67,10 @@ p{margin:.45rem 0}
 .lines{margin:.5rem 0;padding:.5rem .9rem;background:var(--bg2);border:1px solid var(--line);border-radius:10px;display:inline-block;max-width:100%;overflow-x:auto}
 .lines>div{white-space:nowrap}
 .lines .cont{padding-left:2.2em}
+.tw{max-width:100%;overflow-x:auto;margin:.5rem 0}
+table.tv{border-collapse:collapse;margin:.2rem 0;background:var(--card)}
+table.tv th,table.tv td{border:1.5px solid var(--ink);padding:.3rem .9rem;text-align:center;white-space:nowrap;min-width:2.6em}
+table.tv th{background:var(--bg2);font-weight:600}
 ul,ol{margin:.4rem 0;padding-left:1.4rem}
 li{margin:.2rem 0}
 /* graphiques */
@@ -105,7 +109,7 @@ li{margin:.2rem 0}
 .btn:hover{filter:brightness(1.08)}
 .btn.ghost{background:var(--btnl);color:var(--blue)}
 .btn.ghost:hover{background:var(--blue-l)}
-:root:not(.x) .btn{color:#fff}
+:root:not(.x) .btn:not(.ghost):not(.kb){color:#fff}
 .btn.ghost,.btn.kb{color:var(--blue)}
 .btn.kb{color:var(--orange)}
 .btn:disabled{opacity:.4;cursor:default}
@@ -144,7 +148,7 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
 
 <header class="hero">
   <h1>Équations cartésiennes d’une droite</h1>
-  <p>Cours en 6 étapes · avec des exercices interactifs</p>
+  <p>Cours en 7 étapes · avec des exercices interactifs</p>
 </header>
 
 <nav class="toc" aria-label="Plan du cours">
@@ -152,8 +156,9 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
   <a href="#s2">2 · Vecteur dir.</a>
   <a href="#s3">3 · Coord. de AB</a>
   <a href="#s4">4 · (−b ; a)</a>
-  <a href="#s5">5 · Méthode</a>
-  <a href="#s6">6 · Exercices</a>
+  <a href="#s5">5 · Tracer</a>
+  <a href="#s6">6 · Méthode</a>
+  <a href="#s7">7 · Exercices</a>
 </nav>
 
 <main>
@@ -329,7 +334,76 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
 
 <!-- ============ 5 ============ -->
 <section id="s5">
-  <h2><span class="num">5</span>Méthode : trouver une équation cartésienne</h2>
+  <h2><span class="num">5</span>Tracer une droite à partir de son équation cartésienne</h2>
+
+  <p>On connaît une équation cartésienne <span class="m">ax + by + c = 0</span> d’une droite <i>d</i> et on veut <b>tracer <i>d</i></b> dans un repère. Deux méthodes sont possibles.</p>
+
+  <div class="box meth">
+    <div class="ttl">Méthode 1 : deux points (tableau de valeurs)</div>
+    <ol>
+      <li>On choisit deux valeurs de <span class="m">x</span>.</li>
+      <li>Pour chacune, on remplace <span class="m">x</span> dans l’équation et on résout pour trouver <span class="m">y</span>.</li>
+      <li>On place les deux points obtenus et on trace la droite qui passe par ces deux points.</li>
+    </ol>
+    <p>Conseil : choisir des valeurs de <span class="m">x</span> qui donnent des <span class="m">y</span> entiers, et des points assez éloignés l’un de l’autre pour que le tracé soit précis.</p>
+  </div>
+
+  <h3>Exemple</h3>
+  <p>Tracer la droite <i>d</i> d’équation <span class="m">2x + 3y − 7 = 0</span>.</p>
+  <p>Pour <span class="m">x = −1</span> :</p>
+  <div class="lines m">
+    <div>2 × (−1) + 3y − 7 = 0</div>
+    <div class="cont">⇔ 3y = 9</div>
+    <div class="cont">⇔ y = 3</div>
+  </div>
+  <p>Pour <span class="m">x = 2</span> :</p>
+  <div class="lines m">
+    <div>2 × 2 + 3y − 7 = 0</div>
+    <div class="cont">⇔ 3y = 3</div>
+    <div class="cont">⇔ y = 1</div>
+  </div>
+  <p>On regroupe les résultats dans un tableau de valeurs :</p>
+  <div class="tw"><table class="tv m">
+    <tr><th>x</th><td>−1</td><td>2</td></tr>
+    <tr><th>y</th><td>3</td><td>1</td></tr>
+  </table></div>
+  <p>Donc les points <span class="m">A(−1 ; 3)</span> et <span class="m">B(2 ; 1)</span> appartiennent à <i>d</i> : on les place et on trace la droite (AB).</p>
+  <p class="legend">Ici, <span class="m">x = 0</span> donnerait <span class="m">y = <span class="frac"><span>7</span><span>3</span></span></span> : ce point serait difficile à placer avec précision.</p>
+  <div id="g5a"></div>
+
+  <div class="box meth">
+    <div class="ttl">Méthode 2 : un point et un vecteur directeur</div>
+    <ol>
+      <li>On cherche <b>un point</b> A de <i>d</i> : on choisit une valeur de <span class="m">x</span> et on calcule <span class="m">y</span> (comme dans la méthode 1).</li>
+      <li>On écrit le vecteur directeur <span class="m"><span class="vec">v</span>(−b ; a)</span> (propriété de l’étape 4).</li>
+      <li>À partir de A, on trace <span class="m"><span class="vec">v</span></span> en comptant les unités, puis la droite qui passe par A et a la direction de <span class="m"><span class="vec">v</span></span>.</li>
+    </ol>
+  </div>
+
+  <h3>Exemple</h3>
+  <p>On reprend la droite <i>d</i> d’équation <span class="m">2x + 3y − 7 = 0</span>.</p>
+  <p><b>Un point.</b> Pour <span class="m">x = −1</span>, on a trouvé <span class="m">y = 3</span> : le point <span class="m">A(−1 ; 3)</span> appartient à <i>d</i>.</p>
+  <p><b>Un vecteur directeur.</b> Ici <span class="m">a = 2</span> et <span class="m">b = 3</span>, donc</p>
+  <div class="lines m">
+    <div><span class="vec">v</span> ( −b ; a )</div>
+    <div><span class="vec">v</span> ( −3 ; 2 )</div>
+  </div>
+  <p>À partir de A, on se déplace de <b>3 unités vers la gauche</b> puis de <b>2 unités vers le haut</b> : on arrive au point <span class="m">C(−4 ; 5)</span>, qui est aussi sur <i>d</i>. On trace la droite.</p>
+  <div id="g5b"></div>
+  <p class="legend">On retrouve bien la même droite qu’avec la méthode 1.</p>
+
+  <div class="box rem">
+    <div class="ttl">Remarque</div>
+    <p>Si <span class="m">b = 0</span>, l’équation s’écrit <span class="m">ax + c = 0</span> : on ne peut pas choisir <span class="m">x</span> librement. La droite est <b>verticale</b>. Par exemple, <span class="m">2x − 6 = 0</span> équivaut à <span class="m">x = 3</span> : c’est la droite verticale qui passe par le point <span class="m">(3 ; 0)</span>.</p>
+  </div>
+
+  <h3>À toi de jouer</h3>
+  <div class="act"><span class="tag">Exercice interactif · tracer une droite</span><div id="trace"></div></div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <h2><span class="num">6</span>Méthode : trouver une équation cartésienne</h2>
 
   <div class="box meth">
     <div class="ttl">Méthode</div>
@@ -350,19 +424,19 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
     <div class="rs"><b>Étape 4.</b> Une équation cartésienne de <i>d</i> est <span class="m">4x − 3y − 11 = 0</span>.</div>
     <div class="rs"><b>Vérification.</b> Le point <span class="m">B(5 ; 3)</span> (obtenu en ajoutant <span class="m"><span class="vec">u</span></span> à A) doit aussi être sur <i>d</i> : <span class="m">4 × 5 − 3 × 3 − 11 = 20 − 9 − 11 = 0</span> ✔.</div>
   </div>
-  <div id="g5"></div>
+  <div id="g6"></div>
 </section>
 
-<!-- ============ 6 ============ -->
-<section id="s6">
-  <h2><span class="num">6</span>Exercices</h2>
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <h2><span class="num">7</span>Exercices</h2>
   <p>Chaque exercice est généré au hasard : clique sur « Nouvel exercice » autant de fois que tu veux pour t’entraîner. L’équation d’une droite n’étant pas unique, toute équation correcte est acceptée.</p>
 
-  <div class="act"><span class="tag">Exercice 1 · guidé</span><div id="ex6a"></div></div>
-  <div class="act"><span class="tag">Exercice 2 · avec deux points</span><div id="ex6b"></div></div>
-  <div class="act"><span class="tag">Exercice 3 · appartenance d’un point</span><div id="ex6c"></div></div>
-  <div class="act"><span class="tag">Exercice 4 · sans aide</span><div id="ex6d"></div></div>
-  <div class="act"><span class="tag">Exercice 5 · droite verticale ou horizontale</span><div id="ex6e"></div></div>
+  <div class="act"><span class="tag">Exercice 1 · guidé</span><div id="ex7a"></div></div>
+  <div class="act"><span class="tag">Exercice 2 · avec deux points</span><div id="ex7b"></div></div>
+  <div class="act"><span class="tag">Exercice 3 · appartenance d’un point</span><div id="ex7c"></div></div>
+  <div class="act"><span class="tag">Exercice 4 · sans aide</span><div id="ex7d"></div></div>
+  <div class="act"><span class="tag">Exercice 5 · droite verticale ou horizontale</span><div id="ex7e"></div></div>
 </section>
 </main>
 
@@ -689,7 +763,7 @@ function genDir(type){
   };
 }
 
-/* ---------- étape 6 ---------- */
+/* ---------- étape 7 ---------- */
 function genGuided(){
   const A={x:ri(-4,4),y:ri(-4,4)};
   let al,be;do{al=ri(-4,4);be=ri(-4,4);}while(al===0||be===0);
@@ -898,6 +972,65 @@ function mountCons(root){
   newEx();draw();
 }
 
+/* ---------- étape 5 : tracer une droite (exercice) ---------- */
+function genTrace(){
+  var P,a,b;
+  do{P={x:ri(-3,3),y:ri(-2,2)};a=ri(-3,3);b=ri(-3,3);}
+  while(a===0||b===0||gcd(Math.abs(a),Math.abs(b))!==1||Math.abs(a)+Math.abs(b)<3||P.x===0||P.y===0||P.x-b===0||P.y+a===0);
+  return{P:P,a:a,b:b,c:-(a*P.x+b*P.y),Q:{x:P.x-b,y:P.y+a}};
+}
+function mountTrace(root){
+  var st;
+  function newEx(){var g=genTrace();st={g:g,pts:[],tries:[],shown:false,msg:'',ok:false};}
+  function done(){return st.pts.length>=2;}
+  function fig(){
+    var g=st.g,o={xmin:-7,xmax:7,ymin:-5,ymax:5,s:46,maxw:760,lines:[],vectors:[],points:[],texts:[],alt:'Repère pour tracer la droite'};
+    if(done()||st.shown)o.lines.push({a:g.a,b:g.b,c:g.c,color:'var(--blue)'});
+    st.tries.forEach(function(q){o.points.push({x:q.x,y:q.y,color:q.ok?'var(--green)':'var(--red)'});});
+    if(st.shown){o.points.push({x:g.P.x,y:g.P.y,color:'var(--green)'},{x:g.Q.x,y:g.Q.y,color:'var(--green)'});o.vectors.push({x1:g.P.x,y1:g.P.y,x2:g.Q.x,y2:g.Q.y,color:'var(--orange)'});}
+    return grid(o);
+  }
+  function solution(){
+    var g=st.g,x1=g.P.x,x2=g.Q.x;
+    function calc(x,y){
+      var r=g.b*y;
+      return '<p>Pour '+M('x = '+fmt(x))+' :</p><div class="lines m"><div>'+par(g.a)+' × '+par(x)+term(g.b,'y',false)+term(g.c,'',false)+' = 0</div><div class="cont">⇔ '+(g.b===1?'':g.b===-1?MIN:fmt(g.b))+'y = '+fmt(r)+'</div><div class="cont">⇔ y = '+fmt(y)+'</div></div>';
+    }
+    return '<p><b>Méthode 1.</b></p>'+calc(x1,g.P.y)+calc(x2,g.Q.y)+
+      '<div class="tw"><table class="tv m"><tr><th>x</th><td>'+fmt(x1)+'</td><td>'+fmt(x2)+'</td></tr><tr><th>y</th><td>'+fmt(g.P.y)+'</td><td>'+fmt(g.Q.y)+'</td></tr></table></div>'+
+      '<p>Les points '+M(coords(x1,g.P.y))+' et '+M(coords(x2,g.Q.y))+' appartiennent à la droite.</p>'+
+      '<p><b>Méthode 2.</b> Le point '+M(coords(g.P.x,g.P.y))+' appartient à la droite et '+M(vec('v')+'(−b ; a)')+', soit '+M(vec('v')+coords(-g.b,g.a))+', est un vecteur directeur (en orange sur la figure).</p>';
+  }
+  function draw(){
+    var g=st.g;
+    root.innerHTML='<div class="q"><p>Trace la droite <i>d</i> d’équation '+M(eqC(g.a,g.b,g.c))+'.</p><p>Clique sur <b>deux nœuds</b> du quadrillage qui sont des points de <i>d</i>.</p></div>'+
+      '<div class="cons-svg">'+fig()+'</div><div class="fb'+(st.msg?(st.ok?' ok':' ko'):'')+'" aria-live="polite">'+st.msg+'</div>'+
+      '<div class="btns"><button type="button" class="btn ghost sol">Correction</button><button type="button" class="btn ghost new">Nouvel exercice ↻</button></div>'+
+      (st.shown?'<div class="solbox">'+solution()+'</div>':'');
+    typeset(root);
+    var svg=root.querySelector('svg');
+    svg.addEventListener('click',function(e){
+      if(done()||st.shown)return;
+      var vb=svg.viewBox.baseVal,r=svg.getBoundingClientRect(),sc=vb.width/r.width;
+      var x=Math.round(-7+(e.clientX-r.left)*sc/46),y=Math.round(5-(e.clientY-r.top)*sc/46);
+      if(st.pts.some(function(q){return q.x===x&&q.y===y;})){st.msg='❌ Tu as déjà placé ce point : choisis un <b>autre</b> point de la droite.';st.ok=false;draw();return;}
+      var v=g.a*x+g.b*y+g.c,ok=v===0;
+      st.tries.push({x:x,y:y,ok:ok});
+      if(ok){
+        st.pts.push({x:x,y:y});st.ok=true;
+        st.msg=done()?'✅ Bravo ! Les points '+M(coords(st.pts[0].x,st.pts[0].y))+' et '+M(coords(x,y))+' vérifient l’équation : voici la droite <i>d</i>.':'✅ Le point '+M(coords(x,y))+' est sur la droite : '+M(par(g.a)+' × '+par(x)+' + '+par(g.b)+' × '+par(y)+' + '+par(g.c)+' = 0')+'. Place un deuxième point.';
+      }else{
+        st.ok=false;
+        st.msg='❌ Le point '+M(coords(x,y))+' n’est pas sur la droite : '+M(par(g.a)+' × '+par(x)+' + '+par(g.b)+' × '+par(y)+' + '+par(g.c)+' = '+fmt(v))+', ce n’est pas 0. Choisis une valeur de '+M('x')+' et calcule '+M('y')+'.';
+      }
+      draw();
+    });
+    root.querySelector('.sol').onclick=function(){st.shown=!st.shown;draw();};
+    root.querySelector('.new').onclick=function(){newEx();draw();};
+  }
+  newEx();draw();
+}
+
 /* ---------- figures statiques ---------- */
 function figures(){
   const A3={x:2,y:-3},B3={x:5,y:1};
@@ -909,7 +1042,18 @@ function figures(){
     lines:[{a:3,b:-2,c:5,color:'var(--blue)'}],
     vectors:[{x1:-1,y1:1,x2:1,y2:4,color:'var(--orange)'}],
     points:[{x:-1,y:1},{x:1,y:4}],alt:'Droite 3x - 2y + 5 = 0 et son vecteur directeur'});
-  $('#g5').innerHTML=grid({xmin:-2,xmax:8,ymin:-4,ymax:6,s:40,maxw:720,
+  $('#g5a').innerHTML=grid({xmin:-3,xmax:5,ymin:-1,ymax:5,s:56,maxw:720,
+    lines:[{a:2,b:3,c:-7,color:'var(--blue)'}],
+    points:[{x:-1,y:3,label:'A'},{x:2,y:1,label:'B'}],
+    texts:[{x:4.2,y:0.35,t:'d',c:'var(--blue)'}],alt:'Droite 2x + 3y - 7 = 0 tracée avec deux points'});
+  $('#g5b').innerHTML=grid({xmin:-5,xmax:4,ymin:-1,ymax:6,s:56,maxw:720,
+    lines:[{a:2,b:3,c:-7,color:'var(--blue)'}],
+    segs:[{x1:-1,y1:3,x2:-4,y2:3},{x1:-4,y1:3,x2:-4,y2:5}],
+    vectors:[{x1:-1,y1:3,x2:-4,y2:5,color:'var(--orange)'}],
+    points:[{x:-1,y:3,label:'A'},{x:-4,y:5,label:'C',color:'var(--orange)'}],
+    texts:[{x:-2.5,y:2.45,t:'3',mid:1},{x:-4.45,y:3.85,t:'2'},{x:-2.3,y:4.6,t:'v',c:'var(--orange)',vec:1},{x:3.2,y:0.95,t:'d',c:'var(--blue)'}],
+    alt:'Droite 2x + 3y - 7 = 0 tracée avec un point et un vecteur directeur'});
+  $('#g6').innerHTML=grid({xmin:-2,xmax:8,ymin:-4,ymax:6,s:40,maxw:720,
     lines:[{a:4,b:-3,c:-11,color:'var(--blue)'}],
     vectors:[{x1:2,y1:-1,x2:5,y2:3,color:'var(--orange)'}],
     points:[{x:2,y:-1,label:'A'},{x:5,y:3,label:'B'}],alt:'Droite 4x - 3y - 11 = 0'});
@@ -933,7 +1077,7 @@ function reveals(){
 }
 
 /* ---------- démarrage ---------- */
-window.__cours={genRed1,genRed2,genRead,genQcm,genCoord,genDir,genGuided,genTwoPts,genMember,genFree,genRed3,genSpecial,parse,eqC,checkEq};
+window.__cours={genRed1,genRed2,genRead,genQcm,genCoord,genDir,genGuided,genTwoPts,genMember,genFree,genRed3,genSpecial,genTrace,parse,eqC,checkEq};
 if(typeof document!=='undefined'&&document.getElementById('s1')){
   figures();
   $('#b-prev').addEventListener('click',function(){if(buildStep>1){buildStep--;build();}});
@@ -946,6 +1090,7 @@ if(typeof document!=='undefined'&&document.getElementById('s1')){
   [-2,-1,1,2,3].forEach(function(k){var b=document.createElement('button');b.type='button';b.className='btn kb';b.setAttribute('data-k',k);b.textContent='k = '+fmt(k);b.onclick=function(){stretchK=k;stretch();};kb.appendChild(b);});
   stretch();
   mountCons($('#cons'));
+  mountTrace($('#trace'));
   mountEx($('#ex1a'),genRed1);
   mountEx($('#ex1b'),genRed2);
   mountEx($('#ex1c'),genRed3);
@@ -956,11 +1101,11 @@ if(typeof document!=='undefined'&&document.getElementById('s1')){
   mountEx($('#ex4a'),()=>genDir(1));
   mountEx($('#ex4b'),()=>genDir(2));
   mountEx($('#ex4c'),()=>genDir(3));
-  mountEx($('#ex6a'),genGuided);
-  mountEx($('#ex6b'),genTwoPts);
-  mountEx($('#ex6c'),genMember);
-  mountEx($('#ex6d'),genFree);
-  mountEx($('#ex6e'),genSpecial);
+  mountEx($('#ex7a'),genGuided);
+  mountEx($('#ex7b'),genTwoPts);
+  mountEx($('#ex7c'),genMember);
+  mountEx($('#ex7d'),genFree);
+  mountEx($('#ex7e'),genSpecial);
   reveals();
   typeset(document);
 }
