@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Série 5 — Statistiques et probabilités</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+:root{
+  --paper:#F4F6FA; --card:#FFFFFF; --ink:#18212E; --muted:#586477; --line:#D6DCE6;
+  --eq:#1D5FC4; --eq-soft:#E4EDFB; --eqv:#8C2B8F; --eqv-soft:#F4E6F4;
+  --ok:#1C7A45; --ok-soft:#E3F3EA; --bad:#B8342A; --bad-soft:#FBE7E5; --focus:#1D5FC4;
+  --c4:#c2570c;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --f-math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#11161F; --card:#19212D; --ink:#E6EBF2; --muted:#9AA6B8; --line:#2D394B;
+    --eq:#7EAEF5; --eq-soft:#1D2D48; --eqv:#DB8FD8; --eqv-soft:#35213A;
+    --ok:#56C98F; --ok-soft:#173327; --bad:#F2806F; --bad-soft:#3A1F1C; --focus:#7EAEF5;
+    --c4:#f0a066;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;
+  margin:0;padding:0 16px 64px;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:780px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;margin:0}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;min-height:44px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+.m{font-family:var(--f-math);font-size:1.15em}
+/* fraction à barre horizontale (A2) */
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;
+  font-family:var(--f-math);font-size:.95em;line-height:1.15;margin:0 .12em}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 .2em}
+.frac>span:last-child{padding:0 .2em}
+/* arc (AB) et angle (AÔB) — A3 */
+.arc,.hat{position:relative;display:inline-block;padding-top:.3em;line-height:1.1;font-family:var(--f-math);font-size:1.08em}
+.arc::before{content:"";position:absolute;left:-.04em;right:-.04em;top:.06em;height:.24em;
+  border-top:1.7px solid currentColor;border-radius:50% 50% 0 0 / 100% 100% 0 0}
+.hat::before,.hat::after{content:"";position:absolute;top:.17em;width:50%;border-top:1.7px solid currentColor}
+.hat::before{left:0;transform-origin:right center;transform:rotate(-9deg)}
+.hat::after{right:0;transform-origin:left center;transform:rotate(9deg)}
+/* figure SVG du cercle */
+.fig{display:block;width:min(100%,320px);height:auto;margin:0 auto}
+.fig .circ{fill:none;stroke:var(--ink);stroke-width:2}
+.fig .axis{stroke:var(--muted);stroke-width:1.2}
+.fig .sp6{stroke:var(--eq);stroke-width:1;opacity:.35}
+.fig .sp4{stroke:var(--c4);stroke-width:1;opacity:.4}
+.fig .tick6{stroke:var(--eq);stroke-width:2}
+.fig .tick4{stroke:var(--c4);stroke-width:2}
+.fig .arcv{fill:none;stroke:var(--eqv);stroke-width:4;stroke-linecap:round}
+.fig .mdot{fill:var(--bad)}
+.fig .ray{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:4 3}
+.fig text{fill:var(--ink);font-family:var(--f-math)}
+
+body{padding-top:12px}
+h1{font-size:1.45rem;margin:10px 0 4px}
+.lead{color:var(--muted);margin:0 0 12px;font-size:1rem}
+.bar{position:sticky;top:0;z-index:5;background:var(--paper);padding:8px 0;border-bottom:1px solid var(--line);
+  display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;font-size:.95rem}
+.bar button{padding:6px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+h2.ex{font-size:1.15rem;margin:22px 0 8px;color:var(--eq)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0}
+.q.good{border-color:var(--ok)} .q.bad{border-color:var(--bad)}
+.qh{display:flex;gap:10px;align-items:flex-start}
+.qn{flex:0 0 auto;min-width:28px;height:28px;border-radius:50%;background:var(--eq-soft);color:var(--eq);
+  font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.qt{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+details.rep{margin-top:10px}
+details.rep>summary{list-style:none;cursor:pointer;min-height:46px;display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--eq);color:var(--eq);border-radius:12px;font-weight:700;background:var(--eq-soft);padding:0 12px}
+details.rep>summary::-webkit-details-marker{display:none}
+details.rep[open]>summary{margin-bottom:10px}
+.ans{background:var(--ok-soft);border-left:4px solid var(--ok);border-radius:8px;padding:10px 12px;overflow-wrap:anywhere}
+.self{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.self button{flex:1 1 140px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-weight:700}
+.self .ok.on{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.self .ko.on{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.m i{font-style:italic}
+.lr{display:inline-flex;align-items:center;vertical-align:middle}
+.pb{display:inline-block;font-size:2.3em;line-height:.8;font-weight:200;transform:scaleX(.7);margin:0 -.05em}
+.m sup,.m sub{font-size:.72em;line-height:0}
+.rad{border-top:1.5px solid currentColor;padding:0 .1em;margin-left:1px}
+.ov{text-decoration:overline}
+.vec{position:relative;display:inline-block;line-height:1;padding-top:.2em;margin-right:.14em}
+.vec::before{content:"";position:absolute;left:.04em;right:-.06em;top:0;border-top:1.6px solid currentColor}
+.vec::after{content:"";position:absolute;right:-.06em;top:.8px;width:.3em;height:.3em;border-top:1.6px solid currentColor;border-right:1.6px solid currentColor;transform:translateY(-50%) rotate(45deg)}
+.figw{background:#fff;border-radius:10px;padding:6px;margin:10px auto;max-width:440px;text-align:center}
+.figw img{max-width:100%;height:auto;display:block;margin:0 auto}
+.tw{overflow-x:auto;margin:10px 0}
+.tb{border-collapse:collapse;margin:0 auto}
+.tb th,.tb td{border:1px solid var(--line);padding:6px 12px;text-align:center}
+.tb th{background:var(--eq-soft)}
+.tv td.arr{font-size:1.2em}
+.tb.tv th,.tb.tv td{padding:6px 5px}
+.sch{display:flex;flex-direction:column;align-items:center;gap:4px;margin:12px 0}
+.sbox{border:1.5px solid var(--ink);border-radius:8px;background:var(--card);padding:8px 18px;text-align:center;min-width:180px}
+.sarr{color:var(--eq);font-weight:700}.sarr span{font-size:1.3em;margin-right:6px}
+.ch{border-collapse:collapse;margin:6px 0;max-width:100%}
+.ch td{padding:2px 6px 2px 0;vertical-align:middle}
+.ch .ph{visibility:hidden}
+.ch .ind{padding-left:1.2em}
+.ch tr.res td{color:var(--eq);font-weight:600}
+.ch .ar{padding-right:10px}.ch .ou{padding:0 10px}
+.ans p{margin:6px 0}
+.sg th,.sg td{min-width:24px;padding:4px 4px}
+.sg{font-size:.92rem}
+.tb.tv th,.tb.tv td,.tb.sg th,.tb.sg td{white-space:nowrap}
+/* tableau de signes (r_signes) — modèle generer_odt */
+.sgt{border-collapse:collapse;margin:0 auto;border:1.5px solid var(--ink);font-size:.95rem;background:var(--card)}
+.sgt th,.sgt td{padding:5px 2px;text-align:center;white-space:nowrap;border-top:1px solid var(--ink);position:relative}
+.sgt tr:first-child th,.sgt tr:first-child td{border-top:0}
+.sgt th.lb{background:var(--eq-soft);border-right:1.5px solid var(--ink);padding:5px 5px;font-weight:400}
+.sgt tr.lastrow th.lb{font-weight:700}
+.nw{white-space:nowrap}
+.sgt td{vertical-align:top}
+.sgt th.lb{vertical-align:middle}
+.sgt td.iv{min-width:26px}
+.sgt td.vx{min-width:34px}
+.sgt td.vl{min-width:26px}
+.sgt td.vl::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid var(--ink)}
+.sgt .z{position:relative;z-index:1;background:var(--card);padding:0 2px}
+.sgt td.ha{padding-bottom:15px}
+.sgt .sa{position:absolute;left:50%;bottom:1px;transform:translateX(-50%);font-size:.62rem;line-height:1;color:var(--bad);font-weight:600}
+.end{margin-top:22px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Série 5 — Statistiques et probabilités</h1><p class="lead">Niveau seconde — automatismes, <b>sans calculatrice</b>. Cherche sur ton brouillon, puis clique sur « Voir la réponse » et dis si tu avais juste.</p><div class="bar"><span id="bilan"></span><button id="raz" type="button">Recommencer</button></div><section class="q"><div class="qh"><div class="qn">1</div><div class="qt">Série : <span class="m">3&nbsp;;&nbsp;5&nbsp;;&nbsp;5&nbsp;;&nbsp;6&nbsp;;&nbsp;8&nbsp;;&nbsp;9&nbsp;;&nbsp;12&nbsp;;&nbsp;12</span>. Calculer moyenne, médiane, quartiles et étendue.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>L’effectif est <span class="m">8</span>. La moyenne est la somme des valeurs divisée par l’effectif :</p><table class="ch"><tr><td class="lf"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>3&nbsp;+&nbsp;5&nbsp;+&nbsp;5&nbsp;+&nbsp;6&nbsp;+&nbsp;8&nbsp;+&nbsp;9&nbsp;+&nbsp;12&nbsp;+&nbsp;12</span><span>8</span></span></span></td></tr><tr><td class="lf ph"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>60</span><span>8</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m">7,5</span></td></tr></table><p>L’effectif est pair et la série est rangée dans l’ordre croissant : la médiane est la moyenne de la <span class="m">4</span>e et de la <span class="m">5</span>e valeur :</p><table class="ch"><tr><td class="lf"><span class="m">Me</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>6&nbsp;+&nbsp;8</span><span>2</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">Me</span></td><td class="eqs">=&nbsp;<span class="m">7</span></td></tr></table><p>On a <span class="m">8&nbsp;×&nbsp;<span class="frac"><span>1</span><span>4</span></span> = 2</span> : <span class="m">Q<sub>1</sub></span> est la <span class="m">2</span>e valeur, donc <span class="m">Q<sub>1</sub> = 5</span>. On a <span class="m">8&nbsp;×&nbsp;<span class="frac"><span>3</span><span>4</span></span> = 6</span> : <span class="m">Q<sub>3</sub></span> est la <span class="m">6</span>e valeur, donc <span class="m">Q<sub>3</sub> = 9</span>.</p><p>L’étendue est <span class="m">12&nbsp;−&nbsp;3 = 9</span>.</p></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">2</div><div class="qt">Classes <span class="m"><span class="nw">[0&nbsp;;&nbsp;10[</span>&nbsp;;&nbsp;<span class="nw">[10&nbsp;;&nbsp;20[</span>&nbsp;;&nbsp;<span class="nw">[20&nbsp;;&nbsp;30[</span></span> d’effectifs <span class="m">4&nbsp;;&nbsp;10&nbsp;;&nbsp;6</span>. Estimer la moyenne.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>On remplace chaque classe par son centre : <span class="m">5</span>, <span class="m">15</span> et <span class="m">25</span>.</p><table class="ch"><tr><td class="lf"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>4&nbsp;×&nbsp;5&nbsp;+&nbsp;10&nbsp;×&nbsp;15&nbsp;+&nbsp;6&nbsp;×&nbsp;25</span><span>20</span></span></span></td></tr><tr><td class="lf ph"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>20&nbsp;+&nbsp;150&nbsp;+&nbsp;150</span><span>20</span></span></span></td></tr><tr><td class="lf ph"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>320</span><span>20</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m"><i>m</i></span></td><td class="eqs">=&nbsp;<span class="m">16</span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">3</div><div class="qt">La moyenne de <span class="m">15</span> notes est <span class="m">12</span>. On ajoute une note de <span class="m">28</span>. Quelle est la nouvelle moyenne ?</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>La somme des <span class="m">15</span> notes est <span class="m">15&nbsp;×&nbsp;12 = 180</span>. Avec la nouvelle note, on a <span class="m">16</span> notes :</p><table class="ch"><tr><td class="lf"><span class="m"><i>m</i><sub>nouvelle</sub></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>180&nbsp;+&nbsp;28</span><span>16</span></span></span></td></tr><tr><td class="lf ph"><span class="m"><i>m</i><sub>nouvelle</sub></span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>208</span><span>16</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m"><i>m</i><sub>nouvelle</sub></span></td><td class="eqs">=&nbsp;<span class="m">13</span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">4</div><div class="qt">Une urne contient <span class="m">3</span> boules rouges, <span class="m">5</span> vertes et <span class="m">2</span> bleues. On tire une boule au hasard. Calculer <span class="m">P(rouge)</span> et <span class="m">P(rouge ou bleue)</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>Il y a <span class="m">3&nbsp;+&nbsp;5&nbsp;+&nbsp;2 = 10</span> boules, toutes équiprobables : <span class="m">P(A) = <span class="frac"><span>nombre de cas favorables</span><span>nombre de cas possibles</span></span></span>.</p><table class="ch"><tr class="res"><td class="lf"><span class="m">P(rouge)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>3</span><span>10</span></span></span></td></tr></table><p>Il y a <span class="m">3&nbsp;+&nbsp;2 = 5</span> boules rouges ou bleues :</p><table class="ch"><tr><td><span class="m">P(rouge ou bleue)</span>&nbsp;=&nbsp;<span class="m"><span class="frac"><span>5</span><span>10</span></span></span></td></tr><tr class="res"><td class="ind">=&nbsp;<span class="m"><span class="frac"><span>1</span><span>2</span></span></span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">5</div><div class="qt">On a <span class="m">P(A) = 0,4</span>, <span class="m">P(B) = 0,5</span> et <span class="m">P(A&#8239;∩&#8239;B) = 0,2</span>. Calculer <span class="m">P(A&#8239;∪&#8239;B)</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>On utilise <span class="m">P(A&#8239;∪&#8239;B) = P(A)&nbsp;+&nbsp;P(B)&nbsp;−&nbsp;P(A&#8239;∩&#8239;B)</span> :</p><table class="ch"><tr><td class="lf"><span class="m">P(A&#8239;∪&#8239;B)</span></td><td class="eqs">=&nbsp;<span class="m">0,4&nbsp;+&nbsp;0,5&nbsp;−&nbsp;0,2</span></td></tr><tr class="res"><td class="lf ph"><span class="m">P(A&#8239;∪&#8239;B)</span></td><td class="eqs">=&nbsp;<span class="m">0,7</span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">6</div><div class="qt">On lance deux dés équilibrés. Calculer la probabilité que la somme soit <span class="m">7</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>Il y a <span class="m">6&nbsp;×&nbsp;6 = 36</span> couples équiprobables. Les couples de somme <span class="m">7</span> sont <span class="m"><span class="nw">(1&nbsp;;&nbsp;6)</span></span>, <span class="m"><span class="nw">(2&nbsp;;&nbsp;5)</span></span>, <span class="m"><span class="nw">(3&nbsp;;&nbsp;4)</span></span>, <span class="m"><span class="nw">(4&nbsp;;&nbsp;3)</span></span>, <span class="m"><span class="nw">(5&nbsp;;&nbsp;2)</span></span>, <span class="m"><span class="nw">(6&nbsp;;&nbsp;1)</span></span> : <span class="m">6</span> cas favorables.</p><table class="ch"><tr><td class="lf"><span class="m">P</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>6</span><span>36</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">P</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>1</span><span>6</span></span></span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">7</div><div class="qt">Sur <span class="m">150</span> personnes : <span class="m">90</span> femmes dont <span class="m">54</span> portent des lunettes, et <span class="m">60</span> hommes dont <span class="m">24</span> portent des lunettes. On choisit une personne au hasard (<span class="m">F</span> : femme, <span class="m">L</span> : lunettes). Calculer <span class="m">P(F&#8239;∩&#8239;L)</span> et <span class="m">P(L)</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>Il y a <span class="m">54</span> femmes portant des lunettes sur <span class="m">150</span> personnes :</p><table class="ch"><tr><td class="lf"><span class="m">P(F&#8239;∩&#8239;L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>54</span><span>150</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">P(F&#8239;∩&#8239;L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>9</span><span>25</span></span></span></td></tr></table><p>Il y a <span class="m">54&nbsp;+&nbsp;24 = 78</span> personnes portant des lunettes :</p><table class="ch"><tr><td class="lf"><span class="m">P(L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>78</span><span>150</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">P(L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>13</span><span>25</span></span></span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">8</div><div class="qt">Même contexte : calculer <span class="m">P<sub>L</sub>(F)</span> et <span class="m">P<sub>F</sub>(L)</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>On se limite aux <span class="m">78</span> personnes qui portent des lunettes : <span class="m">54</span> sont des femmes.</p><table class="ch"><tr><td class="lf"><span class="m">P<sub>L</sub>(F)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>54</span><span>78</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">P<sub>L</sub>(F)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>9</span><span>13</span></span></span></td></tr></table><p>On se limite aux <span class="m">90</span> femmes : <span class="m">54</span> portent des lunettes.</p><table class="ch"><tr><td class="lf"><span class="m">P<sub>F</sub>(L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>54</span><span>90</span></span></span></td></tr><tr class="res"><td class="lf ph"><span class="m">P<sub>F</sub>(L)</span></td><td class="eqs">=&nbsp;<span class="m"><span class="frac"><span>3</span><span>5</span></span></span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><section class="q"><div class="qh"><div class="qn">9</div><div class="qt">Dans un arbre pondéré, <span class="m">P(A) = 0,6</span> et <span class="m">P<sub>A</sub>(B) = 0,5</span>. Calculer <span class="m">P(A&#8239;∩&#8239;B)</span>.</div></div><details class="rep"><summary>Voir la réponse</summary><div class="ans"><p>On multiplie les probabilités le long de la branche :</p><table class="ch"><tr><td class="lf"><span class="m">P(A&#8239;∩&#8239;B)</span></td><td class="eqs">=&nbsp;<span class="m">P(A)&nbsp;×&nbsp;P<sub>A</sub>(B)</span></td></tr><tr><td class="lf ph"><span class="m">P(A&#8239;∩&#8239;B)</span></td><td class="eqs">=&nbsp;<span class="m">0,6&nbsp;×&nbsp;0,5</span></td></tr><tr class="res"><td class="lf ph"><span class="m">P(A&#8239;∩&#8239;B)</span></td><td class="eqs">=&nbsp;<span class="m">0,3</span></td></tr></table></div><div class="self"><button class="ok" type="button">✔ J’avais juste</button><button class="ko" type="button">✘ Pas juste</button></div></details></section><p class="end">— Fin de la série —</p>
+</div>
+<script>
+
+/*LOGIC_START*/
+function bilan(vues, justes, total){ return 'Vues ' + vues + '/' + total + ' · Justes ' + justes; }
+/*LOGIC_END*/
+(function(){
+  var qs = Array.prototype.slice.call(document.querySelectorAll('.q'));
+  var bar = document.getElementById('bilan');
+  function maj(){
+    var v = 0, j = 0;
+    qs.forEach(function(q){ if (q._s >= 1) v++; if (q._s === 2) j++; });
+    bar.textContent = bilan(v, j, qs.length);
+  }
+  qs.forEach(function(q){
+    q._s = 0;
+    var d = q.querySelector('details'), ok = q.querySelector('.ok'), ko = q.querySelector('.ko');
+    d.addEventListener('toggle', function(){ if (d.open && q._s === 0) { q._s = 1; maj(); } });
+    function set(s){
+      q._s = s;
+      ok.className = 'ok' + (s === 2 ? ' on' : ''); ko.className = 'ko' + (s === 3 ? ' on' : '');
+      q.className = 'q' + (s === 2 ? ' good' : (s === 3 ? ' bad' : ''));
+      maj();
+    }
+    ok.addEventListener('click', function(){ set(2); });
+    ko.addEventListener('click', function(){ set(3); });
+    q._reset = function(){ d.open = false; q._s = 0; ok.className = 'ok'; ko.className = 'ko'; q.className = 'q'; };
+  });
+  document.getElementById('raz').addEventListener('click', function(){
+    qs.forEach(function(q){ q._reset(); }); maj(); window.scrollTo(0, 0);
+  });
+  maj();
+})();
+
+</script>
+</body>
+</html>
