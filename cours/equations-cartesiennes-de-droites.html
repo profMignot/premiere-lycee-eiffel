@@ -202,6 +202,8 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
     <div class="ttl">Remarques</div>
     <ul>
       <li><b>L’équation cartésienne n’est pas unique.</b> En multipliant par un réel non nul, on obtient une autre équation de la même droite : <span class="m">4x − 2y + 6 = 0</span> décrit la même droite que <span class="m">2x − y + 3 = 0</span>.</li>
+      <li><b>On simplifie toujours l’équation.</b> Si <span class="m">a</span>, <span class="m">b</span> et <span class="m">c</span> ont un diviseur commun, on divise par ce nombre. Par exemple, on simplifie en divisant par 2 :
+        <div class="lines m"><div>4x − 2y + 6 = 0</div><div class="cont">⇔ 2x − y + 3 = 0</div></div></li>
       <li><b>Droite verticale</b> <span class="m">x = 4</span> : elle s’écrit <span class="m">x − 4 = 0</span>, avec <span class="m">a = 1</span>, <span class="m">b = 0</span>, <span class="m">c = −4</span>.</li>
       <li><b>Droite horizontale</b> <span class="m">y = 3</span> : elle s’écrit <span class="m">y − 3 = 0</span>, avec <span class="m">a = 0</span>, <span class="m">b = 1</span>, <span class="m">c = −3</span>.</li>
     </ul>
@@ -411,6 +413,7 @@ footer{text-align:center;color:var(--muted);font-size:.9rem;padding:0 1rem 2rem}
     <ol>
       <li>Avec la propriété de l’étape 4, <span class="m"><span class="vec">v</span>(−b ; a)</span> est directeur : on en déduit facilement <span class="m">a</span> et <span class="m">b</span>. On écrit <span class="m">ax + by + c = 0</span>, avec <i>c</i> encore inconnu.</li>
       <li>Le point A appartient à <i>d</i> : ses coordonnées vérifient l’équation. On les remplace dans <span class="m">ax + by + c = 0</span> et on <b>résout pour trouver <i>c</i></b>.</li>
+      <li>Si <span class="m">a</span>, <span class="m">b</span> et <span class="m">c</span> ont un diviseur commun, on <b>simplifie</b> l’équation en divisant par ce nombre.</li>
     </ol>
     <p>Si l’énoncé donne <b>deux points</b> A et B, on commence par calculer <span class="m"><span class="vec">AB</span></span> (étape 3), qui sert de vecteur directeur.</p>
   </div>
@@ -621,9 +624,26 @@ function checkEq(v,abc,integer){
   if(!prop)return{ok:false,msg:'Ce n’est pas la bonne droite. Passe tous les termes dans le même membre (l’autre membre doit valoir 0) et surveille les signes.'};
   if(integer&&!(Number.isInteger(A)&&Number.isInteger(B)&&Number.isInteger(C)))return{ok:false,msg:'C’est la bonne droite, mais on demande des <b>coefficients entiers</b> : multiplie par le dénominateur.'};
   const same=eq0(A,a0)&&eq0(B,b0)&&eq0(C,c0);
-  return{ok:true,msg:same?'Bravo !':'Bravo ! Ton équation est proportionnelle à '+M(eqC(a0,b0,c0))+' : c’est la même droite (une équation cartésienne n’est pas unique).'};
+  return{ok:true,msg:(same?'Bravo !':'Bravo ! Ton équation est proportionnelle à '+M(eqC(a0,b0,c0))+' : c’est la même droite (une équation cartésienne n’est pas unique).')+simpHint(A,B,C)};
 }
 const onLine=(a,b,c,P)=>eq0(a*P.x+b*P.y+c,0);
+
+/* A13 : équation cartésienne simplifiée (division par le PGCD de a, b, c) */
+const gcd3=(a,b,c)=>gcd(gcd(a,b),c);
+const isInt=n=>Number.isInteger(n);
+/* diviseur : le PGCD, pris négatif si le premier coefficient non nul est négatif (−3x + 3y − 9 = 0 : on divise par −3) */
+function simpl(a,b,c){let g=gcd3(a,b,c);if(g<=1)return[a,b,c,1];if((a!==0?a:b)<0)g=-g;return[a/g,b/g,c/g,g];}
+const eqS=(a,b,c)=>{const s=simpl(a,b,c);return eqC(s[0],s[1],s[2]);};
+function simpEtape(a,b,c){
+  const s=simpl(a,b,c);
+  if(s[3]===1)return '';
+  return '<p>On simplifie en divisant par '+fmt(s[3])+' :</p><div class="lines m"><div>'+eqC(a,b,c)+'</div><div class="cont">⇔ '+eqC(s[0],s[1],s[2])+'</div></div>';
+}
+function simpHint(A,B,C){
+  if(!(isInt(A)&&isInt(B)&&isInt(C)))return '';
+  const s=simpl(A,B,C);
+  return s[3]!==1?' Tu peux encore <b>simplifier</b> en divisant par '+fmt(s[3])+' : '+M(eqC(s[0],s[1],s[2]))+'.':'';
+}
 
 /* ---------- étape 1 ---------- */
 function genRed1(){
@@ -740,12 +760,14 @@ function genCoord(n1,n2,reverse,forceNeg){
 /* ---------- étape 4 ---------- */
 function genDir(type){
   let a,b,c;
+  do{
   if(type===1){a=ri(1,5);b=ri(1,5);c=ri(-6,6)||3;}
   else if(type===2){a=ri(-5,-1);b=ri(-5,-1);c=ri(-6,6)||-2;}
   else{
     if(Math.random()<.5){a=ri(1,5)*pick([1,-1]);b=0;}else{a=0;b=ri(1,5)*pick([1,-1]);}
     c=ri(-6,6)||4;
   }
+  }while(gcd3(a,b,c)!==1);   /* A13 : équation donnée déjà simplifiée */
   const vx=-b,vy=a;
   return{
     question:'<p>La droite <i>d</i> a pour équation cartésienne '+M(eqC(a,b,c))+'. Donne un vecteur directeur de <i>d</i>.</p>',
@@ -776,11 +798,11 @@ function genGuided(){
       if(isNaN(A1)||isNaN(B1)||isNaN(C1))return{ok:false,msg:NEEDNUM};
       const abOk=!(A1===0&&B1===0)&&eq0(A1*al+B1*be,0);
       const cOk=abOk&&onLine(A1,B1,C1,A);
-      if(abOk&&cOk)return{ok:true,msg:'Bravo ! Une équation de <i>d</i> est '+M(eqC(A1,B1,C1))+'.'};
+      if(abOk&&cOk)return{ok:true,msg:'Bravo ! Une équation de <i>d</i> est '+M(eqC(A1,B1,C1))+'.'+simpHint(A1,B1,C1)};
       if(!abOk)return{ok:false,msg:'Les nombres '+M('a')+' et '+M('b')+' ne conviennent pas. Rappel : '+M(vec('v')+'(−b ; a)')+' doit avoir les coordonnées de '+M(vec('u'))+' : la 1<sup>re</sup> coordonnée de '+M(vec('u'))+' est égale à '+M('−b')+', la 2<sup>e</sup> est égale à '+M('a')+'.'};
       return{ok:false,msg:'Tes nombres '+M('a')+' et '+M('b')+' conviennent ✔. Mais '+M('c')+' est faux : remplace '+M('x')+' et '+M('y')+' par les coordonnées de A dans '+M('ax + by + c = 0')+' et résous.'};
     },
-    solution:'<p>On veut '+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>L’équation est '+M(expr(a,b,0)+' + c = 0')+'. Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">'+fmt(val)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div><p>Équation : '+M(eqC(a,b,c))+'.</p>'
+    solution:'<p>On veut '+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>L’équation est '+M(expr(a,b,0)+' + c = 0')+'. Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">'+fmt(val)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div>'+simpEtape(a,b,c)+'<p>Équation : '+M(eqS(a,b,c))+'.</p>'
   };
 }
 function genTwoPts(){
@@ -795,20 +817,23 @@ function genTwoPts(){
       if([x,y,A1,B1,C1].some(isNaN))return{ok:false,msg:NEEDNUM};
       const vOk=eq0(x,rx)&&eq0(y,ry);
       const eOk=!(A1===0&&B1===0)&&onLine(A1,B1,C1,A)&&onLine(A1,B1,C1,B);
-      if(vOk&&eOk)return{ok:true,msg:'Bravo ! '+M(vec('AB')+coords(rx,ry))+' et une équation de (AB) est '+M(eqC(A1,B1,C1))+'.'};
+      if(vOk&&eOk)return{ok:true,msg:'Bravo ! '+M(vec('AB')+coords(rx,ry))+' et une équation de (AB) est '+M(eqC(A1,B1,C1))+'.'+simpHint(A1,B1,C1)};
       let m=vOk?'Les coordonnées de '+M(vec('AB'))+' sont justes ✔. ':'Les coordonnées de '+M(vec('AB'))+' sont fausses (arrivée − départ). ';
       m+=eOk?'Ton équation est juste ✔.':'Ton équation n’est pas celle de la droite (AB) : '+(vOk?'vérifie que A et B vérifient bien ton équation.':'corrige d’abord le vecteur '+M(vec('AB'))+', il sert de vecteur directeur.');
       return{ok:false,msg:m};
     },
-    solution:'<div class="lines m"><div>'+vec('AB')+' ( x<sub>B</sub> − x<sub>A</sub> ; y<sub>B</sub> − y<sub>A</sub> )</div><div>'+vec('AB')+' ( '+fmt(B.x)+' − '+par(A.x)+' ; '+fmt(B.y)+' − '+par(A.y)+' )</div><div>'+vec('AB')+' '+coordsS(rx,ry)+'</div></div><p>Donc '+M('−b = '+fmt(rx))+' et '+M('a = '+fmt(ry))+' : '+M('a = '+fmt(a))+', '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite (AB), donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p><p>Équation : '+M(eqC(a,b,c))+'. <i>(Vérifie avec B.)</i></p>'
+    solution:'<div class="lines m"><div>'+vec('AB')+' ( x<sub>B</sub> − x<sub>A</sub> ; y<sub>B</sub> − y<sub>A</sub> )</div><div>'+vec('AB')+' ( '+fmt(B.x)+' − '+par(A.x)+' ; '+fmt(B.y)+' − '+par(A.y)+' )</div><div>'+vec('AB')+' '+coordsS(rx,ry)+'</div></div><p>Donc '+M('−b = '+fmt(rx))+' et '+M('a = '+fmt(ry))+' : '+M('a = '+fmt(a))+', '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite (AB), donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p>'+simpEtape(a,b,c)+'<p>Équation : '+M(eqS(a,b,c))+'. <i>(Vérifie avec B.)</i></p>'
   };
 }
 function genMember(){
-  let a,b;do{a=ri(-4,4);b=ri(-4,4);}while(a===0||b===0);
-  const P={x:ri(-4,4),y:ri(-4,4)};
+  let a,b,P,c;
   const on=Math.random()<.5;
-  let c=-(a*P.x+b*P.y);
-  if(!on)c+=pick([-2,-1,1,2]);
+  do{
+    do{a=ri(-4,4);b=ri(-4,4);}while(a===0||b===0);
+    P={x:ri(-4,4),y:ri(-4,4)};
+    c=-(a*P.x+b*P.y);
+    if(!on)c+=pick([-2,-1,1,2]);
+  }while(gcd3(a,b,c)!==1);   /* A13 : équation donnée déjà simplifiée */
   const val=a*P.x+b*P.y+c;
   return{
     question:'<p>La droite <i>d</i> a pour équation '+M(eqC(a,b,c))+'. Le point '+M('M'+coords(P.x,P.y))+' appartient-il à <i>d</i> ?</p>',
@@ -835,9 +860,9 @@ function genFree(){
       const abOk=!(A1===0&&B1===0)&&eq0(A1*al+B1*be,0);
       if(!abOk)return{ok:false,msg:'La direction n’est pas la bonne : '+M(vec('v')+'(−b ; a)')+' doit être colinéaire à '+M(vec('u'))+'.'};
       if(!onLine(A1,B1,C1,A))return{ok:false,msg:'La direction est bonne ✔, mais A ne vérifie pas ton équation : revois le calcul de '+M('c')+'.'};
-      return{ok:true,msg:'Bravo ! '+M(eqC(A1,B1,C1))+' est bien une équation de <i>d</i>.'};
+      return{ok:true,msg:'Bravo ! '+M(eqC(A1,B1,C1))+' est bien une équation de <i>d</i>.'+simpHint(A1,B1,C1)};
     },
-    solution:'<p>'+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+' (car '+M(vec('v')+'(−b ; a) = '+vec('u'))+'). Puis le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p><p>Équation : '+M(eqC(a,b,c))+'.</p>'
+    solution:'<p>'+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+' (car '+M(vec('v')+'(−b ; a) = '+vec('u'))+'). Puis le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite : '+M(par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0')+', donc '+M('c = '+fmt(c))+'.</p>'+simpEtape(a,b,c)+'<p>Équation : '+M(eqS(a,b,c))+'.</p>'
   };
 }
 
@@ -856,9 +881,9 @@ function genSpecial(){
       if(A1===0&&B1===0)return{ok:false,msg:'Les nombres '+M('a')+' et '+M('b')+' ne peuvent pas être tous les deux nuls.'};
       if(!eq0(A1*al+B1*be,0))return{ok:false,msg:'La direction n’est pas la bonne : '+M(vec('v')+'(−b ; a)')+' doit être colinéaire à '+M(vec('u'))+'.'};
       if(!onLine(A1,B1,C1,A))return{ok:false,msg:'La direction est bonne ✔, mais A ne vérifie pas ton équation : revois le calcul de '+M('c')+'.'};
-      return{ok:true,msg:'Bravo ! C’est une droite '+(vert?'verticale':'horizontale')+' : '+(vert?M('x = '+fmt(A.x)):M('y = '+fmt(A.y)))+'.'};
+      return{ok:true,msg:'Bravo ! C’est une droite '+(vert?'verticale':'horizontale')+' : '+(vert?M('x = '+fmt(A.x)):M('y = '+fmt(A.y)))+'.'+simpHint(A1,B1,C1)};
     },
-    solution:'<p>'+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div><p>Équation : '+M(eqC(a,b,c))+'. Le vecteur directeur '+M(vec('u')+coords(al,be))+' est '+(vert?'vertical':'horizontal')+' : la droite est '+(vert?'<b>verticale</b>, d’équation '+M('x = '+fmt(A.x)):'<b>horizontale</b>, d’équation '+M('y = '+fmt(A.y)))+'.</p>'
+    solution:'<p>'+M('−b = '+fmt(al))+' et '+M('a = '+fmt(be))+', donc '+M('a = '+fmt(a))+' et '+M('b = '+fmt(b))+'.</p><p>Le point A appartient à la droite <i>d</i>, donc ses coordonnées vérifient l’équation de la droite :</p><div class="lines m"><div>'+par(a)+' × '+par(A.x)+' + '+par(b)+' × '+par(A.y)+' + c = 0</div><div class="cont">c = '+fmt(c)+'</div></div>'+simpEtape(a,b,c)+'<p>Équation : '+M(eqS(a,b,c))+'. Le vecteur directeur '+M(vec('u')+coords(al,be))+' est '+(vert?'vertical':'horizontal')+' : la droite est '+(vert?'<b>verticale</b>, d’équation '+M('x = '+fmt(A.x)):'<b>horizontale</b>, d’équation '+M('y = '+fmt(A.y)))+'.</p>'
   };
 }
 
