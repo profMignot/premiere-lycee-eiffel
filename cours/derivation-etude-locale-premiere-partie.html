@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dérivation : étude locale (première partie)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --bg:#f4f7f9; --surface:#ffffff; --fg:#12202c; --muted:#54677a; --line:#d6e0e8; --grid:#e6edf3;
+  --curve:#1d4f91; --secant:#c24a08; --tangent:#0f7a5a; --red:#c40000;
+  --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-math:"STIX Two Text",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1620; --surface:#15202c; --fg:#e8eff6; --muted:#9bb0c3; --line:#263646; --grid:#1f2d3b;
+    --curve:#7fb2f0; --secant:#ff9a5c; --tangent:#4fd1a1; --red:#ff6b6b; color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:16px;line-height:1.45}
+i{font-family:var(--font-math)}
+.nw{white-space:nowrap}
+.bigdef{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;height:100%;gap:.8em}
+.bigt{font-size:2.6em;font-weight:700;line-height:1.25}
+.bigt.small{font-size:1.7em;font-weight:600}
+.bigf{font-size:3.6em;font-family:var(--font-math)}
+.pg{position:relative;min-height:100vh;overflow-x:hidden}
+button{font:inherit;font-weight:500;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--curve);outline-offset:2px}
+
+/* ---------- fenêtres : déplaçables (barre de titre) et redimensionnables (coin bas-droit) ---------- */
+.win{position:absolute;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);resize:none;overflow:hidden;min-width:200px;min-height:120px;max-width:100vw;font-size:var(--fs,16px)}
+.win>.wbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:.35em .8em;cursor:move;touch-action:none;user-select:none;background:color-mix(in srgb,var(--fg) 9%,transparent);border-bottom:1px solid var(--line);font:600 1.5em/1.3 var(--font-ui);color:var(--fg)}
+.win>.wbar .hint{font-size:.55em;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0;opacity:.8}
+.win>.wbody{flex:1 1 auto;min-height:0;overflow:auto;padding:.6em .9em .9em}
+.win>.grip{position:absolute;right:0;bottom:0;width:22px;height:22px;cursor:nwse-resize;touch-action:none;z-index:5;background:linear-gradient(135deg,transparent 52%,var(--muted) 52%,var(--muted) 60%,transparent 60%,transparent 72%,var(--muted) 72%,var(--muted) 80%,transparent 80%);border-bottom-right-radius:12px;opacity:.8}
+.win.fig>.wbody{padding:0;overflow:hidden;display:flex}
+.win.fig svg{width:100%;height:100%;display:block;background:var(--surface)}
+
+.sel{display:flex;flex-wrap:wrap;align-items:center;gap:.4em .5em;margin:.3em 0}
+.sel .sl{color:var(--muted);font-size:.85em;margin-right:2px}
+.sel .b{padding:.2em .7em;border-radius:999px;font-size:.9em;font-family:var(--font-math)}
+.sel .b.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.ctl{margin:.4em 0 .6em}
+.act{padding:.45em .9em;border-radius:.6em;border:2px solid var(--fg);font-weight:600;font-size:.95em;margin:.2em .4em .2em 0}
+.act.alt{border-color:var(--secant);color:var(--secant)}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6em;align-items:center;margin:.3em 0}
+.row label{font-size:2.5em}
+.row .o{font-family:var(--font-math);font-size:2.9em;font-weight:600;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--secant);height:2em;margin:0}
+.txt{font-family:var(--font-math);font-size:1.1em;margin:.4em 0}
+.box{font-family:var(--font-math);font-size:1.1em;margin:.6em 0;padding:.5em .8em;border-left:6px solid var(--tangent);background:color-mix(in srgb,var(--tangent) 8%,transparent);border-radius:0 10px 10px 0}
+.box.red{border-left-color:var(--red);background:color-mix(in srgb,var(--red) 6%,transparent)}
+.box.sec{border-left-color:var(--secant);background:color-mix(in srgb,var(--secant) 8%,transparent)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .2em;text-align:center}
+.fr>span:first-child{padding:0 .3em .08em;border-bottom:1.5px solid currentColor}
+.fr>span:last-child{padding-top:.08em}
+.val{font-family:var(--font-ui);font-weight:700;font-size:1.4em;color:var(--secant)}
+.cstep{display:flex;align-items:center;gap:.8em;margin:.4em 0;padding:.4em .6em;border-radius:10px;background:color-mix(in srgb,var(--fg) 5%,transparent);animation:cin .35s ease}
+@keyframes cin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.clab{flex:0 0 10em;font:700 .78em "IBM Plex Sans",sans-serif;color:#fff;border-radius:999px;padding:.35em .8em;text-align:center}
+.c0{background:#1d5fb8}.c1{background:#c24a08}.c2{background:#6b3fa0}.c3{background:#0f7a5a}.c4{background:#c40000}.c5{background:#475569}
+.cexp{font:1.1em/1.55 "STIX Two Text",serif;min-width:0}
+.cexp b{color:var(--tangent)}
+@media (max-width:640px){.cstep{flex-direction:column;align-items:flex-start}.clab{flex:none}}
+table.tv{border-collapse:collapse;font-family:var(--font-math);margin:.3em 0}
+table.tv td{border:1.5px solid var(--fg);padding:.25em .9em;text-align:center;min-width:3.2em}
+svg text{font-family:var(--font-math);font-size:17px;fill:var(--fg);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg .it{font-style:italic}
+svg .tA{fill:var(--tangent);font-weight:600}
+svg .tM{fill:var(--secant);font-weight:600}
+svg .tn{font-size:14px;fill:var(--muted)}
+.grid{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--muted);stroke-width:1.6}
+.curve{fill:none;stroke:var(--curve);stroke-width:3.2}
+.tan{stroke:var(--tangent);stroke-width:3.2}
+.sec{stroke:var(--secant);stroke-width:3.2}
+.vA{stroke:var(--tangent);stroke-width:2;stroke-dasharray:6 3}
+.vM{stroke:var(--secant);stroke-width:2;stroke-dasharray:6 3}
+.harr{stroke:var(--fg);stroke-width:1.8}
+.harrh{fill:var(--fg)}
+.p2txt{font-family:var(--font-math);font-size:1.1em;line-height:1.3;margin:.5em 0;padding:.4em .8em;border-left:6px solid var(--tangent);background:color-mix(in srgb,var(--tangent) 8%,transparent);border-radius:0 10px 10px 0}
+.p2ans{margin:.6em 0;padding:.4em .8em;border-left:6px solid var(--red);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--red) 6%,transparent)}
+.p2ans p{margin:.3em 0;font-family:var(--font-math);font-size:1.1em;color:var(--red)}
+.hv{display:inline-block;min-width:2.4em;padding:0 .4em;border:2px dashed var(--red);border-radius:.35em;font-weight:700;text-align:center;line-height:1.3}
+.hv.on{border-color:transparent}
+.hv:empty::before{content:"…"}
+.p2btn{font:inherit;font-weight:600;font-size:.95em;padding:.35em 1em;border-radius:10px;border:2px solid var(--red);background:var(--surface);color:var(--red);margin:.3em .3em .3em 0}
+.p2btn.sec{border-color:var(--secant);color:var(--secant)}
+.cA{stroke:var(--tangent);stroke-width:2;fill:none;stroke-linecap:round}
+.cM{stroke:var(--secant);stroke-width:2;fill:none;stroke-linecap:round}
+.cP{stroke:var(--red);stroke-width:2;fill:none;stroke-linecap:round}
+.card .wbody h2{font-family:var(--font-math);font-size:2.1em;margin:.15em 0 .5em}
+.card .wbody .tg{font-size:.8em;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.card .wbody ul{font-family:var(--font-math);font-size:1.15em;line-height:1.5;padding-left:1.2em}
+.card .wbody li{margin:.35em 0}
+.p1btn{font:inherit;font-weight:600;font-size:1.05em;padding:.6em 1.2em;border-radius:12px;border:2px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer;margin-top:.8em}
+.pnav{position:fixed;right:14px;bottom:12px;z-index:9000;display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:999px;background:color-mix(in srgb,var(--surface) 90%,transparent);border:1px solid var(--line);box-shadow:0 4px 16px rgba(0,0,0,.15);color:var(--muted);font-size:.95rem}
+.pnav button{font-weight:600;padding:.35em .9em;border-radius:999px;border:1px solid var(--fg);background:var(--fg);color:var(--bg)}
+.pnav button:disabled{opacity:.3;cursor:default}
+svg .tk{font-size:13px}
+button,.grip,.wbar{-webkit-tap-highlight-color:transparent}
+
+/* ---------- téléphone : fenêtres empilées, hauteur automatique, texte plus grand ---------- */
+@media (max-width:860px){
+  .pg{display:flex;flex-direction:column;gap:12px;padding:10px 10px 96px;min-height:0!important}
+  .win{position:relative!important;left:auto!important;top:auto!important;width:100%!important;height:auto!important;min-width:0;min-height:0;max-width:100%;font-size:16px!important;overflow:visible}
+  .win>.wbar{cursor:default;border-radius:12px 12px 0 0}
+  .win>.wbar .hint,.win>.grip{display:none}
+  .win>.wbody{overflow:visible}
+  .win.fig{order:0} .win.ctlw{order:1} .win.twin,.win.card{order:2}
+  .win.fig>.wbody{display:block;overflow:hidden;border-radius:0 0 12px 12px}
+  .win.fig svg{height:auto;aspect-ratio:1/1}
+  svg text{font-size:23px}
+  svg .tn{font-size:19px}
+  svg .tk{font-size:18px}
+  .pnav{left:8px;right:8px;bottom:8px;justify-content:space-between}
+  .card .wbody h2{font-size:1.7em}
+}
+</style>
+</head>
+<body>
+
+<section class="pg" id="pg1">
+  <div class="win card" data-fs="46">
+    <div class="wbar"><span>Objectif</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
+    <div class="wbody">
+      <div class="tg">Séquence · Taux de variation et tangente</div>
+      <h2>Objectif</h2>
+      <ul>
+        <li>Calculer un <b>taux de variation</b> et l’interpréter comme le coefficient directeur d’une <b>sécante</b>.</li>
+        <li>Observer des <b>tangentes</b> à une courbe.</li>
+        <li>Savoir que le coefficient directeur d’une tangente est un nombre important : le <b>nombre dérivé</b>.</li>
+        <li>Lire graphiquement des nombres dérivés et des équations de tangentes.</li>
+        <li>À partir de l’équation d’une tangente : en déduire le nombre dérivé et tracer cette tangente.</li>
+      </ul>
+      <button type="button" class="p1btn" id="go1">Commencer →</button>
+    </div>
+  </div>
+</section>
+
+<section class="pg" id="pgT" hidden>
+  <div class="win card" data-fs="46">
+    <div class="wbar"><span>Définition</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
+    <div class="wbody bigdef">
+      <div class="bigt small">Le taux de variation de <i>f</i> entre <i>a</i> et <i>b</i> est</div>
+      <div class="bigf"><span class="fr"><span><i>f</i>(<i>b</i>) − <i>f</i>(<i>a</i>)</span><span><i>b</i> − <i>a</i></span></span></div>
+    </div>
+  </div>
+</section>
+
+<div id="pages"></div>
+
+<section class="pg" id="pgT3" hidden>
+  <div class="win card" data-fs="46">
+    <div class="wbar"><span>Exercices</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
+    <div class="wbody bigdef">
+      <div class="bigt" style="font-size:4em">Exercices</div>
+    </div>
+  </div>
+</section>
+
+<section class="pg" id="pgT2" hidden>
+  <div class="win card" data-fs="46">
+    <div class="wbar"><span>Nouvelle partie</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
+    <div class="wbody bigdef">
+      <div class="bigt">Notion de tangente</div>
+      <div class="bigt">et</div>
+      <div class="bigt">notion de nombre dérivé</div>
+    </div>
+  </div>
+</section>
+
+<section class="pg" id="pg13" hidden>
+  <div class="win card" data-fs="46">
+    <div class="wbar"><span>À retenir</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
+    <div class="wbody">
+      <div class="tg">Séquence · Taux de variation et tangente</div>
+      <h2>À retenir</h2>
+      <ul>
+        <li>Le <b>taux de variation</b> de <i>f</i> entre <i>a</i> et <i>b</i> (<i>a</i> ≠ <i>b</i>) est
+          <span class="fr"><span><i>f</i>(<i>b</i>) − <i>f</i>(<i>a</i>)</span><span><i>b</i> − <i>a</i></span></span>.
+          C’est aussi le <b>coefficient directeur de la sécante</b> (AM) :
+          <span class="fr"><span><i>y</i><sub>M</sub> − <i>y</i><sub>A</sub></span><span><i>x</i><sub>M</sub> − <i>x</i><sub>A</sub></span></span>, avec A(<i>a</i> ; <i>f</i>(<i>a</i>)) et M(<i>b</i> ; <i>f</i>(<i>b</i>)).</li>
+        <li>Avec M d’abscisse <i>a</i> + <i>h</i> : le taux de variation est
+          <span class="fr"><span><i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)</span><span><i>h</i></span></span> (<i>h</i> ≠ 0).</li>
+        <li>Le coefficient directeur de la tangente au point d’abscisse <i>a</i> s’appelle le <b>nombre dérivé</b> de <i>f</i> en <i>a</i>, noté <i>f</i>′(<i>a</i>).</li>
+        <li><b>Lire</b> <i>f</i>′(<i>a</i>) : on lit le coefficient directeur de la tangente. Une tangente <b>horizontale</b> a pour coefficient directeur 0 : <i>f</i>′(<i>a</i>) = 0.</li>
+        <li><b>Ne pas confondre</b> <i>f</i>(<i>a</i>) et <i>f</i>′(<i>a</i>) : <i>f</i>(<i>a</i>) est l’<b>ordonnée</b> du point A de la courbe ; <i>f</i>′(<i>a</i>) est le <b>coefficient directeur</b> de la tangente en A.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<nav class="pnav" aria-label="Pages">
+  <button type="button" id="pPrev">◀ Précédent</button>
+  <span id="pNum">1 / 16</span>
+  <button type="button" id="pNext">Suivant ▶</button>
+</nav>
+
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var M="−", NP=16, page=1;
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+function r3(x){return Math.round(x*1000)/1000}
+function r6(x){return Math.round(x*1e6)/1e6}
+function fm(x){x=r3(x); if(x===0) x=0; return String(x).replace(".",",").replace("-",M)}
+function fm6(x){x=r6(x); if(x===0) x=0; return String(x).replace(".",",").replace("-",M)}
+function par(v){return v<0?"("+fm(v)+")":fm(v)}
+function fr(n,d){return '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>'}
+function I(s){return "<i>"+s+"</i>"}
+function IS(s){return '<tspan class="it">'+s+'</tspan>'}
+function fp(a){return I("f")+"("+fm(a)+")"}
+function dp(a){return I("f")+"′("+fm(a)+")"}
+function tabV(m,p){
+  return '<table class="tv"><tr><td>'+I("x")+'</td><td>0</td><td>1</td></tr><tr><td>'+eqS(m,p)+'</td><td>'+fm(p)+'</td><td>'+fm(m+p)+'</td></tr></table>';
+}
+function eqS(m,p){
+  var s=I("y")+" = ", has=false;
+  if(m!==0){ var am=Math.abs(m); s+=(m<0?M:"")+(am===1?"":fm(am))+I("x"); has=true; }
+  if(p!==0||!has){ s+= has ? (p<0?" − ":" + ")+fm(Math.abs(p)) : fm(p); }
+  return '<span class="nw">'+s+'</span>';
+}
+var YM_YA=I("y")+"<sub>M</sub> − "+I("y")+"<sub>A</sub>", XM_XA=I("x")+"<sub>M</sub> − "+I("x")+"<sub>A</sub>";
+
+/* ---------- repère : x de -5 à 5, y de -4 à 6 ---------- */
+var W=560, U=48, OX=280, OY=330;
+function X(x){return OX+U*x}
+function Y(y){return OY-U*y}
+function T(s,x,y,cls,anc){return '<text class="'+(cls||"")+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" text-anchor="'+(anc||"middle")+'">'+s+'</text>'}
+function base(){
+  var g="", i;
+  for(i=-5;i<=5;i++) if(i) g+='<line class="grid" x1="'+X(i)+'" y1="0" x2="'+X(i)+'" y2="'+W+'"/>';
+  for(i=-4;i<=6;i++) if(i) g+='<line class="grid" x1="0" y1="'+Y(i)+'" x2="'+W+'" y2="'+Y(i)+'"/>';
+  g+='<line class="axis" x1="0" y1="'+Y(0)+'" x2="'+W+'" y2="'+Y(0)+'"/><line class="axis" x1="'+X(0)+'" y1="0" x2="'+X(0)+'" y2="'+W+'"/>';
+  for(i=-5;i<=5;i++) if(i) g+=T('<tspan class="tk">'+fm(i)+'</tspan>',X(i),Y(0)+17,"","middle");
+  for(i=-4;i<=6;i++) if(i) g+=T('<tspan class="tk">'+fm(i)+'</tspan>',X(0)-6,Y(i)+5,"","end");
+  g+=T("O",X(0)-7,Y(0)+17,"","end")+T(IS("x"),W-12,Y(0)-8,"","middle")+T(IS("y"),X(0)+12,16,"","middle");
+  return g;
+}
+function curve(f){
+  var d="", x, yy;
+  for(x=-5.2;x<=5.2;x+=0.05){ yy=Y(f(x)); if(yy<-300) yy=-300; if(yy>860) yy=860; d+=(d?"L":"M")+X(x).toFixed(1)+" "+yy.toFixed(1); }
+  return '<path class="curve" d="'+d+'"/>';
+}
+function ln(m,p,cls){ return '<line class="'+cls+'" x1="'+X(-5.6)+'" y1="'+Y(m*-5.6+p)+'" x2="'+X(5.6)+'" y2="'+Y(m*5.6+p)+'"/>'; }
+function cross(x,y,cls){var cx=X(x), cy=Y(y); return '<path class="'+cls+'" d="M'+(cx-7)+' '+(cy-7)+'L'+(cx+7)+' '+(cy+7)+'M'+(cx-7)+' '+(cy+7)+'L'+(cx+7)+' '+(cy-7)+'"/>';}
+function arrowPx(a,b,c,d){
+  var dx=c-a, dy=d-b, L=Math.hypot(dx,dy);
+  if(L<1) return "";
+  var ux=dx/L, uy=dy/L, hs=Math.min(10,L/2);
+  var p1=(c-hs*ux+4*uy).toFixed(1)+","+(d-hs*uy-4*ux).toFixed(1), p2=(c-hs*ux-4*uy).toFixed(1)+","+(d-hs*uy+4*ux).toFixed(1);
+  return '<line class="harr" x1="'+a.toFixed(1)+'" y1="'+b.toFixed(1)+'" x2="'+c.toFixed(1)+'" y2="'+d.toFixed(1)+'"/><polygon class="harrh" points="'+c.toFixed(1)+','+d.toFixed(1)+' '+p1+' '+p2+'"/>';
+}
+function arrow(x1,y1,x2,y2){ return arrowPx(X(x1),Y(y1),X(x2),Y(y2)); }
+function stepsHTML(rows,n){
+  var h="";
+  rows.forEach(function(r,i){ if(i<n) h+='<div class="cstep"><span class="clab '+r[0]+'">'+r[1]+'</span><span class="cexp">'+r[2]+'</span></div>'; });
+  return h;
+}
+function setBtn(n,k,len){ $("btn"+n).textContent=(k>=len)?"Recommencer ↺":"Étape suivante →"; }
+
+/* ---------- squelette des pages 2 à 12 : fenêtres figure + texte (+ curseur page 5) ---------- */
+var TIT={2:"Exemple 1 : un taux de variation",3:"Exemple 2 : un taux de variation",4:"Exemple 3 : un taux de variation",
+ 5:"La fonction carré : A d’abscisse 1 et M d’abscisse 1 + h",
+ 6:"Une tangente à une courbe (1)",7:"Une tangente à une courbe (2)",8:"Une tangente à une courbe (3)",9:"Une tangente à une courbe (4)",
+ 10:"Lire l’équation d’une tangente",11:"Tracer une tangente",12:"Entraînement"};
+var HINT='<span class="hint">déplacer ↔ · agrandir ⇲</span>';
+for(var n0=2;n0<=12;n0++){
+  var s=document.createElement("section"); s.className="pg"; s.id="pg"+n0; s.hidden=true;
+  s.innerHTML='<div class="win fig"><div class="wbar"><span>Figure</span>'+HINT+'</div><div class="wbody"><svg id="svg'+n0+'" viewBox="0 0 560 560" role="img" aria-label="Repère et courbe"></svg></div></div>'
+   +'<div class="win twin" data-fs="36"><div class="wbar"><span>'+TIT[n0]+'</span>'+HINT+'</div><div class="wbody"><div class="sel" id="sel'+n0+'"></div>'+(n0===5?'':'<div class="ctl" id="ctl'+n0+'"></div>')+'<div id="out'+n0+'"></div></div></div>'
+   +(n0===5?'<div class="win ctlw" data-fs="30"><div class="wbar"><span>Curseur h</span>'+HINT+'</div><div class="wbody"><div class="ctl" id="ctl5"></div></div></div>':'');
+  $("pages").appendChild(s);
+}
+
+/* ================= PAGES 2 à 4 : trois taux de variation ================= */
+var EX=[
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 2"+I("x"), f:function(x){return x*x-2*x}, a:1, b:3,
+  calc:function(x){return par(x)+"² − 2 × "+par(x)+" = "+fm(x*x-2*x)}},
+ {lab:I("f")+"("+I("x")+") = "+M+I("x")+"² + 4", f:function(x){return -x*x+4}, a:-1, b:2,
+  calc:function(x){return M+par(x)+"² + 4 = "+fm(-x*x+4)}},
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 4"+I("x")+" + 3", f:function(x){return x*x-4*x+3}, a:1, b:4,
+  calc:function(x){return par(x)+"² − 4 × "+par(x)+" + 3 = "+fm(x*x-4*x+3)}}
+];
+var stEx=[{n:0},{n:0},{n:0}];
+function rowsEx(i){
+  var e=EX[i], a=e.a, b=e.b, fa=e.f(a), fb=e.f(b), dx=b-a, dy=fb-fa, m=dy/dx;
+  return [
+   ["c0","Je calcule les ordonnées", fp(a)+" = "+e.calc(a)+"<br>"+fp(b)+" = "+e.calc(b)],
+   ["c1","Je calcule le taux de variation", fr(fp(b)+" − "+fp(a),fm(b)+" − "+par(a))+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b>"],
+   ["c2","Coefficient directeur de (AM)","Le taux de variation est aussi le <b>coefficient directeur de la sécante</b> (AM) :<br>"
+     +fr(YM_YA,XM_XA)+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b> = le taux de variation"],
+   ["c5","Vérification graphique","Avec les flèches : de A à M, on avance de <b>"+fm(dx)+"</b> (flèche horizontale) et on "+(dy>=0?"monte":"descend")+" de <b>"+fm(Math.abs(dy))+"</b> (flèche verticale) :<br>"+fr(fm(dy),fm(dx))+" = "+fm(m)+" ✓"],
+   ["c4","Je conclus","Le taux de variation de "+I("f")+" entre "+fm(a)+" et "+fm(b)+" est <b>"+fm(m)+"</b>.<br>C’est le <b>coefficient directeur de la sécante</b> (AM)."]
+  ];
+}
+function drawEx(i){
+  var n=i+2, e=EX[i], st=stEx[i], a=e.a, b=e.b, fa=e.f(a), fb=e.f(b), m=(fb-fa)/(b-a);
+  var g=base()+curve(e.f)+ln(m,fa-m*a,"sec");
+  if(st.n>=4) g+=arrow(a,fa,b,fa)+arrow(b,fa,b,fb)+T(fm(b-a),X((a+b)/2),Y(fa)+(fb>=fa?19:-8),"tn","middle")+T(fm(fb-fa),X(b)+10,Y((fa+fb)/2)+5,"tn","start");
+  g+=cross(a,fa,"cA")+cross(b,fb,"cM")
+    +T("A",X(a)-10,Y(fa)-12,"tA","end")+T("M",X(b)+10,Y(fb)-12,"tM","start");
+  $("svg"+n).innerHTML=g;
+  var rows=rowsEx(i);
+  setBtn(n,st.n,rows.length);
+  $("out"+n).innerHTML='<div class="p2txt">Soit '+I("f")+' la fonction définie par '+e.lab+'.<br>Le point A de la courbe a pour abscisse '+fm(a)+', le point M a pour abscisse '+fm(b)+'.<br>Calculer le taux de variation de '+I("f")+' entre '+fm(a)+' et '+fm(b)+'.</div>'+stepsHTML(rows,st.n);
+}
+[0,1,2].forEach(function(i){
+  $("ctl"+(i+2)).innerHTML='<button type="button" class="act" id="btn'+(i+2)+'">Étape suivante →</button>';
+  $("btn"+(i+2)).onclick=function(){ stEx[i].n=(stEx[i].n>=rowsEx(i).length)?0:stEx[i].n+1; render(); };
+});
+
+/* ================= PAGE 5 : la fonction carré, M d'abscisse 1 + h ================= */
+var HV=[-3,-2,-1.5,-1,-0.5,-0.2,-0.1,-0.05,-0.01,-0.001,0,0.001,0.01,0.05,0.1,0.2,0.5,1,1.5];
+var st5={k:HV.indexOf(1),chk:false};
+$("ctl5").innerHTML='<div class="row"><label for="s5">'+I("h")+'</label><input type="range" id="s5" min="0" max="'+(HV.length-1)+'" step="1" value="'+st5.k+'"><span class="o" id="o5"></span></div><button type="button" class="p2btn sec" id="h0">Mettre h à 0</button>';
+$("h0").onclick=function(){ st5.k=HV.indexOf(0); $("s5").value=st5.k; render(); };
+$("s5").oninput=function(){ st5.k=+this.value; render(); };
+function draw5(){
+  var h=HV[st5.k], xm=1+h, fb=xm*xm, zero=(h===0), g=base()+curve(function(x){return x*x});
+  var yAx=Y(0), endV=yAx+62, rowArr=yAx+48, rowLab=yAx+84;
+  var x1=X(1), x2=X(xm), yA=Y(1), yM=Y(fb), mid=(x1+x2)/2, lx=X(0)-24, m=2+h;
+  if(!zero) g+=ln(m,1-m,"sec");
+  g+='<line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+x1+'" y2="'+endV+'"/><line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+X(0)+'" y2="'+yA+'"/>';
+  if(!zero) g+='<line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+x2+'" y2="'+endV+'"/><line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+X(0)+'" y2="'+yM+'"/>';
+  if(Math.abs(x2-x1)>=5) g+=arrowPx(x1,rowArr,x2,rowArr)+T(IS("h"),mid,rowArr-8,"","middle");
+  g+=T("1",x1,rowLab,"tA","middle");
+  if(!zero&&Math.abs(x2-x1)>=44) g+=T("1 + "+IS("h"),x2,rowLab,"tM","middle");
+  var yFa=yA-5, yFm=yM-5;
+  if(!zero&&Math.abs(yA-yM)<18){ if(yM<yA) yFa=yA+16; else yFm=yM+16; }
+  g+=T(IS("f")+"(1)",lx,yFa,"tA","end");
+  if(!zero) g+=T(IS("f")+"(1 + "+IS("h")+")",lx,yFm,"tM","end");
+  if(st5.chk&&!zero){
+    g+=arrow(1,1,xm,1)+arrow(xm,1,xm,fb);
+    g+=T(fm6(h),(x1+x2)/2+(h>0?12:-12),yA-8,"tn","middle")+T(fm6(fb-1),x2+10,(yA+yM)/2+5,"tn","start");
+  }
+  g+=cross(1,1,"cA")+T("A",x1+10,yA+20,"tA","start");
+  if(!zero) g+=cross(xm,fb,"cM")+T("M",x2-10,yM-12,"tM","end");
+  $("svg5").innerHTML=g;
+  $("o5").innerHTML=I("h")+" = "+fm6(h);
+  var o='<div class="p2txt">Soit '+I("f")+' la fonction définie sur ℝ par '+I("f")+'('+I("x")+') = '+I("x")+'².<br>Le point A a pour abscisse 1 et le point M a pour abscisse 1 + '+I("h")+' (avec '+I("h")+' ≠ 0). Déplace le curseur '+I("h")+'.</div>';
+  if(zero){
+    o+='<div class="box sec">Pour '+I("h")+' = 0, M est confondu avec A : il n’y a plus de sécante (AM), et on ne peut pas diviser par 0.</div>';
+  } else {
+    o+='<div class="box sec">Taux de variation de '+I("f")+' entre 1 et 1 + '+I("h")+' :<br>'
+      +fr(I("f")+"(1 + "+I("h")+") − "+I("f")+"(1)",I("h"))+" = "+fr(I("f")+"("+fm6(xm)+") − "+I("f")+"(1)",fm6(h))+" = "+fr(fm6(fb)+" − 1",fm6(h))+' = <span class="val">'+fm6(m)+'</span></div>';
+  }
+  $("out5").innerHTML=o;
+}
+$("out5").onclick=function(e){ if(e.target.id==="chk5"){ st5.chk=!st5.chk; render(); } };
+
+/* ================= PAGES 6 à 9 : tangentes, une page par courbe ================= */
+var TG=[
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"²", f:function(x){return x*x}, d:function(x){return 2*x}, a:1},
+ {lab:I("f")+"("+I("x")+") = "+M+fr(I("x")+"²","2")+" + 3", f:function(x){return -x*x/2+3}, d:function(x){return -x}, a:2},
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 4"+I("x")+" + 3", f:function(x){return x*x-4*x+3}, d:function(x){return 2*x-4}, a:2},
+ {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"³","4")+" "+M+" "+I("x")+"² "+M+" "+I("x")+" + 2", f:function(x){return x*x*x/4-x*x-x+2}, d:function(x){return 3*x*x/4-2*x-1}, a:0, m2:4}
+];
+var stTg=[{n:0},{n:0},{n:0},{n:0}];
+function tgv(i){var t=TG[i], a=t.a, fa=t.f(a), m=t.d(a); return {t:t,a:a,fa:fa,m:m,p:fa-m*a,xb:a+1,yb:fa+m};}
+function rowsTg(i){
+  var v=tgv(i), a=v.a;
+  if(v.m===0) return [
+   ["c0","Je lis le coefficient directeur","La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
+   ["c4","Je conclus","C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = 0</b>."]
+  ];
+  return [
+   ["c0","Je lis deux points de la tangente","A("+fm(a)+" ; "+fm(v.fa)+") et B("+fm(v.xb)+" ; "+fm(v.yb)+")"],
+   ["c1","Je lis le coefficient directeur","Avec les flèches : de A à B, on avance de <b>1</b> et on "+(v.m>0?"monte de <b>"+fm(v.m)+"</b>":v.m<0?"descend de <b>"+fm(Math.abs(v.m))+"</b>":"ne monte pas (<b>0</b>)")+" :<br>"+fr(fm(v.m),"1")+" = <b>"+fm(v.m)+"</b>"],
+   ["c4","Je conclus","Le coefficient directeur de la tangente à la courbe au point d’abscisse "+fm(a)+" est <b>"+fm(v.m)+"</b>.<br>C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = "+fm(v.m)+"</b>."]
+  ];
+}
+function drawTg(i){
+  var n=i+6, v=tgv(i), a=v.a, st=stTg[i];
+  var g=base()+curve(v.t.f)+ln(v.m,v.p,"tan")+cross(a,v.fa,"cA")+T("A",X(a)-10,Y(v.fa)-12,"tA","end");
+  if(v.t.m2!==undefined) g+=cross(v.t.m2,v.t.f(v.t.m2),"cM")+T("M",X(v.t.m2)+10,Y(v.t.f(v.t.m2))-12,"tM","start");
+  if(v.m!==0&&st.n>=1) g+=cross(v.xb,v.yb,"cM")+T("B",X(v.xb)+10,Y(v.yb)+(v.m<0?22:-12),"tM","start");
+  if(v.m!==0&&st.n>=2){
+    g+=arrow(a,v.fa,v.xb,v.fa)+(v.m!==0?arrow(v.xb,v.fa,v.xb,v.yb):"")
+      +T("1",X(a+0.5),Y(v.fa)+(v.m>=0?19:-8),"tn","middle")+(v.m!==0?T(fm(v.m),X(v.xb)+10,Y(v.fa+v.m/2)+5,"tn","start"):"");
+  }
+  $("svg"+n).innerHTML=g;
+  var rows=rowsTg(i);
+  setBtn(n,st.n,rows.length);
+  $("out"+n).innerHTML='<p class="txt">Courbe de '+v.t.lab+'.</p>'
+    +'<div class="p2txt">La droite verte est la <b>tangente</b> à la courbe au point A d’abscisse '+fm(a)+'. On détermine son coefficient directeur.</div>'
+    +(v.t.m2!==undefined?'<div class="p2txt">Cette droite recoupe la courbe en un point M. En A, elle est <b>tangente</b> à la courbe ; en M, elle est <b>sécante</b> sans être tangente.<br><b>Une tangente est une sécante particulière.</b></div>':'')
+    +stepsHTML(rows,st.n);
+}
+[0,1,2,3].forEach(function(i){
+  $("ctl"+(i+6)).innerHTML='<button type="button" class="act" id="btn'+(i+6)+'">Étape suivante →</button>';
+  $("btn"+(i+6)).onclick=function(){ stTg[i].n=(stTg[i].n>=rowsTg(i).length)?0:stTg[i].n+1; render(); };
+});
+
+/* ================= pages 10 à 12 : lire / tracer ================= */
+var CU=[
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"²", f:function(x){return x*x}, d:function(x){return 2*x}, as:[-1,0,1]},
+ {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"²","2"), f:function(x){return x*x/2}, d:function(x){return x}, as:[-2,0,2]},
+ {lab:I("f")+"("+I("x")+") = "+M+fr(I("x")+"²","2")+" + 3", f:function(x){return -x*x/2+3}, d:function(x){return -x}, as:[-2,0,2]},
+ {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"³","4"), f:function(x){return x*x*x/4}, d:function(x){return 3*x*x/4}, as:[-2,0,2]}
+];
+function cs(ci,ai){var c=CU[ci], a=c.as[ai], fa=c.f(a), m=c.d(a); return {c:c,a:a,fa:fa,m:m,p:fa-m*a};}
+var st10={ci:0,ai:2,n:0,rev:false}, st11={ci:0,ai:2,n:0}, st12={mode:"lire",ci:0,ai:2,rev:false};
+
+function selUI(id,st,withA){
+  var h='<span class="sl">Courbe :</span>';
+  CU.forEach(function(c,i){ h+='<button type="button" class="b'+(st.ci===i?" on":"")+'" data-c="'+i+'">'+c.lab+'</button>'; });
+  if(withA){
+    h+='<br><span class="sl">Point :</span>';
+    CU[st.ci].as.forEach(function(a,i){ h+='<button type="button" class="b'+(st.ai===i?" on":"")+'" data-a="'+i+'">'+I("a")+' = '+fm(a)+'</button>'; });
+  }
+  var el=$(id); el.innerHTML=h;
+  el.onclick=function(e){
+    var b=e.target.closest("button"); if(!b) return;
+    if(b.hasAttribute("data-c")){ st.ci=+b.getAttribute("data-c"); if(withA) st.ai=2; }
+    else st.ai=+b.getAttribute("data-a");
+    if("n" in st) st.n=0;
+    if("rev" in st) st.rev=false;
+    selUI(id,st,withA); render();
+  };
+}
+
+/* ---- page 10 : lire l'équation ---- */
+$("ctl10").innerHTML='<button type="button" class="act" id="btn10">Voir la méthode →</button>';
+function rows10(){
+  var k=cs(st10.ci,st10.ai), m=k.m, p=k.p;
+  return [
+   ["c1","Je lis le coefficient directeur", m!==0
+      ? "Avec les flèches : à partir de A, on avance de <b>1</b> et on "+(m>0?"monte":"descend")+" de <b>"+fm(Math.abs(m))+"</b> :<br>"+I("a")+" = "+fr(fm(m),"1")+" = <b>"+fm(m)+"</b>"
+      : "La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
+   ["c4","J’en déduis le nombre dérivé","Le coefficient directeur de la tangente est le nombre dérivé : <b>"+dp(k.a)+" = "+fm(m)+"</b>."],
+   ["c0","Je lis l’ordonnée à l’origine","La tangente coupe l’axe des ordonnées en (0 ; "+fm(p)+") :<br>l’ordonnée à l’origine est <b>"+I("b")+" = "+fm(p)+"</b>."],
+   ["c2","J’écris l’équation","La tangente a pour équation <b>"+eqS(m,p)+"</b>."]
+  ];
+}
+function draw10(){
+  var k=cs(st10.ci,st10.ai), n=st10.n, a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f)+ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+  if(n>=1){
+    g+=arrow(a,k.fa,a+1,k.fa)+T("1",X(a+0.5),Y(k.fa)+(m>=0?19:-8),"tn","middle");
+    if(m!==0) g+=arrow(a+1,k.fa,a+1,k.fa+m)+cross(a+1,k.fa+m,"cM")+T(fm(m),X(a+1)+10,Y(k.fa+m/2)+5,"tn","start");
+  }
+  if(n>=3) g+=cross(0,p,"cP");
+  $("svg10").innerHTML=g;
+  var rows=rows10(), rv=st10.rev;
+  $("btn10").textContent=(n===0)?"Voir la méthode →":(n>=rows.length)?"Masquer la méthode ↺":"Étape suivante →";
+  $("out10").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
+    +'<div class="p2txt">La tangente est tracée au point A d’abscisse '+fm(a)+'. On lit graphiquement son coefficient directeur, on en déduit '+dp(a)+', puis on lit l’ordonnée à l’origine pour écrire l’équation de la tangente.</div>'
+    +'<div class="p2ans"><p>Le coefficient directeur de la tangente est <span class="hv'+(rv?' on':'')+'">'+(rv?fm(m):'')+'</span>.</p>'
+    +'<p>Donc le nombre dérivé : '+dp(a)+' = <span class="hv'+(rv?' on':'')+'">'+(rv?fm(m):'')+'</span></p>'
+    +'<p>L’ordonnée à l’origine est <span class="hv'+(rv?' on':'')+'">'+(rv?fm(p):'')+'</span>.</p>'
+    +'<p>La tangente a pour équation <span class="hv'+(rv?' on':'')+'">'+(rv?eqS(m,p):'')+'</span>.</p>'
+    +'<button type="button" class="p2btn" id="rv10">'+(rv?'Masquer les valeurs':'Afficher les valeurs')+'</button></div>'
+    +stepsHTML(rows,n);
+}
+$("btn10").onclick=function(){ st10.n=(st10.n>=rows10().length)?0:st10.n+1; render(); };
+$("out10").onclick=function(e){ if(e.target.id==="rv10"){ st10.rev=!st10.rev; render(); } };
+
+/* ---- page 11 : tracer une tangente ---- */
+$("ctl11").innerHTML='<button type="button" class="act" id="btn11">Étape suivante →</button>';
+function rows11(){
+  var k=cs(st11.ci,st11.ai), a=k.a, m=k.m, p=k.p;
+  var hz=(m===0), L=[
+   ["c4","Je lis le nombre dérivé","L’équation est de la forme "+'<span class="nw">'+I("y")+" = "+I("a")+I("x")+" + "+I("b")+'</span>'+" : le coefficient directeur de la tangente est "+I("a")+" = "+fm(m)+", donc <b>"+dp(a)+" = "+fm(m)+"</b>."],
+   ["c0","Je calcule deux points",tabV(m,p)
+      +"Pour "+I("x")+" = 1 : "+I("y")+" = "+par(m)+" × 1 + "+par(p)+" = "+fm(m+p)],
+   ["c1","Je trace la droite","Je place les points (0 ; "+fm(p)+") et (1 ; "+fm(m+p)+"), puis je trace la droite : c’est la tangente."]
+  ];
+  if(hz) L=[L[0],["c1","Je trace la droite","La tangente est <b>horizontale</b> : elle est parallèle à l’axe des abscisses. Inutile de calculer des points, je la trace directement à la hauteur "+I("y")+" = "+fm(p)+" : c’est la tangente."]];
+  return L;
+}
+function draw11(){
+  var k=cs(st11.ci,st11.ai), n=st11.n, a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f);
+  var hz=(m===0), nl=hz?2:3;
+  if(!hz&&n>=2) g+=cross(0,p,"cP")+cross(1,m+p,"cP");
+  if(n>=nl) g+=ln(m,p,"tan");
+  if(n>=nl) g+=cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+  $("svg11").innerHTML=g;
+  var rows=rows11();
+  setBtn(11,n,rows.length);
+  $("out11").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente à la courbe au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,p)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>'+stepsHTML(rows,n);
+}
+$("btn11").onclick=function(){ st11.n=(st11.n>=rows11().length)?0:st11.n+1; render(); };
+
+/* ---- page 12 : entraînement ---- */
+$("ctl12").innerHTML='<div class="sel" id="md12"></div><button type="button" class="act" id="new12">Nouvel exemple</button><button type="button" class="act alt" id="rev12">Afficher la correction</button>';
+function md12UI(){
+  var el=$("md12");
+  el.innerHTML='<span class="sl">Exercice :</span><button type="button" class="b'+(st12.mode==="lire"?" on":"")+'" data-m="lire">Lire sur le graphique</button><button type="button" class="b'+(st12.mode==="tracer"?" on":"")+'" data-m="tracer">Tracer à partir de l’équation</button>';
+  el.onclick=function(e){ var b=e.target.closest("button"); if(!b) return; st12.mode=b.getAttribute("data-m"); st12.rev=false; md12UI(); render(); };
+}
+$("new12").onclick=function(){
+  var ci=st12.ci, ai=st12.ai, t=0;
+  while(t<20 && ci===st12.ci && ai===st12.ai){ ci=Math.floor(Math.random()*4); ai=Math.floor(Math.random()*3); t++; }
+  st12.ci=ci; st12.ai=ai; st12.rev=false; render();
+};
+$("rev12").onclick=function(){ st12.rev=!st12.rev; render(); };
+function draw12(){
+  var k=cs(st12.ci,st12.ai), a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f), o="";
+  if(st12.mode==="lire"){
+    g+=ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+    o='<p class="txt">Courbe de '+k.c.lab+'.<br>La tangente est tracée au point A d’abscisse '+fm(a)+'.<br><b>Lis '+fp(a)+', '+dp(a)+' et l’équation de la tangente.</b></p>';
+    if(st12.rev) o+='<div class="box">'+fp(a)+' = '+fm(k.fa)+' : c’est l’<b>ordonnée du point A</b> (on la lit sur l’axe des ordonnées).<br>'+dp(a)+' = '+fm(m)+' : c’est le <b>coefficient directeur de la tangente</b> en A.<br><b>Attention : ne pas confondre '+I("f")+'('+I("a")+') et '+I("f")+'′('+I("a")+').</b><br>Équation de la tangente : '+eqS(m,p)+'</div>';
+  } else {
+    o='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,p)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>';
+    if(st12.rev){
+      g+=(m===0?"":cross(0,p,"cP")+cross(1,m+p,"cP"))+ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+      o+='<div class="box">L’équation est de la forme '+'<span class="nw">'+I("y")+' = '+I("a")+I("x")+' + '+I("b")+'</span>'+' : le coefficient directeur de la tangente est '+I("a")+' = '+fm(m)+'.<br>Or '+dp(a)+' est le coefficient directeur de la tangente en A, donc <b>'+dp(a)+' = '+fm(m)+'</b>.<br><br>'+(m===0?'Comme la droite est <b>horizontale</b>, parallèle à l’axe des abscisses, on la trace directement à la hauteur '+I("y")+' = '+fm(p)+'.':'Pour tracer la droite, je fais un tableau de valeurs :<br>'+tabV(m,p)+'Je place les points (0 ; '+fm(p)+') et (1 ; '+fm(m+p)+') puis je trace la droite.')+'</div>';
+    }
+  }
+  $("svg12").innerHTML=g;
+  $("rev12").textContent=st12.rev?"Masquer la correction":"Afficher la correction";
+  $("out12").innerHTML=o;
+}
+
+/* ================= fenêtres : déplacer, redimensionner, texte proportionnel ================= */
+function fitPage(sec){
+  var wins=sec.querySelectorAll(".win"), bot=0, i, top=sec.getBoundingClientRect().top;
+  for(i=0;i<wins.length;i++) bot=Math.max(bot,wins[i].offsetTop+wins[i].offsetHeight);
+  sec.style.minHeight=Math.max(innerHeight,bot+90)+"px";
+}
+function initWin(w){
+  var bar=w.querySelector(".wbar"), d=null, base=parseFloat(w.getAttribute("data-fs"))||0;
+  bar.addEventListener("pointerdown",function(e){
+    var r=w.getBoundingClientRect(), pr=w.parentNode.getBoundingClientRect();
+    d={dx:e.clientX-r.left,dy:e.clientY-r.top,px:pr.left,py:pr.top};
+    try{ bar.setPointerCapture(e.pointerId); }catch(err){}
+    w.style.zIndex=String(++initWin.z);
+  });
+  bar.addEventListener("pointermove",function(e){
+    if(!d) return;
+    w.style.left=clamp(e.clientX-d.dx-d.px,-w.offsetWidth+90,innerWidth-90)+"px";
+    w.style.top=Math.max(0,e.clientY-d.dy-d.py)+"px";
+  });
+  function end(){ if(d){ d=null; fitPage(w.parentNode); } }
+  bar.addEventListener("pointerup",end); bar.addEventListener("pointercancel",end);
+  var grip=document.createElement("div"), rz=null; grip.className="grip"; grip.title="Redimensionner"; w.appendChild(grip);
+  grip.addEventListener("pointerdown",function(e){
+    rz={x:e.clientX,y:e.clientY,w:w.offsetWidth,h:w.offsetHeight};
+    try{ grip.setPointerCapture(e.pointerId); }catch(err){}
+    w.style.zIndex=String(++initWin.z); e.preventDefault();
+  });
+  grip.addEventListener("pointermove",function(e){
+    if(!rz) return;
+    w.style.width=clamp(rz.w+e.clientX-rz.x,200,innerWidth-8)+"px";
+    w.style.height=Math.max(120,rz.h+e.clientY-rz.y)+"px";
+  });
+  function endRz(){ rz=null; }
+  grip.addEventListener("pointerup",endRz); grip.addEventListener("pointercancel",endRz);
+  if(window.ResizeObserver){
+    new ResizeObserver(function(){
+      if(base) w.style.setProperty("--fs",clamp(w.offsetWidth/base,6,200)+"px");
+      if(!w.parentNode.hidden) fitPage(w.parentNode);
+    }).observe(w);
+  }
+}
+initWin.z=10;
+function layoutPage(sec){
+  var wins=sec.querySelectorAll(".win"), vw=innerWidth, vh=innerHeight, f, t, c, fw, tl, tw, fh;
+  if(wins.length===1){
+    var ww=Math.min(920,vw-32), w=wins[0];
+    w.style.width=ww+"px"; w.style.left=Math.max(16,(vw-ww)/2)+"px"; w.style.top="30px"; w.style.height=Math.min(vh-130,640)+"px";
+  } else {
+    f=wins[0]; t=wins[1]; c=wins[2];
+    if(vw>=860){
+      fw=Math.min(Math.round(vw*0.45),620); fh=fw+30; tl=16+fw+16; tw=Math.min(vw-tl-16,780);
+      f.style.left="16px"; f.style.top="14px"; f.style.width=fw+"px"; f.style.height=fh+"px";
+      t.style.left=tl+"px"; t.style.top="14px"; t.style.width=tw+"px"; t.style.height=Math.max(fh,Math.min(vh-100,720))+"px";
+      if(c){ var cw=Math.min(360,fw-24); c.style.width=cw+"px"; c.style.height="190px"; c.style.left="28px"; c.style.top=(14+fh-210)+"px"; }
+    } else {
+      fw=vw-32; fh=fw+30;
+      f.style.left="16px"; f.style.top="14px"; f.style.width=fw+"px"; f.style.height=fh+"px";
+      t.style.left="16px"; t.style.top=(14+fh+16)+"px"; t.style.width=fw+"px"; t.style.height="520px";
+      if(c){ c.style.width=Math.min(340,fw-24)+"px"; c.style.height="190px"; c.style.left="24px"; c.style.top=(14+fh-210)+"px"; }
+    }
+  }
+  sec.setAttribute("data-laid","1");
+  fitPage(sec);
+}
+Array.prototype.forEach.call(document.querySelectorAll(".win"),initWin);
+
+/* ================= navigation ================= */
+function mp(i){ return i<=1?1:(i===2?"T":(i<=6?i-1:(i===7?"T2":(i<=11?i-2:(i===12?"T3":i-3))))); }
+function ip(){ return mp(page); }
+function render(){
+  var page=ip();
+  if(page>=2&&page<=4) drawEx(page-2); else if(page===5) draw5(); else if(page>=6&&page<=9) drawTg(page-6);
+  else if(page===10) draw10(); else if(page===11) draw11(); else if(page===12) draw12();
+}
+function goPage(n){
+  page=clamp(n,1,NP);
+  for(var i=1;i<=NP;i++) $("pg"+mp(i)).hidden=(i!==page);
+  var sec=$("pg"+ip());
+  if(!sec.getAttribute("data-laid")) layoutPage(sec); else fitPage(sec);
+  $("pNum").textContent=page+" / "+NP;
+  $("pPrev").disabled=(page===1); $("pNext").disabled=(page===NP);
+  render(); window.scrollTo(0,0);
+}
+selUI("sel10",st10,true); selUI("sel11",st11,true); md12UI();
+$("sel12").hidden=true;
+$("go1").onclick=function(){ goPage(2); };
+$("pPrev").onclick=function(){ goPage(page-1); };
+$("pNext").onclick=function(){ goPage(page+1); };
+document.addEventListener("keydown",function(e){
+  if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.key==="ArrowRight"||e.key==="PageDown") goPage(page+1);
+  if(e.key==="ArrowLeft"||e.key==="PageUp") goPage(page-1);
+});
+goPage(1);
+})();
+</script>
+</body>
+</html>
