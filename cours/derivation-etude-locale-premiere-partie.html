@@ -197,14 +197,14 @@ button,.grip,.wbar{-webkit-tap-highlight-color:transparent}
 
 <nav class="pnav" aria-label="Pages">
   <button type="button" id="pPrev">◀ Précédent</button>
-  <span id="pNum">1 / 16</span>
+  <span id="pNum">1 / 17</span>
   <button type="button" id="pNext">Suivant ▶</button>
 </nav>
 
 <script>
 (function(){
 var $=function(id){return document.getElementById(id)};
-var M="−", NP=16, page=1;
+var M="−", NP=17, page=1;
 function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
 function r3(x){return Math.round(x*1000)/1000}
 function r6(x){return Math.round(x*1e6)/1e6}
@@ -268,15 +268,15 @@ function setBtn(n,k,len){ $("btn"+n).textContent=(k>=len)?"Recommencer ↺":"Ét
 var TIT={2:"Exemple 1 : un taux de variation",3:"Exemple 2 : un taux de variation",4:"Exemple 3 : un taux de variation",
  5:"La fonction carré : A d’abscisse 1 et M d’abscisse 1 + h",
  6:"Une tangente à une courbe (1)",7:"Une tangente à une courbe (2)",8:"Une tangente à une courbe (3)",9:"Une tangente à une courbe (4)",
- 10:"Lire l’équation d’une tangente",11:"Tracer une tangente",12:"Entraînement"};
+ 10:"Lire l’équation d’une tangente",11:"Tracer une tangente",12:"Entraînement",A:"Lire f(a) et f′(a)"};
 var HINT='<span class="hint">déplacer ↔ · agrandir ⇲</span>';
-for(var n0=2;n0<=12;n0++){
+[2,3,4,5,6,7,8,9,10,11,"A",12].forEach(function(n0){
   var s=document.createElement("section"); s.className="pg"; s.id="pg"+n0; s.hidden=true;
   s.innerHTML='<div class="win fig"><div class="wbar"><span>Figure</span>'+HINT+'</div><div class="wbody"><svg id="svg'+n0+'" viewBox="0 0 560 560" role="img" aria-label="Repère et courbe"></svg></div></div>'
    +'<div class="win twin" data-fs="36"><div class="wbar"><span>'+TIT[n0]+'</span>'+HINT+'</div><div class="wbody"><div class="sel" id="sel'+n0+'"></div>'+(n0===5?'':'<div class="ctl" id="ctl'+n0+'"></div>')+'<div id="out'+n0+'"></div></div></div>'
    +(n0===5?'<div class="win ctlw" data-fs="30"><div class="wbar"><span>Curseur h</span>'+HINT+'</div><div class="wbody"><div class="ctl" id="ctl5"></div></div></div>':'');
   $("pages").appendChild(s);
-}
+});
 
 /* ================= PAGES 2 à 4 : trois taux de variation ================= */
 var EX=[
@@ -404,15 +404,16 @@ var CU=[
  {lab:I("f")+"("+I("x")+") = "+M+fr(I("x")+"²","2")+" + 3", f:function(x){return -x*x/2+3}, d:function(x){return -x}, as:[-2,0,2]},
  {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"³","4"), f:function(x){return x*x*x/4}, d:function(x){return 3*x*x/4}, as:[-2,0,2]}
 ];
-function cs(ci,ai){var c=CU[ci], a=c.as[ai], fa=c.f(a), m=c.d(a); return {c:c,a:a,fa:fa,m:m,p:fa-m*a};}
+function cs(ci,ai,arr){var c=(arr||CU)[ci], a=c.as[ai], fa=c.f(a), m=c.d(a); return {c:c,a:a,fa:fa,m:m,p:fa-m*a};}
 var st10={ci:0,ai:2,n:0,rev:false}, st11={ci:0,ai:2,n:0}, st12={mode:"lire",ci:0,ai:2,rev:false};
 
-function selUI(id,st,withA){
+function selUI(id,st,withA,arr){
+  var C=arr||CU;
   var h='<span class="sl">Courbe :</span>';
-  CU.forEach(function(c,i){ h+='<button type="button" class="b'+(st.ci===i?" on":"")+'" data-c="'+i+'">'+c.lab+'</button>'; });
+  C.forEach(function(c,i){ h+='<button type="button" class="b'+(st.ci===i?" on":"")+'" data-c="'+i+'">'+c.lab+'</button>'; });
   if(withA){
     h+='<br><span class="sl">Point :</span>';
-    CU[st.ci].as.forEach(function(a,i){ h+='<button type="button" class="b'+(st.ai===i?" on":"")+'" data-a="'+i+'">'+I("a")+' = '+fm(a)+'</button>'; });
+    C[st.ci].as.forEach(function(a,i){ h+='<button type="button" class="b'+(st.ai===i?" on":"")+'" data-a="'+i+'">'+I("a")+' = '+fm(a)+'</button>'; });
   }
   var el=$(id); el.innerHTML=h;
   el.onclick=function(e){
@@ -421,7 +422,7 @@ function selUI(id,st,withA){
     else st.ai=+b.getAttribute("data-a");
     if("n" in st) st.n=0;
     if("rev" in st) st.rev=false;
-    selUI(id,st,withA); render();
+    selUI(id,st,withA,arr); render();
   };
 }
 
@@ -517,6 +518,46 @@ function draw12(){
   $("out12").innerHTML=o;
 }
 
+/* ---- page A : lire f(a) et f'(a), méthode pas à pas ---- */
+var CU2=[
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 2"+I("x"), f:function(x){return x*x-2*x}, d:function(x){return 2*x-2}, as:[-1,1,2]},
+ {lab:I("f")+"("+I("x")+") = "+M+I("x")+"² + 2"+I("x")+" + 3", f:function(x){return -x*x+2*x+3}, d:function(x){return -2*x+2}, as:[0,1,2]},
+ {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"²","2")+" "+M+" 2"+I("x")+" + 1", f:function(x){return x*x/2-2*x+1}, d:function(x){return x-2}, as:[0,2,4]},
+ {lab:I("f")+"("+I("x")+") = "+I("x")+"³ "+M+" 3"+I("x"), f:function(x){return x*x*x-3*x}, d:function(x){return 3*x*x-3}, as:[-1,0,1]}
+];
+var stA={ci:0,ai:0,n:0};
+$("ctlA").innerHTML='<button type="button" class="act" id="btnA">Étape suivante →</button><button type="button" class="act alt" id="nwA">Nouvel exemple</button>';
+function rowsA(){
+  var k=cs(stA.ci,stA.ai,CU2), a=k.a, m=k.m;
+  return [
+   ["c0","Je lis f(a)","Le point A a pour abscisse "+fm(a)+" (pointillé vertical). Je lis son <b>ordonnée</b> sur l’axe des ordonnées (pointillé horizontal) :<br><b>"+fp(a)+" = "+fm(k.fa)+"</b>."],
+   ["c1","Je lis f′(a)", m!==0
+      ? "Le coefficient directeur de la tangente au point d’abscisse <b>"+fm(a)+"</b> est <b>"+fm(m)+"</b>.<br>Donc <b>"+dp(a)+" = "+fm(m)+"</b>."
+      : "La tangente au point d’abscisse <b>"+fm(a)+"</b> est <b>horizontale</b> (parallèle à l’axe des abscisses) : elle ne monte ni ne descend, donc son coefficient directeur est <b>0</b>.<br>Donc <b>"+dp(a)+" = 0</b>."],
+   ["c4","Je conclus",fp(a)+" = <b>"+fm(k.fa)+"</b> : <b>ordonnée</b> du point A.<br>"+dp(a)+" = <b>"+fm(m)+"</b> : <b>coefficient directeur</b> de la tangente en A.<br><b>Ne pas confondre</b> "+I("f")+"("+I("a")+") et "+I("f")+"′("+I("a")+")."]
+  ];
+}
+function drawA(){
+  var k=cs(stA.ci,stA.ai,CU2), n=stA.n, a=k.a, m=k.m;
+  var g=base()+curve(k.c.f)+ln(m,k.p,"tan");
+  if(n>=1){ if(a!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(0)+'" y2="'+Y(k.fa)+'"/>'; if(a!==0&&k.fa!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(a)+'" y2="'+Y(0)+'"/>'; g+=(a<0?T(IS("f")+"("+fm(a)+")",X(0)+8,Y(k.fa)-9,"tA","start"):T(IS("f")+"("+fm(a)+")",X(0)-24,Y(k.fa)-9,"tA","end")); }
+  if(n>=2&&m!==0){
+    g+=arrow(a,k.fa,a+1,k.fa)+T("1",X(a+0.5),Y(k.fa)+(m>=0?19:-8),"tn","middle");
+    g+=arrow(a+1,k.fa,a+1,k.fa+m)+cross(a+1,k.fa+m,"cM")+T(fm(m),X(a+1)+10,Y(k.fa+m/2)+5,"tn","start");
+  }
+  g+=cross(a,k.fa,"cA")+(a===0?T("A",X(a)+10,Y(k.fa)-12,"tA","start"):T("A",X(a)-10,Y(k.fa)-12,"tA","end"));
+  $("svgA").innerHTML=g;
+  var rows=rowsA(); setBtn("A",n,rows.length);
+  $("outA").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
+    +'<div class="p2txt">La droite verte est la tangente à la courbe au point A d’abscisse '+fm(a)+'. Déterminer '+fp(a)+' et '+dp(a)+'.</div>'+stepsHTML(rows,n);
+}
+$("nwA").onclick=function(){
+  var ci=stA.ci, ai=stA.ai, t=0;
+  while(t<20 && ci===stA.ci && ai===stA.ai){ ci=Math.floor(Math.random()*4); ai=Math.floor(Math.random()*3); t++; }
+  stA.ci=ci; stA.ai=ai; stA.n=0; selUI("selA",stA,true,CU2); render();
+};
+$("btnA").onclick=function(){ stA.n=(stA.n>=rowsA().length)?0:stA.n+1; render(); };
+
 /* ================= fenêtres : déplacer, redimensionner, texte proportionnel ================= */
 function fitPage(sec){
   var wins=sec.querySelectorAll(".win"), bot=0, i, top=sec.getBoundingClientRect().top;
@@ -584,12 +625,12 @@ function layoutPage(sec){
 Array.prototype.forEach.call(document.querySelectorAll(".win"),initWin);
 
 /* ================= navigation ================= */
-function mp(i){ return i<=1?1:(i===2?"T":(i<=6?i-1:(i===7?"T2":(i<=11?i-2:(i===12?"T3":i-3))))); }
+function mp(i){ return i<=1?1:(i===2?"T":(i<=6?i-1:(i===7?"T2":(i<=11?i-2:(i===12?"A":(i===13?"T3":i-4)))))); }
 function ip(){ return mp(page); }
 function render(){
   var page=ip();
   if(page>=2&&page<=4) drawEx(page-2); else if(page===5) draw5(); else if(page>=6&&page<=9) drawTg(page-6);
-  else if(page===10) draw10(); else if(page===11) draw11(); else if(page===12) draw12();
+  else if(page==="A") drawA(); else if(page===10) draw10(); else if(page===11) draw11(); else if(page===12) draw12();
 }
 function goPage(n){
   page=clamp(n,1,NP);
@@ -600,7 +641,7 @@ function goPage(n){
   $("pPrev").disabled=(page===1); $("pNext").disabled=(page===NP);
   render(); window.scrollTo(0,0);
 }
-selUI("sel10",st10,true); selUI("sel11",st11,true); md12UI();
+selUI("selA",stA,true,CU2); selUI("sel10",st10,true); selUI("sel11",st11,true); md12UI();
 $("sel12").hidden=true;
 $("go1").onclick=function(){ goPage(2); };
 $("pPrev").onclick=function(){ goPage(page-1); };
