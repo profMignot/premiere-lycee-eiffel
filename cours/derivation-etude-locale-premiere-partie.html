@@ -124,76 +124,7 @@ button,.grip,.wbar{-webkit-tap-highlight-color:transparent}
 </head>
 <body>
 
-<section class="pg" id="pg1">
-  <div class="win card" data-fs="46">
-    <div class="wbar"><span>Objectif</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
-    <div class="wbody">
-      <div class="tg">Séquence · Taux de variation et tangente</div>
-      <h2>Objectif</h2>
-      <ul>
-        <li>Calculer un <b>taux de variation</b> et l’interpréter comme le coefficient directeur d’une <b>sécante</b>.</li>
-        <li>Observer des <b>tangentes</b> à une courbe.</li>
-        <li>Savoir que le coefficient directeur d’une tangente est un nombre important : le <b>nombre dérivé</b>.</li>
-        <li>Lire graphiquement des nombres dérivés et des équations de tangentes.</li>
-        <li>À partir de l’équation d’une tangente : en déduire le nombre dérivé et tracer cette tangente.</li>
-      </ul>
-      <button type="button" class="p1btn" id="go1">Commencer →</button>
-    </div>
-  </div>
-</section>
-
-<section class="pg" id="pgT" hidden>
-  <div class="win card" data-fs="46">
-    <div class="wbar"><span>Définition</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
-    <div class="wbody bigdef">
-      <div class="bigt small">Le taux de variation de <i>f</i> entre <i>a</i> et <i>b</i> est</div>
-      <div class="bigf"><span class="fr"><span><i>f</i>(<i>b</i>) − <i>f</i>(<i>a</i>)</span><span><i>b</i> − <i>a</i></span></span></div>
-    </div>
-  </div>
-</section>
-
 <div id="pages"></div>
-
-<section class="pg" id="pgT3" hidden>
-  <div class="win card" data-fs="46">
-    <div class="wbar"><span>Exercices</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
-    <div class="wbody bigdef">
-      <div class="bigt" style="font-size:4em">Exercices</div>
-    </div>
-  </div>
-</section>
-
-<section class="pg" id="pgT2" hidden>
-  <div class="win card" data-fs="46">
-    <div class="wbar"><span>Nouvelle partie</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
-    <div class="wbody bigdef">
-      <div class="bigt">Notion de tangente</div>
-      <div class="bigt">et</div>
-      <div class="bigt">notion de nombre dérivé</div>
-    </div>
-  </div>
-</section>
-
-<section class="pg" id="pg13" hidden>
-  <div class="win card" data-fs="46">
-    <div class="wbar"><span>À retenir</span><span class="hint">déplacer ↔ · agrandir ⇲</span></div>
-    <div class="wbody">
-      <div class="tg">Séquence · Taux de variation et tangente</div>
-      <h2>À retenir</h2>
-      <ul>
-        <li>Le <b>taux de variation</b> de <i>f</i> entre <i>a</i> et <i>b</i> (<i>a</i> ≠ <i>b</i>) est
-          <span class="fr"><span><i>f</i>(<i>b</i>) − <i>f</i>(<i>a</i>)</span><span><i>b</i> − <i>a</i></span></span>.
-          C’est aussi le <b>coefficient directeur de la sécante</b> (AM) :
-          <span class="fr"><span><i>y</i><sub>M</sub> − <i>y</i><sub>A</sub></span><span><i>x</i><sub>M</sub> − <i>x</i><sub>A</sub></span></span>, avec A(<i>a</i> ; <i>f</i>(<i>a</i>)) et M(<i>b</i> ; <i>f</i>(<i>b</i>)).</li>
-        <li>Avec M d’abscisse <i>a</i> + <i>h</i> : le taux de variation est
-          <span class="fr"><span><i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)</span><span><i>h</i></span></span> (<i>h</i> ≠ 0).</li>
-        <li>Le coefficient directeur de la tangente au point d’abscisse <i>a</i> s’appelle le <b>nombre dérivé</b> de <i>f</i> en <i>a</i>, noté <i>f</i>′(<i>a</i>).</li>
-        <li><b>Lire</b> <i>f</i>′(<i>a</i>) : on lit le coefficient directeur de la tangente. Une tangente <b>horizontale</b> a pour coefficient directeur 0 : <i>f</i>′(<i>a</i>) = 0.</li>
-        <li><b>Ne pas confondre</b> <i>f</i>(<i>a</i>) et <i>f</i>′(<i>a</i>) : <i>f</i>(<i>a</i>) est l’<b>ordonnée</b> du point A de la courbe ; <i>f</i>′(<i>a</i>) est le <b>coefficient directeur</b> de la tangente en A.</li>
-      </ul>
-    </div>
-  </div>
-</section>
 
 <nav class="pnav" aria-label="Pages">
   <button type="button" id="pPrev">◀ Précédent</button>
@@ -203,8 +134,9 @@ button,.grip,.wbar{-webkit-tap-highlight-color:transparent}
 
 <script>
 (function(){
+var CFG={"pages": [{"type": "carte", "titre": "Objectif", "puces": ["Calculer un <b>taux de variation<\/b> et l’interpréter comme le coefficient directeur d’une <b>sécante<\/b>.", "Observer des <b>tangentes<\/b> à une courbe.", "Savoir que le coefficient directeur d’une tangente est un nombre important : le <b>nombre dérivé<\/b>.", "Lire graphiquement des nombres dérivés et des équations de tangentes.", "À partir de l’équation d’une tangente : en déduire le nombre dérivé et tracer cette tangente."], "bouton": "Commencer →", "titre_fenetre": "Objectif", "tag": "Séquence · Taux de variation et tangente"}, {"type": "grand", "lignes": [["Le taux de variation de <i>f<\/i> entre <i>a<\/i> et <i>b<\/i> est", "petit"], ["<span class=\"fr\"><span><i>f<\/i>(<i>b<\/i>) − <i>f<\/i>(<i>a<\/i>)<\/span><span><i>b<\/i> − <i>a<\/i><\/span><\/span>", "formule"]], "titre_fenetre": "Définition"}, {"type": "taux", "titre_fenetre": "Exemple 1 : un taux de variation", "fn": {"f": "x**2-2*x", "etiquette": "x^2 - 2x", "d": null}, "a": 1, "b": 3}, {"type": "taux", "titre_fenetre": "Exemple 2 : un taux de variation", "fn": {"f": "-(x**2)+4", "etiquette": "-x^2 + 4", "d": null}, "a": -1, "b": 2}, {"type": "taux", "titre_fenetre": "Exemple 3 : un taux de variation", "fn": {"f": "x**2-4*x+3", "etiquette": "x^2 - 4x + 3", "d": null}, "a": 1, "b": 4}, {"type": "curseur", "titre_fenetre": "La fonction carré : A d’abscisse 1 et M d’abscisse 1 + h", "fn": {"f": "x**2", "etiquette": "x^2", "d": null}, "a": 1, "valeurs": [-3, -2, -1.5, -1, -0.5, -0.2, -0.1, -0.05, -0.01, -0.001, 0, 0.001, 0.01, 0.05, 0.1, 0.2, 0.5, 1, 1.5], "h0": 1}, {"type": "grand", "lignes": [["Notion de tangente", "titre"], ["et", "titre"], ["notion de nombre dérivé", "titre"]], "titre_fenetre": "Nouvelle partie"}, {"type": "tangente", "titre_fenetre": "Une tangente à une courbe (1)", "fn": {"f": "x**2", "etiquette": "x^2", "d": "2*x"}, "a": 1, "m2": null}, {"type": "tangente", "titre_fenetre": "Une tangente à une courbe (2)", "fn": {"f": "-(x**2)/2+3", "etiquette": "-frac(x^2,2) + 3", "d": "-x"}, "a": 2, "m2": null}, {"type": "tangente", "titre_fenetre": "Une tangente à une courbe (3)", "fn": {"f": "x**2-4*x+3", "etiquette": "x^2 - 4x + 3", "d": "2*x-4"}, "a": 2, "m2": null}, {"type": "tangente", "titre_fenetre": "Une tangente à une courbe (4)", "fn": {"f": "x**3/4-x**2-x+2", "etiquette": "frac(x^3,4) - x^2 - x + 2", "d": "3*x**2/4-2*x-1"}, "a": 0, "m2": 4}, {"type": "lire", "titre_fenetre": "Lire f(a) et f′(a)", "courbes": [{"f": "x**2-2*x", "etiquette": "x^2 - 2x", "d": "2*x-2", "points": [-1, 1, 2]}, {"f": "-(x**2)+2*x+3", "etiquette": "-x^2 + 2x + 3", "d": "-2*x+2", "points": [0, 1, 2]}, {"f": "x**2/2-2*x+1", "etiquette": "frac(x^2,2) - 2x + 1", "d": "x-2", "points": [0, 2, 4]}, {"f": "x**3-3*x", "etiquette": "x^3 - 3x", "d": "3*x**2-3", "points": [-1, 0, 1]}]}, {"type": "grand", "lignes": [["Exercices", "enorme"]], "titre_fenetre": "Exercices"}, {"type": "equation", "titre_fenetre": "Lire l’équation d’une tangente", "courbes": [{"f": "x**2", "etiquette": "x^2", "d": "2*x", "points": [-1, 0, 1]}, {"f": "x**2/2", "etiquette": "frac(x^2,2)", "d": "x", "points": [-2, 0, 2]}, {"f": "-(x**2)/2+3", "etiquette": "-frac(x^2,2) + 3", "d": "-x", "points": [-2, 0, 2]}, {"f": "x**3/4", "etiquette": "frac(x^3,4)", "d": "3*x**2/4", "points": [-2, 0, 2]}]}, {"type": "tracer", "titre_fenetre": "Tracer une tangente", "courbes": [{"f": "x**2", "etiquette": "x^2", "d": "2*x", "points": [-1, 0, 1]}, {"f": "x**2/2", "etiquette": "frac(x^2,2)", "d": "x", "points": [-2, 0, 2]}, {"f": "-(x**2)/2+3", "etiquette": "-frac(x^2,2) + 3", "d": "-x", "points": [-2, 0, 2]}, {"f": "x**3/4", "etiquette": "frac(x^3,4)", "d": "3*x**2/4", "points": [-2, 0, 2]}]}, {"type": "entrainement", "titre_fenetre": "Entraînement", "courbes": [{"f": "x**2", "etiquette": "x^2", "d": "2*x", "points": [-1, 0, 1]}, {"f": "x**2/2", "etiquette": "frac(x^2,2)", "d": "x", "points": [-2, 0, 2]}, {"f": "-(x**2)/2+3", "etiquette": "-frac(x^2,2) + 3", "d": "-x", "points": [-2, 0, 2]}, {"f": "x**3/4", "etiquette": "frac(x^3,4)", "d": "3*x**2/4", "points": [-2, 0, 2]}]}, {"type": "carte", "titre": "À retenir", "puces": ["Le <b>taux de variation<\/b> de <i>f<\/i> entre <i>a<\/i> et <i>b<\/i> (<i>a<\/i> ≠ <i>b<\/i>) est <span class=\"fr\"><span><i>f<\/i>(<i>b<\/i>) − <i>f<\/i>(<i>a<\/i>)<\/span><span><i>b<\/i> − <i>a<\/i><\/span><\/span>. C’est aussi le <b>coefficient directeur de la sécante<\/b> (AM) : <span class=\"fr\"><span><i>y<\/i><sub>M<\/sub> − <i>y<\/i><sub>A<\/sub><\/span><span><i>x<\/i><sub>M<\/sub> − <i>x<\/i><sub>A<\/sub><\/span><\/span>, avec A(<i>a<\/i> ; <i>f<\/i>(<i>a<\/i>)) et M(<i>b<\/i> ; <i>f<\/i>(<i>b<\/i>)).", "Avec M d’abscisse <i>a<\/i> + <i>h<\/i> : le taux de variation est <span class=\"fr\"><span><i>f<\/i>(<i>a<\/i> + <i>h<\/i>) − <i>f<\/i>(<i>a<\/i>)<\/span><span><i>h<\/i><\/span><\/span> (<i>h<\/i> ≠ 0).", "Le coefficient directeur de la tangente au point d’abscisse <i>a<\/i> s’appelle le <b>nombre dérivé<\/b> de <i>f<\/i> en <i>a<\/i>, noté <i>f<\/i>′(<i>a<\/i>).", "<b>Lire<\/b> <i>f<\/i>′(<i>a<\/i>) : on lit le coefficient directeur de la tangente. Une tangente <b>horizontale<\/b> a pour coefficient directeur 0 : <i>f<\/i>′(<i>a<\/i>) = 0.", "<b>Ne pas confondre<\/b> <i>f<\/i>(<i>a<\/i>) et <i>f<\/i>′(<i>a<\/i>) : <i>f<\/i>(<i>a<\/i>) est l’<b>ordonnée<\/b> du point A de la courbe ; <i>f<\/i>′(<i>a<\/i>) est le <b>coefficient directeur<\/b> de la tangente en A."], "bouton": null, "titre_fenetre": "À retenir", "tag": "Séquence · Taux de variation et tangente"}]};
 var $=function(id){return document.getElementById(id)};
-var M="−", NP=17, page=1;
+var PG=CFG.pages, NP=PG.length, M="−", page=1;
 function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
 function r3(x){return Math.round(x*1000)/1000}
 function r6(x){return Math.round(x*1e6)/1e6}
@@ -216,6 +148,43 @@ function I(s){return "<i>"+s+"</i>"}
 function IS(s){return '<tspan class="it">'+s+'</tspan>'}
 function fp(a){return I("f")+"("+fm(a)+")"}
 function dp(a){return I("f")+"′("+fm(a)+")"}
+function FN(e){return new Function("x","return ("+e+");")}
+
+/* ---------- mini-notation : x^2, 2x, frac(x^2,2), signe - ---------- */
+function fracAt(s,i){ /* s.substr(i,5)==="frac(" : renvoie {a,b,next} */
+  var d=1,j=i+5,k=-1;
+  for(;j<s.length&&d>0;j++){
+    if(s[j]==="(") d++; else if(s[j]===")") d--; else if(s[j]===","&&d===1&&k<0) k=j;
+  }
+  return {a:s.slice(i+5,k),b:s.slice(k+1,j-1),next:j};
+}
+function expo(e){ return ({"2":"²","3":"³"}[e])||("<sup>"+e+"</sup>"); }
+function LAB(s){
+  var out="",i=0,c,q;
+  while(i<s.length){
+    if(s.substr(i,5)==="frac("){ q=fracAt(s,i); out+=fr(LAB(q.a),LAB(q.b)); i=q.next; continue; }
+    c=s[i];
+    if(c==="^"){ out+=expo(s[i+1]); i+=2; continue; }
+    if(c==="-"){ out+=M; i++; continue; }
+    if(/[a-zA-Z]/.test(c)){ out+=I(c); i++; continue; }
+    out+=c; i++;
+  }
+  return out;
+}
+function SUB(s,v){ /* remplace x par la valeur v (entre parenthèses si négative) */
+  var out="",i=0,c,q;
+  while(i<s.length){
+    if(s.substr(i,5)==="frac("){ q=fracAt(s,i); out+=fr(SUB(q.a,v),SUB(q.b,v)); i=q.next; continue; }
+    c=s[i];
+    if(c==="^"){ out+=expo(s[i+1]); i+=2; continue; }
+    if(c==="-"){ out+=M; i++; continue; }
+    if(c==="x"){ if(/[0-9]$/.test(out)) out+=" × "; out+=par(v); i++; continue; }
+    out+=c; i++;
+  }
+  return out;
+}
+function FL(fn){ return I("f")+"("+I("x")+") = "+LAB(fn.etiquette); }
+
 function tabV(m,p){
   return '<table class="tv"><tr><td>'+I("x")+'</td><td>0</td><td>1</td></tr><tr><td>'+eqS(m,p)+'</td><td>'+fm(p)+'</td><td>'+fm(m+p)+'</td></tr></table>';
 }
@@ -262,158 +231,44 @@ function stepsHTML(rows,n){
   rows.forEach(function(r,i){ if(i<n) h+='<div class="cstep"><span class="clab '+r[0]+'">'+r[1]+'</span><span class="cexp">'+r[2]+'</span></div>'; });
   return h;
 }
-function setBtn(n,k,len){ $("btn"+n).textContent=(k>=len)?"Recommencer ↺":"Étape suivante →"; }
+function setBtn(id,k,len){ $("btn"+id).textContent=(k>=len)?"Recommencer ↺":"Étape suivante →"; }
 
-/* ---------- squelette des pages 2 à 12 : fenêtres figure + texte (+ curseur page 5) ---------- */
-var TIT={2:"Exemple 1 : un taux de variation",3:"Exemple 2 : un taux de variation",4:"Exemple 3 : un taux de variation",
- 5:"La fonction carré : A d’abscisse 1 et M d’abscisse 1 + h",
- 6:"Une tangente à une courbe (1)",7:"Une tangente à une courbe (2)",8:"Une tangente à une courbe (3)",9:"Une tangente à une courbe (4)",
- 10:"Lire l’équation d’une tangente",11:"Tracer une tangente",12:"Entraînement",A:"Lire f(a) et f′(a)"};
+/* ---------- état des pages ---------- */
+var P=PG.map(function(c,idx){ return {i:idx+1,c:c,type:c.type,n:0}; });
 var HINT='<span class="hint">déplacer ↔ · agrandir ⇲</span>';
-[2,3,4,5,6,7,8,9,10,11,"A",12].forEach(function(n0){
-  var s=document.createElement("section"); s.className="pg"; s.id="pg"+n0; s.hidden=true;
-  s.innerHTML='<div class="win fig"><div class="wbar"><span>Figure</span>'+HINT+'</div><div class="wbody"><svg id="svg'+n0+'" viewBox="0 0 560 560" role="img" aria-label="Repère et courbe"></svg></div></div>'
-   +'<div class="win twin" data-fs="36"><div class="wbar"><span>'+TIT[n0]+'</span>'+HINT+'</div><div class="wbody"><div class="sel" id="sel'+n0+'"></div>'+(n0===5?'':'<div class="ctl" id="ctl'+n0+'"></div>')+'<div id="out'+n0+'"></div></div></div>'
-   +(n0===5?'<div class="win ctlw" data-fs="30"><div class="wbar"><span>Curseur h</span>'+HINT+'</div><div class="wbody"><div class="ctl" id="ctl5"></div></div></div>':'');
-  $("pages").appendChild(s);
-});
-
-/* ================= PAGES 2 à 4 : trois taux de variation ================= */
-var EX=[
- {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 2"+I("x"), f:function(x){return x*x-2*x}, a:1, b:3,
-  calc:function(x){return par(x)+"² − 2 × "+par(x)+" = "+fm(x*x-2*x)}},
- {lab:I("f")+"("+I("x")+") = "+M+I("x")+"² + 4", f:function(x){return -x*x+4}, a:-1, b:2,
-  calc:function(x){return M+par(x)+"² + 4 = "+fm(-x*x+4)}},
- {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 4"+I("x")+" + 3", f:function(x){return x*x-4*x+3}, a:1, b:4,
-  calc:function(x){return par(x)+"² − 4 × "+par(x)+" + 3 = "+fm(x*x-4*x+3)}}
-];
-var stEx=[{n:0},{n:0},{n:0}];
-function rowsEx(i){
-  var e=EX[i], a=e.a, b=e.b, fa=e.f(a), fb=e.f(b), dx=b-a, dy=fb-fa, m=dy/dx;
-  return [
-   ["c0","Je calcule les ordonnées", fp(a)+" = "+e.calc(a)+"<br>"+fp(b)+" = "+e.calc(b)],
-   ["c1","Je calcule le taux de variation", fr(fp(b)+" − "+fp(a),fm(b)+" − "+par(a))+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b>"],
-   ["c2","Coefficient directeur de (AM)","Le taux de variation est aussi le <b>coefficient directeur de la sécante</b> (AM) :<br>"
-     +fr(YM_YA,XM_XA)+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b> = le taux de variation"],
-   ["c5","Vérification graphique","Avec les flèches : de A à M, on avance de <b>"+fm(dx)+"</b> (flèche horizontale) et on "+(dy>=0?"monte":"descend")+" de <b>"+fm(Math.abs(dy))+"</b> (flèche verticale) :<br>"+fr(fm(dy),fm(dx))+" = "+fm(m)+" ✓"],
-   ["c4","Je conclus","Le taux de variation de "+I("f")+" entre "+fm(a)+" et "+fm(b)+" est <b>"+fm(m)+"</b>.<br>C’est le <b>coefficient directeur de la sécante</b> (AM)."]
-  ];
-}
-function drawEx(i){
-  var n=i+2, e=EX[i], st=stEx[i], a=e.a, b=e.b, fa=e.f(a), fb=e.f(b), m=(fb-fa)/(b-a);
-  var g=base()+curve(e.f)+ln(m,fa-m*a,"sec");
-  if(st.n>=4) g+=arrow(a,fa,b,fa)+arrow(b,fa,b,fb)+T(fm(b-a),X((a+b)/2),Y(fa)+(fb>=fa?19:-8),"tn","middle")+T(fm(fb-fa),X(b)+10,Y((fa+fb)/2)+5,"tn","start");
-  g+=cross(a,fa,"cA")+cross(b,fb,"cM")
-    +T("A",X(a)-10,Y(fa)-12,"tA","end")+T("M",X(b)+10,Y(fb)-12,"tM","start");
-  $("svg"+n).innerHTML=g;
-  var rows=rowsEx(i);
-  setBtn(n,st.n,rows.length);
-  $("out"+n).innerHTML='<div class="p2txt">Soit '+I("f")+' la fonction définie par '+e.lab+'.<br>Le point A de la courbe a pour abscisse '+fm(a)+', le point M a pour abscisse '+fm(b)+'.<br>Calculer le taux de variation de '+I("f")+' entre '+fm(a)+' et '+fm(b)+'.</div>'+stepsHTML(rows,st.n);
-}
-[0,1,2].forEach(function(i){
-  $("ctl"+(i+2)).innerHTML='<button type="button" class="act" id="btn'+(i+2)+'">Étape suivante →</button>';
-  $("btn"+(i+2)).onclick=function(){ stEx[i].n=(stEx[i].n>=rowsEx(i).length)?0:stEx[i].n+1; render(); };
-});
-
-/* ================= PAGE 5 : la fonction carré, M d'abscisse 1 + h ================= */
-var HV=[-3,-2,-1.5,-1,-0.5,-0.2,-0.1,-0.05,-0.01,-0.001,0,0.001,0.01,0.05,0.1,0.2,0.5,1,1.5];
-var st5={k:HV.indexOf(1),chk:false};
-$("ctl5").innerHTML='<div class="row"><label for="s5">'+I("h")+'</label><input type="range" id="s5" min="0" max="'+(HV.length-1)+'" step="1" value="'+st5.k+'"><span class="o" id="o5"></span></div><button type="button" class="p2btn sec" id="h0">Mettre h à 0</button>';
-$("h0").onclick=function(){ st5.k=HV.indexOf(0); $("s5").value=st5.k; render(); };
-$("s5").oninput=function(){ st5.k=+this.value; render(); };
-function draw5(){
-  var h=HV[st5.k], xm=1+h, fb=xm*xm, zero=(h===0), g=base()+curve(function(x){return x*x});
-  var yAx=Y(0), endV=yAx+62, rowArr=yAx+48, rowLab=yAx+84;
-  var x1=X(1), x2=X(xm), yA=Y(1), yM=Y(fb), mid=(x1+x2)/2, lx=X(0)-24, m=2+h;
-  if(!zero) g+=ln(m,1-m,"sec");
-  g+='<line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+x1+'" y2="'+endV+'"/><line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+X(0)+'" y2="'+yA+'"/>';
-  if(!zero) g+='<line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+x2+'" y2="'+endV+'"/><line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+X(0)+'" y2="'+yM+'"/>';
-  if(Math.abs(x2-x1)>=5) g+=arrowPx(x1,rowArr,x2,rowArr)+T(IS("h"),mid,rowArr-8,"","middle");
-  g+=T("1",x1,rowLab,"tA","middle");
-  if(!zero&&Math.abs(x2-x1)>=44) g+=T("1 + "+IS("h"),x2,rowLab,"tM","middle");
-  var yFa=yA-5, yFm=yM-5;
-  if(!zero&&Math.abs(yA-yM)<18){ if(yM<yA) yFa=yA+16; else yFm=yM+16; }
-  g+=T(IS("f")+"(1)",lx,yFa,"tA","end");
-  if(!zero) g+=T(IS("f")+"(1 + "+IS("h")+")",lx,yFm,"tM","end");
-  if(st5.chk&&!zero){
-    g+=arrow(1,1,xm,1)+arrow(xm,1,xm,fb);
-    g+=T(fm6(h),(x1+x2)/2+(h>0?12:-12),yA-8,"tn","middle")+T(fm6(fb-1),x2+10,(yA+yM)/2+5,"tn","start");
-  }
-  g+=cross(1,1,"cA")+T("A",x1+10,yA+20,"tA","start");
-  if(!zero) g+=cross(xm,fb,"cM")+T("M",x2-10,yM-12,"tM","end");
-  $("svg5").innerHTML=g;
-  $("o5").innerHTML=I("h")+" = "+fm6(h);
-  var o='<div class="p2txt">Soit '+I("f")+' la fonction définie sur ℝ par '+I("f")+'('+I("x")+') = '+I("x")+'².<br>Le point A a pour abscisse 1 et le point M a pour abscisse 1 + '+I("h")+' (avec '+I("h")+' ≠ 0). Déplace le curseur '+I("h")+'.</div>';
-  if(zero){
-    o+='<div class="box sec">Pour '+I("h")+' = 0, M est confondu avec A : il n’y a plus de sécante (AM), et on ne peut pas diviser par 0.</div>';
+function figW(i){ return '<div class="win fig"><div class="wbar"><span>Figure</span>'+HINT+'</div><div class="wbody"><svg id="svg'+i+'" viewBox="0 0 560 560" role="img" aria-label="Repère et courbe"></svg></div></div>'; }
+function twinW(i,tit,ctl){ return '<div class="win twin" data-fs="36"><div class="wbar"><span>'+tit+'</span>'+HINT+'</div><div class="wbody"><div class="sel" id="sel'+i+'"></div>'+(ctl?'<div class="ctl" id="ctl'+i+'"></div>':'')+'<div id="out'+i+'"></div></div></div>'; }
+P.forEach(function(p){
+  var c=p.c, i=p.i, s=document.createElement("section"), h="";
+  s.className="pg"; s.id="pg"+i; s.hidden=true;
+  if(p.type==="carte"){
+    h='<div class="win card" data-fs="46"><div class="wbar"><span>'+c.titre_fenetre+'</span>'+HINT+'</div><div class="wbody">'
+      +(c.tag?'<div class="tg">'+c.tag+'</div>':'')+'<h2>'+c.titre+'</h2><ul>'+c.puces.map(function(x){return "<li>"+x+"</li>"}).join("")+'</ul>'
+      +(c.bouton?'<button type="button" class="p1btn" id="go'+i+'">'+c.bouton+'</button>':'')+'</div></div>';
+  } else if(p.type==="grand"){
+    var cls={titre:"bigt",petit:"bigt small",formule:"bigf",enorme:"bigt"};
+    h='<div class="win card" data-fs="46"><div class="wbar"><span>'+c.titre_fenetre+'</span>'+HINT+'</div><div class="wbody bigdef">'
+      +c.lignes.map(function(l){return '<div class="'+cls[l[1]]+'"'+(l[1]==="enorme"?' style="font-size:4em"':'')+'>'+l[0]+'</div>'}).join("")+'</div></div>';
+  } else if(p.type==="curseur"){
+    h=figW(i)+twinW(i,c.titre_fenetre,false)
+      +'<div class="win ctlw" data-fs="30"><div class="wbar"><span>Curseur h</span>'+HINT+'</div><div class="wbody"><div class="ctl" id="ctl'+i+'"></div></div></div>';
   } else {
-    o+='<div class="box sec">Taux de variation de '+I("f")+' entre 1 et 1 + '+I("h")+' :<br>'
-      +fr(I("f")+"(1 + "+I("h")+") − "+I("f")+"(1)",I("h"))+" = "+fr(I("f")+"("+fm6(xm)+") − "+I("f")+"(1)",fm6(h))+" = "+fr(fm6(fb)+" − 1",fm6(h))+' = <span class="val">'+fm6(m)+'</span></div>';
+    h=figW(i)+twinW(i,c.titre_fenetre,true);
   }
-  $("out5").innerHTML=o;
-}
-$("out5").onclick=function(e){ if(e.target.id==="chk5"){ st5.chk=!st5.chk; render(); } };
-
-/* ================= PAGES 6 à 9 : tangentes, une page par courbe ================= */
-var TG=[
- {lab:I("f")+"("+I("x")+") = "+I("x")+"²", f:function(x){return x*x}, d:function(x){return 2*x}, a:1},
- {lab:I("f")+"("+I("x")+") = "+M+fr(I("x")+"²","2")+" + 3", f:function(x){return -x*x/2+3}, d:function(x){return -x}, a:2},
- {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 4"+I("x")+" + 3", f:function(x){return x*x-4*x+3}, d:function(x){return 2*x-4}, a:2},
- {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"³","4")+" "+M+" "+I("x")+"² "+M+" "+I("x")+" + 2", f:function(x){return x*x*x/4-x*x-x+2}, d:function(x){return 3*x*x/4-2*x-1}, a:0, m2:4}
-];
-var stTg=[{n:0},{n:0},{n:0},{n:0}];
-function tgv(i){var t=TG[i], a=t.a, fa=t.f(a), m=t.d(a); return {t:t,a:a,fa:fa,m:m,p:fa-m*a,xb:a+1,yb:fa+m};}
-function rowsTg(i){
-  var v=tgv(i), a=v.a;
-  if(v.m===0) return [
-   ["c0","Je lis le coefficient directeur","La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
-   ["c4","Je conclus","C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = 0</b>."]
-  ];
-  return [
-   ["c0","Je lis deux points de la tangente","A("+fm(a)+" ; "+fm(v.fa)+") et B("+fm(v.xb)+" ; "+fm(v.yb)+")"],
-   ["c1","Je lis le coefficient directeur","Avec les flèches : de A à B, on avance de <b>1</b> et on "+(v.m>0?"monte de <b>"+fm(v.m)+"</b>":v.m<0?"descend de <b>"+fm(Math.abs(v.m))+"</b>":"ne monte pas (<b>0</b>)")+" :<br>"+fr(fm(v.m),"1")+" = <b>"+fm(v.m)+"</b>"],
-   ["c4","Je conclus","Le coefficient directeur de la tangente à la courbe au point d’abscisse "+fm(a)+" est <b>"+fm(v.m)+"</b>.<br>C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = "+fm(v.m)+"</b>."]
-  ];
-}
-function drawTg(i){
-  var n=i+6, v=tgv(i), a=v.a, st=stTg[i];
-  var g=base()+curve(v.t.f)+ln(v.m,v.p,"tan")+cross(a,v.fa,"cA")+T("A",X(a)-10,Y(v.fa)-12,"tA","end");
-  if(v.t.m2!==undefined) g+=cross(v.t.m2,v.t.f(v.t.m2),"cM")+T("M",X(v.t.m2)+10,Y(v.t.f(v.t.m2))-12,"tM","start");
-  if(v.m!==0&&st.n>=1) g+=cross(v.xb,v.yb,"cM")+T("B",X(v.xb)+10,Y(v.yb)+(v.m<0?22:-12),"tM","start");
-  if(v.m!==0&&st.n>=2){
-    g+=arrow(a,v.fa,v.xb,v.fa)+(v.m!==0?arrow(v.xb,v.fa,v.xb,v.yb):"")
-      +T("1",X(a+0.5),Y(v.fa)+(v.m>=0?19:-8),"tn","middle")+(v.m!==0?T(fm(v.m),X(v.xb)+10,Y(v.fa+v.m/2)+5,"tn","start"):"");
-  }
-  $("svg"+n).innerHTML=g;
-  var rows=rowsTg(i);
-  setBtn(n,st.n,rows.length);
-  $("out"+n).innerHTML='<p class="txt">Courbe de '+v.t.lab+'.</p>'
-    +'<div class="p2txt">La droite verte est la <b>tangente</b> à la courbe au point A d’abscisse '+fm(a)+'. On détermine son coefficient directeur.</div>'
-    +(v.t.m2!==undefined?'<div class="p2txt">Cette droite recoupe la courbe en un point M. En A, elle est <b>tangente</b> à la courbe ; en M, elle est <b>sécante</b> sans être tangente.<br><b>Une tangente est une sécante particulière.</b></div>':'')
-    +stepsHTML(rows,st.n);
-}
-[0,1,2,3].forEach(function(i){
-  $("ctl"+(i+6)).innerHTML='<button type="button" class="act" id="btn'+(i+6)+'">Étape suivante →</button>';
-  $("btn"+(i+6)).onclick=function(){ stTg[i].n=(stTg[i].n>=rowsTg(i).length)?0:stTg[i].n+1; render(); };
+  s.innerHTML=h; $("pages").appendChild(s);
 });
 
-/* ================= pages 10 à 12 : lire / tracer ================= */
-var CU=[
- {lab:I("f")+"("+I("x")+") = "+I("x")+"²", f:function(x){return x*x}, d:function(x){return 2*x}, as:[-1,0,1]},
- {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"²","2"), f:function(x){return x*x/2}, d:function(x){return x}, as:[-2,0,2]},
- {lab:I("f")+"("+I("x")+") = "+M+fr(I("x")+"²","2")+" + 3", f:function(x){return -x*x/2+3}, d:function(x){return -x}, as:[-2,0,2]},
- {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"³","4"), f:function(x){return x*x*x/4}, d:function(x){return 3*x*x/4}, as:[-2,0,2]}
-];
-function cs(ci,ai,arr){var c=(arr||CU)[ci], a=c.as[ai], fa=c.f(a), m=c.d(a); return {c:c,a:a,fa:fa,m:m,p:fa-m*a};}
-var st10={ci:0,ai:2,n:0,rev:false}, st11={ci:0,ai:2,n:0}, st12={mode:"lire",ci:0,ai:2,rev:false};
-
+/* ---------- courbes au choix (lire, équation, tracer, entraînement) ---------- */
+function mkCU(list){
+  return list.map(function(c){ return {lab:FL(c), f:FN(c.f), d:FN(c.d), as:c.points}; });
+}
+function cs(ci,ai,arr){var c=arr[ci], a=c.as[ai], fa=c.f(a), m=c.d(a); return {c:c,a:a,fa:fa,m:m,p:fa-m*a};}
 function selUI(id,st,withA,arr){
-  var C=arr||CU;
   var h='<span class="sl">Courbe :</span>';
-  C.forEach(function(c,i){ h+='<button type="button" class="b'+(st.ci===i?" on":"")+'" data-c="'+i+'">'+c.lab+'</button>'; });
+  arr.forEach(function(c,i){ h+='<button type="button" class="b'+(st.ci===i?" on":"")+'" data-c="'+i+'">'+c.lab+'</button>'; });
   if(withA){
     h+='<br><span class="sl">Point :</span>';
-    C[st.ci].as.forEach(function(a,i){ h+='<button type="button" class="b'+(st.ai===i?" on":"")+'" data-a="'+i+'">'+I("a")+' = '+fm(a)+'</button>'; });
+    arr[st.ci].as.forEach(function(a,i){ h+='<button type="button" class="b'+(st.ai===i?" on":"")+'" data-a="'+i+'">'+I("a")+' = '+fm(a)+'</button>'; });
   }
   var el=$(id); el.innerHTML=h;
   el.onclick=function(e){
@@ -425,142 +280,254 @@ function selUI(id,st,withA,arr){
     selUI(id,st,withA,arr); render();
   };
 }
+function autreExemple(p){
+  var ci=p.ci, ai=p.ai, t=0, nb=p.CU.length;
+  while(t<20 && ci===p.ci && ai===p.ai){ ci=Math.floor(Math.random()*nb); ai=Math.floor(Math.random()*3); t++; }
+  p.ci=ci; p.ai=ai; p.n=0; p.rev=false;
+}
 
-/* ---- page 10 : lire l'équation ---- */
-$("ctl10").innerHTML='<button type="button" class="act" id="btn10">Voir la méthode →</button>';
-function rows10(){
-  var k=cs(st10.ci,st10.ai), m=k.m, p=k.p;
+/* ================= taux de variation ================= */
+function rowsEx(p){
+  var f=p.f, a=p.a, b=p.b, fa=f(a), fb=f(b), dx=b-a, dy=fb-fa, m=dy/dx;
+  function calc(x){ return SUB(p.c.fn.etiquette,x)+" = "+fm(f(x)); }
   return [
-   ["c1","Je lis le coefficient directeur", m!==0
-      ? "Avec les flèches : à partir de A, on avance de <b>1</b> et on "+(m>0?"monte":"descend")+" de <b>"+fm(Math.abs(m))+"</b> :<br>"+I("a")+" = "+fr(fm(m),"1")+" = <b>"+fm(m)+"</b>"
-      : "La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
-   ["c4","J’en déduis le nombre dérivé","Le coefficient directeur de la tangente est le nombre dérivé : <b>"+dp(k.a)+" = "+fm(m)+"</b>."],
-   ["c0","Je lis l’ordonnée à l’origine","La tangente coupe l’axe des ordonnées en (0 ; "+fm(p)+") :<br>l’ordonnée à l’origine est <b>"+I("b")+" = "+fm(p)+"</b>."],
-   ["c2","J’écris l’équation","La tangente a pour équation <b>"+eqS(m,p)+"</b>."]
+   ["c0","Je calcule les ordonnées", fp(a)+" = "+calc(a)+"<br>"+fp(b)+" = "+calc(b)],
+   ["c1","Je calcule le taux de variation", fr(fp(b)+" − "+fp(a),fm(b)+" − "+par(a))+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b>"],
+   ["c2","Coefficient directeur de (AM)","Le taux de variation est aussi le <b>coefficient directeur de la sécante</b> (AM) :<br>"
+     +fr(YM_YA,XM_XA)+" = "+fr(fm(fb)+" − "+par(fa),fm(b)+" − "+par(a))+" = "+fr(fm(dy),fm(dx))+" = <b>"+fm(m)+"</b> = le taux de variation"],
+   ["c5","Vérification graphique","Avec les flèches : de A à M, on avance de <b>"+fm(dx)+"</b> (flèche horizontale) et on "+(dy>=0?"monte":"descend")+" de <b>"+fm(Math.abs(dy))+"</b> (flèche verticale) :<br>"+fr(fm(dy),fm(dx))+" = "+fm(m)+" ✓"],
+   ["c4","Je conclus","Le taux de variation de "+I("f")+" entre "+fm(a)+" et "+fm(b)+" est <b>"+fm(m)+"</b>.<br>C’est le <b>coefficient directeur de la sécante</b> (AM)."]
   ];
 }
-function draw10(){
-  var k=cs(st10.ci,st10.ai), n=st10.n, a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f)+ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
-  if(n>=1){
-    g+=arrow(a,k.fa,a+1,k.fa)+T("1",X(a+0.5),Y(k.fa)+(m>=0?19:-8),"tn","middle");
-    if(m!==0) g+=arrow(a+1,k.fa,a+1,k.fa+m)+cross(a+1,k.fa+m,"cM")+T(fm(m),X(a+1)+10,Y(k.fa+m/2)+5,"tn","start");
-  }
-  if(n>=3) g+=cross(0,p,"cP");
-  $("svg10").innerHTML=g;
-  var rows=rows10(), rv=st10.rev;
-  $("btn10").textContent=(n===0)?"Voir la méthode →":(n>=rows.length)?"Masquer la méthode ↺":"Étape suivante →";
-  $("out10").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
-    +'<div class="p2txt">La tangente est tracée au point A d’abscisse '+fm(a)+'. On lit graphiquement son coefficient directeur, on en déduit '+dp(a)+', puis on lit l’ordonnée à l’origine pour écrire l’équation de la tangente.</div>'
-    +'<div class="p2ans"><p>Le coefficient directeur de la tangente est <span class="hv'+(rv?' on':'')+'">'+(rv?fm(m):'')+'</span>.</p>'
-    +'<p>Donc le nombre dérivé : '+dp(a)+' = <span class="hv'+(rv?' on':'')+'">'+(rv?fm(m):'')+'</span></p>'
-    +'<p>L’ordonnée à l’origine est <span class="hv'+(rv?' on':'')+'">'+(rv?fm(p):'')+'</span>.</p>'
-    +'<p>La tangente a pour équation <span class="hv'+(rv?' on':'')+'">'+(rv?eqS(m,p):'')+'</span>.</p>'
-    +'<button type="button" class="p2btn" id="rv10">'+(rv?'Masquer les valeurs':'Afficher les valeurs')+'</button></div>'
-    +stepsHTML(rows,n);
+function drawEx(p){
+  var f=p.f, a=p.a, b=p.b, fa=f(a), fb=f(b), m=(fb-fa)/(b-a);
+  var g=base()+curve(f)+ln(m,fa-m*a,"sec");
+  if(p.n>=4) g+=arrow(a,fa,b,fa)+arrow(b,fa,b,fb)+T(fm(b-a),X((a+b)/2),Y(fa)+(fb>=fa?19:-8),"tn","middle")+T(fm(fb-fa),X(b)+10,Y((fa+fb)/2)+5,"tn","start");
+  g+=cross(a,fa,"cA")+cross(b,fb,"cM")+T("A",X(a)-10,Y(fa)-12,"tA","end")+T("M",X(b)+10,Y(fb)-12,"tM","start");
+  $("svg"+p.i).innerHTML=g;
+  var rows=rowsEx(p);
+  setBtn(p.i,p.n,rows.length);
+  $("out"+p.i).innerHTML='<div class="p2txt">Soit '+I("f")+' la fonction définie par '+FL(p.c.fn)+'.<br>Le point A de la courbe a pour abscisse '+fm(a)+', le point M a pour abscisse '+fm(b)+'.<br>Calculer le taux de variation de '+I("f")+' entre '+fm(a)+' et '+fm(b)+'.</div>'+stepsHTML(rows,p.n);
 }
-$("btn10").onclick=function(){ st10.n=(st10.n>=rows10().length)?0:st10.n+1; render(); };
-$("out10").onclick=function(e){ if(e.target.id==="rv10"){ st10.rev=!st10.rev; render(); } };
+function initEx(p){
+  p.f=FN(p.c.fn.f); p.a=p.c.a; p.b=p.c.b;
+  $("ctl"+p.i).innerHTML='<button type="button" class="act" id="btn'+p.i+'">Étape suivante →</button>';
+  $("btn"+p.i).onclick=function(){ p.n=(p.n>=rowsEx(p).length)?0:p.n+1; render(); };
+}
 
-/* ---- page 11 : tracer une tangente ---- */
-$("ctl11").innerHTML='<button type="button" class="act" id="btn11">Étape suivante →</button>';
-function rows11(){
-  var k=cs(st11.ci,st11.ai), a=k.a, m=k.m, p=k.p;
-  var hz=(m===0), L=[
-   ["c4","Je lis le nombre dérivé","L’équation est de la forme "+'<span class="nw">'+I("y")+" = "+I("a")+I("x")+" + "+I("b")+'</span>'+" : le coefficient directeur de la tangente est "+I("a")+" = "+fm(m)+", donc <b>"+dp(a)+" = "+fm(m)+"</b>."],
-   ["c0","Je calcule deux points",tabV(m,p)
-      +"Pour "+I("x")+" = 1 : "+I("y")+" = "+par(m)+" × 1 + "+par(p)+" = "+fm(m+p)],
-   ["c1","Je trace la droite","Je place les points (0 ; "+fm(p)+") et (1 ; "+fm(m+p)+"), puis je trace la droite : c’est la tangente."]
-  ];
-  if(hz) L=[L[0],["c1","Je trace la droite","La tangente est <b>horizontale</b> : elle est parallèle à l’axe des abscisses. Inutile de calculer des points, je la trace directement à la hauteur "+I("y")+" = "+fm(p)+" : c’est la tangente."]];
-  return L;
-}
-function draw11(){
-  var k=cs(st11.ci,st11.ai), n=st11.n, a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f);
-  var hz=(m===0), nl=hz?2:3;
-  if(!hz&&n>=2) g+=cross(0,p,"cP")+cross(1,m+p,"cP");
-  if(n>=nl) g+=ln(m,p,"tan");
-  if(n>=nl) g+=cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
-  $("svg11").innerHTML=g;
-  var rows=rows11();
-  setBtn(11,n,rows.length);
-  $("out11").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente à la courbe au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,p)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>'+stepsHTML(rows,n);
-}
-$("btn11").onclick=function(){ st11.n=(st11.n>=rows11().length)?0:st11.n+1; render(); };
-
-/* ---- page 12 : entraînement ---- */
-$("ctl12").innerHTML='<div class="sel" id="md12"></div><button type="button" class="act" id="new12">Nouvel exemple</button><button type="button" class="act alt" id="rev12">Afficher la correction</button>';
-function md12UI(){
-  var el=$("md12");
-  el.innerHTML='<span class="sl">Exercice :</span><button type="button" class="b'+(st12.mode==="lire"?" on":"")+'" data-m="lire">Lire sur le graphique</button><button type="button" class="b'+(st12.mode==="tracer"?" on":"")+'" data-m="tracer">Tracer à partir de l’équation</button>';
-  el.onclick=function(e){ var b=e.target.closest("button"); if(!b) return; st12.mode=b.getAttribute("data-m"); st12.rev=false; md12UI(); render(); };
-}
-$("new12").onclick=function(){
-  var ci=st12.ci, ai=st12.ai, t=0;
-  while(t<20 && ci===st12.ci && ai===st12.ai){ ci=Math.floor(Math.random()*4); ai=Math.floor(Math.random()*3); t++; }
-  st12.ci=ci; st12.ai=ai; st12.rev=false; render();
-};
-$("rev12").onclick=function(){ st12.rev=!st12.rev; render(); };
-function draw12(){
-  var k=cs(st12.ci,st12.ai), a=k.a, m=k.m, p=k.p, g=base()+curve(k.c.f), o="";
-  if(st12.mode==="lire"){
-    g+=ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
-    o='<p class="txt">Courbe de '+k.c.lab+'.<br>La tangente est tracée au point A d’abscisse '+fm(a)+'.<br><b>Lis '+fp(a)+', '+dp(a)+' et l’équation de la tangente.</b></p>';
-    if(st12.rev) o+='<div class="box">'+fp(a)+' = '+fm(k.fa)+' : c’est l’<b>ordonnée du point A</b> (on la lit sur l’axe des ordonnées).<br>'+dp(a)+' = '+fm(m)+' : c’est le <b>coefficient directeur de la tangente</b> en A.<br><b>Attention : ne pas confondre '+I("f")+'('+I("a")+') et '+I("f")+'′('+I("a")+').</b><br>Équation de la tangente : '+eqS(m,p)+'</div>';
+/* ================= curseur h ================= */
+function drawCur(p){
+  var f=p.f, a=p.a, fa=f(a), h=p.HV[p.k], xm=a+h, fb=f(xm), zero=(h===0), g=base()+curve(f);
+  var yAx=Y(0), endV=yAx+62, rowArr=yAx+48, rowLab=yAx+84;
+  var x1=X(a), x2=X(xm), yA=Y(fa), yM=Y(fb), mid=(x1+x2)/2, lx=X(0)-24, m=zero?0:(fb-fa)/h;
+  if(!zero) g+=ln(m,fa-m*a,"sec");
+  g+='<line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+x1+'" y2="'+endV+'"/><line class="vA" x1="'+x1+'" y1="'+yA+'" x2="'+X(0)+'" y2="'+yA+'"/>';
+  if(!zero) g+='<line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+x2+'" y2="'+endV+'"/><line class="vM" x1="'+x2+'" y1="'+yM+'" x2="'+X(0)+'" y2="'+yM+'"/>';
+  if(Math.abs(x2-x1)>=5) g+=arrowPx(x1,rowArr,x2,rowArr)+T(IS("h"),mid,rowArr-8,"","middle");
+  g+=T(fm(a),x1,rowLab,"tA","middle");
+  if(!zero&&Math.abs(x2-x1)>=44) g+=T(fm(a)+" + "+IS("h"),x2,rowLab,"tM","middle");
+  var yFa=yA-5, yFm=yM-5;
+  if(!zero&&Math.abs(yA-yM)<18){ if(yM<yA) yFa=yA+16; else yFm=yM+16; }
+  g+=T(IS("f")+"("+fm(a)+")",lx,yFa,"tA","end");
+  if(!zero) g+=T(IS("f")+"("+fm(a)+" + "+IS("h")+")",lx,yFm,"tM","end");
+  g+=cross(a,fa,"cA")+T("A",x1+10,yA+20,"tA","start");
+  if(!zero) g+=cross(xm,fb,"cM")+T("M",x2-10,yM-12,"tM","end");
+  $("svg"+p.i).innerHTML=g;
+  $("o"+p.i).innerHTML=I("h")+" = "+fm6(h);
+  var o='<div class="p2txt">Soit '+I("f")+' la fonction définie sur ℝ par '+FL(p.c.fn)+'.<br>Le point A a pour abscisse '+fm(a)+' et le point M a pour abscisse '+fm(a)+' + '+I("h")+' (avec '+I("h")+' ≠ 0). Déplace le curseur '+I("h")+'.</div>';
+  if(zero){
+    o+='<div class="box sec">Pour '+I("h")+' = 0, M est confondu avec A : il n’y a plus de sécante (AM), et on ne peut pas diviser par 0.</div>';
   } else {
-    o='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,p)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>';
-    if(st12.rev){
-      g+=(m===0?"":cross(0,p,"cP")+cross(1,m+p,"cP"))+ln(m,p,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
-      o+='<div class="box">L’équation est de la forme '+'<span class="nw">'+I("y")+' = '+I("a")+I("x")+' + '+I("b")+'</span>'+' : le coefficient directeur de la tangente est '+I("a")+' = '+fm(m)+'.<br>Or '+dp(a)+' est le coefficient directeur de la tangente en A, donc <b>'+dp(a)+' = '+fm(m)+'</b>.<br><br>'+(m===0?'Comme la droite est <b>horizontale</b>, parallèle à l’axe des abscisses, on la trace directement à la hauteur '+I("y")+' = '+fm(p)+'.':'Pour tracer la droite, je fais un tableau de valeurs :<br>'+tabV(m,p)+'Je place les points (0 ; '+fm(p)+') et (1 ; '+fm(m+p)+') puis je trace la droite.')+'</div>';
-    }
+    o+='<div class="box sec">Taux de variation de '+I("f")+' entre '+fm(a)+' et '+fm(a)+' + '+I("h")+' :<br>'
+      +fr(I("f")+"("+fm(a)+" + "+I("h")+") − "+I("f")+"("+fm(a)+")",I("h"))+" = "+fr(I("f")+"("+fm6(xm)+") − "+I("f")+"("+fm(a)+")",fm6(h))+" = "+fr(fm6(fb)+" − "+par(fa),fm6(h))+' = <span class="val">'+fm6(m)+'</span></div>';
   }
-  $("svg12").innerHTML=g;
-  $("rev12").textContent=st12.rev?"Masquer la correction":"Afficher la correction";
-  $("out12").innerHTML=o;
+  $("out"+p.i).innerHTML=o;
+}
+function initCur(p){
+  p.f=FN(p.c.fn.f); p.a=p.c.a; p.HV=p.c.valeurs; p.k=p.HV.indexOf(p.c.h0);
+  $("ctl"+p.i).innerHTML='<div class="row"><label for="s'+p.i+'">'+I("h")+'</label><input type="range" id="s'+p.i+'" min="0" max="'+(p.HV.length-1)+'" step="1" value="'+p.k+'"><span class="o" id="o'+p.i+'"></span></div><button type="button" class="p2btn sec" id="h0'+p.i+'">Mettre h à 0</button>';
+  $("h0"+p.i).onclick=function(){ p.k=p.HV.indexOf(0); $("s"+p.i).value=p.k; render(); };
+  $("s"+p.i).oninput=function(){ p.k=+this.value; render(); };
 }
 
-/* ---- page A : lire f(a) et f'(a), méthode pas à pas ---- */
-var CU2=[
- {lab:I("f")+"("+I("x")+") = "+I("x")+"² "+M+" 2"+I("x"), f:function(x){return x*x-2*x}, d:function(x){return 2*x-2}, as:[-1,1,2]},
- {lab:I("f")+"("+I("x")+") = "+M+I("x")+"² + 2"+I("x")+" + 3", f:function(x){return -x*x+2*x+3}, d:function(x){return -2*x+2}, as:[0,1,2]},
- {lab:I("f")+"("+I("x")+") = "+fr(I("x")+"²","2")+" "+M+" 2"+I("x")+" + 1", f:function(x){return x*x/2-2*x+1}, d:function(x){return x-2}, as:[0,2,4]},
- {lab:I("f")+"("+I("x")+") = "+I("x")+"³ "+M+" 3"+I("x"), f:function(x){return x*x*x-3*x}, d:function(x){return 3*x*x-3}, as:[-1,0,1]}
-];
-var stA={ci:0,ai:0,n:0};
-$("ctlA").innerHTML='<button type="button" class="act" id="btnA">Étape suivante →</button><button type="button" class="act alt" id="nwA">Nouvel exemple</button>';
-function rowsA(){
-  var k=cs(stA.ci,stA.ai,CU2), a=k.a, m=k.m;
+/* ================= tangentes ================= */
+function tgv(p){var a=p.a, fa=p.f(a), m=p.d(a); return {a:a,fa:fa,m:m,p:fa-m*a,xb:a+1,yb:fa+m};}
+function rowsTg(p){
+  var v=tgv(p), a=v.a;
+  if(v.m===0) return [
+   ["c0","Je lis le coefficient directeur","La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
+   ["c4","Je conclus","C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = 0</b>."]
+  ];
+  return [
+   ["c0","Je lis deux points de la tangente","A("+fm(a)+" ; "+fm(v.fa)+") et B("+fm(v.xb)+" ; "+fm(v.yb)+")"],
+   ["c1","Je lis le coefficient directeur","Avec les flèches : de A à B, on avance de <b>1</b> et on "+(v.m>0?"monte de <b>"+fm(v.m)+"</b>":v.m<0?"descend de <b>"+fm(Math.abs(v.m))+"</b>":"ne monte pas (<b>0</b>)")+" :<br>"+fr(fm(v.m),"1")+" = <b>"+fm(v.m)+"</b>"],
+   ["c4","Je conclus","Le coefficient directeur de la tangente à la courbe au point d’abscisse "+fm(a)+" est <b>"+fm(v.m)+"</b>.<br>C’est le <b>nombre dérivé</b> de "+I("f")+" en "+fm(a)+", noté "+dp(a)+" : <b>"+dp(a)+" = "+fm(v.m)+"</b>."]
+  ];
+}
+function drawTg(p){
+  var v=tgv(p), a=v.a, m2=p.c.m2;
+  var g=base()+curve(p.f)+ln(v.m,v.p,"tan")+cross(a,v.fa,"cA")+T("A",X(a)-10,Y(v.fa)-12,"tA","end");
+  if(m2!==null&&m2!==undefined) g+=cross(m2,p.f(m2),"cM")+T("M",X(m2)+10,Y(p.f(m2))-12,"tM","start");
+  if(v.m!==0&&p.n>=1) g+=cross(v.xb,v.yb,"cM")+T("B",X(v.xb)+10,Y(v.yb)+(v.m<0?22:-12),"tM","start");
+  if(v.m!==0&&p.n>=2){
+    g+=arrow(a,v.fa,v.xb,v.fa)+arrow(v.xb,v.fa,v.xb,v.yb)
+      +T("1",X(a+0.5),Y(v.fa)+(v.m>=0?19:-8),"tn","middle")+T(fm(v.m),X(v.xb)+10,Y(v.fa+v.m/2)+5,"tn","start");
+  }
+  $("svg"+p.i).innerHTML=g;
+  var rows=rowsTg(p);
+  setBtn(p.i,p.n,rows.length);
+  $("out"+p.i).innerHTML='<p class="txt">Courbe de '+FL(p.c.fn)+'.</p>'
+    +'<div class="p2txt">La droite verte est la <b>tangente</b> à la courbe au point A d’abscisse '+fm(a)+'. On détermine son coefficient directeur.</div>'
+    +((m2!==null&&m2!==undefined)?'<div class="p2txt">Cette droite recoupe la courbe en un point M. En A, elle est <b>tangente</b> à la courbe ; en M, elle est <b>sécante</b> sans être tangente.<br><b>Une tangente est une sécante particulière.</b></div>':'')
+    +stepsHTML(rows,p.n);
+}
+function initTg(p){
+  p.f=FN(p.c.fn.f); p.d=FN(p.c.fn.d); p.a=p.c.a;
+  $("ctl"+p.i).innerHTML='<button type="button" class="act" id="btn'+p.i+'">Étape suivante →</button>';
+  $("btn"+p.i).onclick=function(){ p.n=(p.n>=rowsTg(p).length)?0:p.n+1; render(); };
+}
+
+/* ================= lire f(a) et f'(a), pas à pas ================= */
+function rowsLire(p){
+  var k=cs(p.ci,p.ai,p.CU), a=k.a, m=k.m;
   return [
    ["c0","Je lis f(a)","Le point A a pour abscisse "+fm(a)+" (pointillé vertical). Je lis son <b>ordonnée</b> sur l’axe des ordonnées (pointillé horizontal) :<br><b>"+fp(a)+" = "+fm(k.fa)+"</b>."],
    ["c1","Je lis f′(a)", m!==0
       ? "Le coefficient directeur de la tangente au point d’abscisse <b>"+fm(a)+"</b> est <b>"+fm(m)+"</b>.<br>Donc <b>"+dp(a)+" = "+fm(m)+"</b>."
-      : "La tangente au point d’abscisse <b>"+fm(a)+"</b> est <b>horizontale</b> (parallèle à l’axe des abscisses) : elle ne monte ni ne descend, donc son coefficient directeur est <b>0</b>.<br>Donc <b>"+dp(a)+" = 0</b>."],
+      : "La tangente au point d’abscisse <b>"+fm(a)+"</b> est <b>horizontale</b> (parallèle à l’axe des abscisses), donc son coefficient directeur est <b>0</b>.<br>Donc <b>"+dp(a)+" = 0</b>."],
    ["c4","Je conclus",fp(a)+" = <b>"+fm(k.fa)+"</b> : <b>ordonnée</b> du point A.<br>"+dp(a)+" = <b>"+fm(m)+"</b> : <b>coefficient directeur</b> de la tangente en A.<br><b>Ne pas confondre</b> "+I("f")+"("+I("a")+") et "+I("f")+"′("+I("a")+")."]
   ];
 }
-function drawA(){
-  var k=cs(stA.ci,stA.ai,CU2), n=stA.n, a=k.a, m=k.m;
+function drawLire(p){
+  var k=cs(p.ci,p.ai,p.CU), n=p.n, a=k.a, m=k.m;
   var g=base()+curve(k.c.f)+ln(m,k.p,"tan");
-  if(n>=1){ if(a!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(0)+'" y2="'+Y(k.fa)+'"/>'; if(a!==0&&k.fa!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(a)+'" y2="'+Y(0)+'"/>'; g+=(a<0?T(IS("f")+"("+fm(a)+")",X(0)+8,Y(k.fa)-9,"tA","start"):T(IS("f")+"("+fm(a)+")",X(0)-24,Y(k.fa)-9,"tA","end")); }
+  if(n>=1){
+    if(a!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(0)+'" y2="'+Y(k.fa)+'"/>';
+    if(a!==0&&k.fa!==0) g+='<line class="vA" x1="'+X(a)+'" y1="'+Y(k.fa)+'" x2="'+X(a)+'" y2="'+Y(0)+'"/>';
+    g+=(a<0?T(IS("f")+"("+fm(a)+")",X(0)+8,Y(k.fa)-9,"tA","start"):T(IS("f")+"("+fm(a)+")",X(0)-24,Y(k.fa)-9,"tA","end"));
+  }
   if(n>=2&&m!==0){
     g+=arrow(a,k.fa,a+1,k.fa)+T("1",X(a+0.5),Y(k.fa)+(m>=0?19:-8),"tn","middle");
     g+=arrow(a+1,k.fa,a+1,k.fa+m)+cross(a+1,k.fa+m,"cM")+T(fm(m),X(a+1)+10,Y(k.fa+m/2)+5,"tn","start");
   }
   g+=cross(a,k.fa,"cA")+(a===0?T("A",X(a)+10,Y(k.fa)-12,"tA","start"):T("A",X(a)-10,Y(k.fa)-12,"tA","end"));
-  $("svgA").innerHTML=g;
-  var rows=rowsA(); setBtn("A",n,rows.length);
-  $("outA").innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
+  $("svg"+p.i).innerHTML=g;
+  var rows=rowsLire(p); setBtn(p.i,n,rows.length);
+  $("out"+p.i).innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
     +'<div class="p2txt">La droite verte est la tangente à la courbe au point A d’abscisse '+fm(a)+'. Déterminer '+fp(a)+' et '+dp(a)+'.</div>'+stepsHTML(rows,n);
 }
-$("nwA").onclick=function(){
-  var ci=stA.ci, ai=stA.ai, t=0;
-  while(t<20 && ci===stA.ci && ai===stA.ai){ ci=Math.floor(Math.random()*4); ai=Math.floor(Math.random()*3); t++; }
-  stA.ci=ci; stA.ai=ai; stA.n=0; selUI("selA",stA,true,CU2); render();
-};
-$("btnA").onclick=function(){ stA.n=(stA.n>=rowsA().length)?0:stA.n+1; render(); };
+function initLire(p){
+  p.CU=mkCU(p.c.courbes); p.ci=0; p.ai=0;
+  $("ctl"+p.i).innerHTML='<button type="button" class="act" id="btn'+p.i+'">Étape suivante →</button><button type="button" class="act alt" id="nw'+p.i+'">Nouvel exemple</button>';
+  $("btn"+p.i).onclick=function(){ p.n=(p.n>=rowsLire(p).length)?0:p.n+1; render(); };
+  $("nw"+p.i).onclick=function(){ autreExemple(p); selUI("sel"+p.i,p,true,p.CU); render(); };
+  selUI("sel"+p.i,p,true,p.CU);
+}
+
+/* ================= lire l'équation d'une tangente ================= */
+function rowsEq(p){
+  var k=cs(p.ci,p.ai,p.CU), m=k.m, q=k.p;
+  return [
+   ["c1","Je lis le coefficient directeur", m!==0
+      ? "Avec les flèches : à partir de A, on avance de <b>1</b> et on "+(m>0?"monte":"descend")+" de <b>"+fm(Math.abs(m))+"</b> :<br>"+I("a")+" = "+fr(fm(m),"1")+" = <b>"+fm(m)+"</b>"
+      : "La tangente est <b>horizontale</b> : son coefficient directeur est <b>0</b>."],
+   ["c4","J’en déduis le nombre dérivé","Le coefficient directeur de la tangente est le nombre dérivé : <b>"+dp(k.a)+" = "+fm(m)+"</b>."],
+   ["c0","Je lis l’ordonnée à l’origine","La tangente coupe l’axe des ordonnées en (0 ; "+fm(q)+") :<br>l’ordonnée à l’origine est <b>"+I("b")+" = "+fm(q)+"</b>."],
+   ["c2","J’écris l’équation","La tangente a pour équation <b>"+eqS(m,q)+"</b>."]
+  ];
+}
+function drawEq(p){
+  var k=cs(p.ci,p.ai,p.CU), n=p.n, a=k.a, m=k.m, q=k.p, g=base()+curve(k.c.f)+ln(m,q,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+  if(n>=1){
+    g+=arrow(a,k.fa,a+1,k.fa)+T("1",X(a+0.5),Y(k.fa)+(m>=0?19:-8),"tn","middle");
+    if(m!==0) g+=arrow(a+1,k.fa,a+1,k.fa+m)+cross(a+1,k.fa+m,"cM")+T(fm(m),X(a+1)+10,Y(k.fa+m/2)+5,"tn","start");
+  }
+  if(n>=3) g+=cross(0,q,"cP");
+  $("svg"+p.i).innerHTML=g;
+  var rows=rowsEq(p), rv=p.rev;
+  $("btn"+p.i).textContent=(n===0)?"Voir la méthode →":(n>=rows.length)?"Masquer la méthode ↺":"Étape suivante →";
+  function hv(t){ return '<span class="hv'+(rv?' on':'')+'">'+(rv?t:'')+'</span>'; }
+  $("out"+p.i).innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p>'
+    +'<div class="p2txt">La tangente est tracée au point A d’abscisse '+fm(a)+'. On lit graphiquement son coefficient directeur, on en déduit '+dp(a)+', puis on lit l’ordonnée à l’origine pour écrire l’équation de la tangente.</div>'
+    +'<div class="p2ans"><p>Le coefficient directeur de la tangente est '+hv(fm(m))+'.</p>'
+    +'<p>Donc le nombre dérivé : '+dp(a)+' = '+hv(fm(m))+'</p>'
+    +'<p>L’ordonnée à l’origine est '+hv(fm(q))+'.</p>'
+    +'<p>La tangente a pour équation '+hv(eqS(m,q))+'.</p>'
+    +'<button type="button" class="p2btn" id="rv'+p.i+'">'+(rv?'Masquer les valeurs':'Afficher les valeurs')+'</button></div>'
+    +stepsHTML(rows,n);
+}
+function initEq(p){
+  p.CU=mkCU(p.c.courbes); p.ci=0; p.ai=2; p.rev=false;
+  $("ctl"+p.i).innerHTML='<button type="button" class="act" id="btn'+p.i+'">Voir la méthode →</button>';
+  $("btn"+p.i).onclick=function(){ p.n=(p.n>=rowsEq(p).length)?0:p.n+1; render(); };
+  $("out"+p.i).onclick=function(e){ if(e.target.id==="rv"+p.i){ p.rev=!p.rev; render(); } };
+  selUI("sel"+p.i,p,true,p.CU);
+}
+
+/* ================= tracer une tangente ================= */
+function rowsTr(p){
+  var k=cs(p.ci,p.ai,p.CU), a=k.a, m=k.m, q=k.p;
+  var hz=(m===0), L=[
+   ["c4","Je lis le nombre dérivé","L’équation est de la forme "+'<span class="nw">'+I("y")+" = "+I("a")+I("x")+" + "+I("b")+'</span>'+" : le coefficient directeur de la tangente est "+I("a")+" = "+fm(m)+", donc <b>"+dp(a)+" = "+fm(m)+"</b>."],
+   ["c0","Je calcule deux points",tabV(m,q)+"Pour "+I("x")+" = 1 : "+I("y")+" = "+par(m)+" × 1 + "+par(q)+" = "+fm(m+q)],
+   ["c1","Je trace la droite","Je place les points (0 ; "+fm(q)+") et (1 ; "+fm(m+q)+"), puis je trace la droite : c’est la tangente."]
+  ];
+  if(hz) L=[L[0],["c1","Je trace la droite","La tangente est <b>horizontale</b> : elle est parallèle à l’axe des abscisses. Inutile de calculer des points, je la trace directement à la hauteur "+I("y")+" = "+fm(q)+" : c’est la tangente."]];
+  return L;
+}
+function drawTr(p){
+  var k=cs(p.ci,p.ai,p.CU), n=p.n, a=k.a, m=k.m, q=k.p, g=base()+curve(k.c.f);
+  var hz=(m===0), nl=hz?2:3;
+  if(!hz&&n>=2) g+=cross(0,q,"cP")+cross(1,m+q,"cP");
+  if(n>=nl) g+=ln(m,q,"tan");
+  if(n>=nl) g+=cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+  $("svg"+p.i).innerHTML=g;
+  var rows=rowsTr(p);
+  setBtn(p.i,n,rows.length);
+  $("out"+p.i).innerHTML='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente à la courbe au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,q)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>'+stepsHTML(rows,n);
+}
+function initTr(p){
+  p.CU=mkCU(p.c.courbes); p.ci=0; p.ai=2;
+  $("ctl"+p.i).innerHTML='<button type="button" class="act" id="btn'+p.i+'">Étape suivante →</button>';
+  $("btn"+p.i).onclick=function(){ p.n=(p.n>=rowsTr(p).length)?0:p.n+1; render(); };
+  selUI("sel"+p.i,p,true,p.CU);
+}
+
+/* ================= entraînement ================= */
+function mdUI(p){
+  var el=$("md"+p.i);
+  el.innerHTML='<span class="sl">Exercice :</span><button type="button" class="b'+(p.mode==="lire"?" on":"")+'" data-m="lire">Lire sur le graphique</button><button type="button" class="b'+(p.mode==="tracer"?" on":"")+'" data-m="tracer">Tracer à partir de l’équation</button>';
+  el.onclick=function(e){ var b=e.target.closest("button"); if(!b) return; p.mode=b.getAttribute("data-m"); p.rev=false; mdUI(p); render(); };
+}
+function drawEnt(p){
+  var k=cs(p.ci,p.ai,p.CU), a=k.a, m=k.m, q=k.p, g=base()+curve(k.c.f), o="";
+  if(p.mode==="lire"){
+    g+=ln(m,q,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+    o='<p class="txt">Courbe de '+k.c.lab+'.<br>La tangente est tracée au point A d’abscisse '+fm(a)+'.<br><b>Lis '+fp(a)+', '+dp(a)+' et l’équation de la tangente.</b></p>';
+    if(p.rev) o+='<div class="box">'+fp(a)+' = '+fm(k.fa)+' : c’est l’<b>ordonnée du point A</b> (on la lit sur l’axe des ordonnées).<br>'+dp(a)+' = '+fm(m)+' : c’est le <b>coefficient directeur de la tangente</b> en A.<br><b>Attention : ne pas confondre '+I("f")+'('+I("a")+') et '+I("f")+'′('+I("a")+').</b><br>Équation de la tangente : '+eqS(m,q)+'</div>';
+  } else {
+    o='<p class="txt">Courbe de '+k.c.lab+'.</p><div class="box red">La tangente au point d’abscisse '+fm(a)+' a pour équation <b>'+eqS(m,q)+'</b>.<br>Que vaut '+dp(a)+' ? Puis tracer la tangente.</div>';
+    if(p.rev){
+      g+=(m===0?"":cross(0,q,"cP")+cross(1,m+q,"cP"))+ln(m,q,"tan")+cross(a,k.fa,"cA")+T("A",X(a)-10,Y(k.fa)-12,"tA","end");
+      o+='<div class="box">L’équation est de la forme '+'<span class="nw">'+I("y")+' = '+I("a")+I("x")+' + '+I("b")+'</span>'+' : le coefficient directeur de la tangente est '+I("a")+' = '+fm(m)+'.<br>Or '+dp(a)+' est le coefficient directeur de la tangente en A, donc <b>'+dp(a)+' = '+fm(m)+'</b>.<br><br>'+(m===0?'Comme la droite est <b>horizontale</b>, parallèle à l’axe des abscisses, on la trace directement à la hauteur '+I("y")+' = '+fm(q)+'.':'Pour tracer la droite, je fais un tableau de valeurs :<br>'+tabV(m,q)+'Je place les points (0 ; '+fm(q)+') et (1 ; '+fm(m+q)+') puis je trace la droite.')+'</div>';
+    }
+  }
+  $("svg"+p.i).innerHTML=g;
+  $("rev"+p.i).textContent=p.rev?"Masquer la correction":"Afficher la correction";
+  $("out"+p.i).innerHTML=o;
+}
+function initEnt(p){
+  p.CU=mkCU(p.c.courbes); p.ci=0; p.ai=2; p.mode="lire"; p.rev=false;
+  $("ctl"+p.i).innerHTML='<div class="sel" id="md'+p.i+'"></div><button type="button" class="act" id="new'+p.i+'">Nouvel exemple</button><button type="button" class="act alt" id="rev'+p.i+'">Afficher la correction</button>';
+  mdUI(p);
+  $("new"+p.i).onclick=function(){ autreExemple(p); render(); };
+  $("rev"+p.i).onclick=function(){ p.rev=!p.rev; render(); };
+  $("sel"+p.i).hidden=true;
+}
 
 /* ================= fenêtres : déplacer, redimensionner, texte proportionnel ================= */
 function fitPage(sec){
-  var wins=sec.querySelectorAll(".win"), bot=0, i, top=sec.getBoundingClientRect().top;
+  var wins=sec.querySelectorAll(".win"), bot=0, i;
   for(i=0;i<wins.length;i++) bot=Math.max(bot,wins[i].offsetTop+wins[i].offsetHeight);
   sec.style.minHeight=Math.max(innerHeight,bot+90)+"px";
 }
@@ -624,26 +591,23 @@ function layoutPage(sec){
 }
 Array.prototype.forEach.call(document.querySelectorAll(".win"),initWin);
 
-/* ================= navigation ================= */
-function mp(i){ return i<=1?1:(i===2?"T":(i<=6?i-1:(i===7?"T2":(i<=11?i-2:(i===12?"A":(i===13?"T3":i-4)))))); }
-function ip(){ return mp(page); }
-function render(){
-  var page=ip();
-  if(page>=2&&page<=4) drawEx(page-2); else if(page===5) draw5(); else if(page>=6&&page<=9) drawTg(page-6);
-  else if(page==="A") drawA(); else if(page===10) draw10(); else if(page===11) draw11(); else if(page===12) draw12();
-}
+/* ================= initialisation des pages et navigation ================= */
+var DRAW={taux:drawEx,curseur:drawCur,tangente:drawTg,lire:drawLire,equation:drawEq,tracer:drawTr,entrainement:drawEnt};
+var INIT={taux:initEx,curseur:initCur,tangente:initTg,lire:initLire,equation:initEq,tracer:initTr,entrainement:initEnt};
+P.forEach(function(p){
+  if(INIT[p.type]) INIT[p.type](p);
+  if(p.type==="carte"&&p.c.bouton){ $("go"+p.i).onclick=function(){ goPage(p.i+1); }; }
+});
+function render(){ var p=P[page-1]; if(DRAW[p.type]) DRAW[p.type](p); }
 function goPage(n){
   page=clamp(n,1,NP);
-  for(var i=1;i<=NP;i++) $("pg"+mp(i)).hidden=(i!==page);
-  var sec=$("pg"+ip());
+  for(var i=1;i<=NP;i++) $("pg"+i).hidden=(i!==page);
+  var sec=$("pg"+page);
   if(!sec.getAttribute("data-laid")) layoutPage(sec); else fitPage(sec);
   $("pNum").textContent=page+" / "+NP;
   $("pPrev").disabled=(page===1); $("pNext").disabled=(page===NP);
   render(); window.scrollTo(0,0);
 }
-selUI("selA",stA,true,CU2); selUI("sel10",st10,true); selUI("sel11",st11,true); md12UI();
-$("sel12").hidden=true;
-$("go1").onclick=function(){ goPage(2); };
 $("pPrev").onclick=function(){ goPage(page-1); };
 $("pNext").onclick=function(){ goPage(page+1); };
 document.addEventListener("keydown",function(e){
