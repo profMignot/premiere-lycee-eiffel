@@ -1,0 +1,2176 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>Dérivation — Étude locale (2e partie)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+/* Quatre fenêtres (courbe, curseur, taux de variation, tangente) rangées en grille ; chacune se zoome, s'agrandit ou se masque. Une colonne qui défile sur téléphone. */
+:root{
+  --bg:#f4f7f9; --surface:#ffffff; --fg:#12202c; --muted:#54677a; --line:#d6e0e8; --grid:#e6edf3;
+  --curve:#1d4f91; --secant:#c24a08; --tangent:#0f7a5a;
+  --font-ui:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-math:"STIX Two Text",Georgia,"Times New Roman",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1620; --surface:#15202c; --fg:#e8eff6; --muted:#9bb0c3; --line:#263646; --grid:#1f2d3b;
+    --curve:#7fb2f0; --secant:#ff9a5c; --tangent:#4fd1a1; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1620; --surface:#15202c; --fg:#e8eff6; --muted:#9bb0c3; --line:#263646; --grid:#1f2d3b;
+  --curve:#7fb2f0; --secant:#ff9a5c; --tangent:#4fd1a1; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.4;padding-inline:clamp(16px,2.5vw,28px);padding-block:8px}
+i{font-family:var(--font-math)}
+.app{height:100%;min-height:560px;max-width:1700px;margin:0 auto;display:grid;gap:8px;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-areas:"head head" "fig side" "ctrl side"}
+header{grid-area:head;display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px}
+h1{font-family:var(--font-math);font-weight:600;font-size:clamp(1.05rem,1.8vw,1.3rem);line-height:1.15;margin:0}
+.sub{margin:0;color:var(--muted);font-family:var(--font-math);font-size:.92rem}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-left:auto}
+.chips span{color:var(--muted);font-size:.8rem}
+button{font:inherit;font-weight:500;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--curve);outline-offset:2px}
+button.chip{padding:3px 10px;border-radius:999px;font-size:.8rem}
+button.chip[aria-pressed=true]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+
+/* fenêtres : la taille du contenu suit --zf (zoom de la fenêtre) */
+.win{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px;min-width:0;min-height:0;font-size:calc(15px * var(--zf,1))}
+.win.big{font-size:calc(15px * var(--zf,1) * 1.5)}
+#fig{grid-area:fig;display:flex;flex-direction:column;font-size:15px;padding:8px}
+#fig .bar{margin-bottom:6px}
+#ctrl{position:fixed;z-index:30;left:16px;top:96px;width:min(440px,calc(100vw - 16px));padding:8px 12px 10px;font-size:calc(13px * var(--zf,1));box-shadow:0 8px 28px rgba(0,0,0,.25)}
+#swin{position:fixed;z-index:32;left:auto;top:200px;width:min(760px,calc(100vw - 16px));padding:6px 12px 10px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+#swin,#swin *{cursor:move;touch-action:none;user-select:none}
+#swin button{cursor:pointer;font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;width:24px;height:24px;line-height:1}
+#swin .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+#swin .sl{color:var(--secant);font-weight:500;font-family:"STIX Two Text",serif;font-size:calc(32px * var(--hz,1));padding:6px 4px 0;line-height:1.35}
+#swin .sl+.sl{border-top:1px solid var(--line);margin-top:6px}
+#swin .sl b{color:var(--secant);font-style:italic;font-weight:700}
+#hwin{position:fixed;z-index:31;left:auto;right:24px;top:110px;min-width:170px;padding:6px 10px 10px;box-shadow:0 8px 28px rgba(0,0,0,.25)}
+#hwin,#hwin *{cursor:move;touch-action:none;user-select:none}
+#hwin button{cursor:pointer}
+#hwin .bar{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+#hwin .hv{font-family:"STIX Two Text",serif;font-style:italic;font-weight:600;text-align:center;padding:4px 8px 0;font-size:calc(34px * var(--hz,1));white-space:nowrap}
+#hwin button{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:6px;width:24px;height:24px;cursor:pointer;line-height:1}
+#ctrl .bar{cursor:move;touch-action:none;user-select:none}
+.side{grid-area:side;display:grid;gap:12px;min-width:0;min-height:0;align-content:start;overflow:auto}
+.panel{overflow:auto;padding:.8em 1em}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 .6em;font-size:15px}
+.bar h2{font-size:.98rem;font-weight:600;margin:0;flex:1;min-width:10rem}
+.bar h2 .sw{margin-right:10px;vertical-align:middle}
+.wbs{display:inline-flex;flex-wrap:wrap;gap:6px;flex:none}
+button.wb,button.wt{height:26px;border-radius:6px;color:var(--muted);display:inline-flex;align-items:center;justify-content:center}
+button.wb{width:26px;padding:0}
+button.wt{padding:0 8px;font-size:12px}
+button.wb:hover,button.wt:hover{color:var(--fg);border-color:var(--muted)}
+
+/* figure */
+.figbody{display:flex;gap:8px;flex:1 1 0;min-height:0}
+.toggles{display:flex;flex-direction:column;gap:4px;flex:none;align-self:flex-start;max-width:42%}
+.toggles .hd{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:8px 2px 0}
+button.tg{display:flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;font-size:12px;color:var(--muted);text-align:left}
+button.tg .dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--c);flex:none}
+button.tg[aria-pressed=true]{color:var(--fg);border-color:var(--c);box-shadow:inset 0 0 0 1px var(--c)}
+button.tg[aria-pressed=true] .dot{background:var(--c)}
+.plotbox{position:relative;flex:1 1 0;min-width:0;min-height:0}
+svg.plot{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+svg.plot.drag{cursor:grabbing}
+svg text{font-family:var(--font-math);font-size:var(--fs,20px);fill:var(--fg);paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+svg .it{font-style:italic}
+svg .hvalT{font-family:var(--math,"STIX Two Text",serif);font-style:italic;font-weight:600;fill:var(--fg);paint-order:stroke;stroke:var(--bg,#fff);stroke-width:4px}
+.grid{stroke:var(--grid);stroke-width:1}
+.axis{stroke:var(--muted);stroke-width:1.5;fill:none}
+.tick{stroke:var(--muted);stroke-width:1.2}
+.axfill{fill:var(--muted)}
+.curve{fill:none;stroke:var(--curve);stroke-width:3}
+.tan{stroke:var(--tangent);stroke-width:3}
+.sec{stroke:var(--secant);stroke-width:3.5}
+.leg{stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 4}
+.vA{stroke:var(--tangent);stroke-width:2.2;stroke-dasharray:6 3}
+.vM{stroke:var(--secant);stroke-width:2.2;stroke-dasharray:6 3}
+.crossA{stroke:var(--tangent);stroke-width:1.8;fill:none;stroke-linecap:round}
+.crossM{stroke:var(--secant);stroke-width:1.8;fill:none;stroke-linecap:round}
+.tickA{stroke:var(--tangent);stroke-width:2}
+.tickM{stroke:var(--secant);stroke-width:2}
+.harr{stroke:var(--fg);stroke-width:1.6}
+.harrh{fill:var(--fg)}
+.tA{fill:var(--tangent)!important;font-weight:600}
+.tM{fill:var(--secant)!important;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 20px;margin:6px 4px 0;color:var(--muted);font-size:.88rem}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{display:inline-block;width:28px;height:0;border-top:3.5px solid var(--secant);flex:none}
+.sw.t{border-top:3px solid var(--tangent)}
+.sw.c{border-top-color:var(--curve)}
+
+/* fenêtre curseur */
+.hgrid{display:grid;grid-template-columns:auto minmax(0,1fr) 7.6em;align-items:center;gap:.15em .9em}
+.hgrid label{font-weight:500}
+.out{font-family:var(--font-math);font-size:1.3em;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;height:2em;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:.5em;border-radius:.5em;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;box-sizing:border-box;width:1.5em;height:1.5em;border-radius:50%;background:var(--thumb);border:2px solid var(--surface);margin-top:-.5em;box-shadow:0 0 0 1px var(--thumb)}
+input[type=range]::-moz-range-track{height:.5em;border-radius:.5em;background:var(--line)}
+input[type=range]::-moz-range-thumb{box-sizing:border-box;width:1.5em;height:1.5em;border-radius:50%;background:var(--thumb);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--thumb)}
+#p{--thumb:var(--secant)}
+#a{--thumb:var(--tangent)}
+.ends{position:relative;height:1.5em;color:var(--muted);font-size:1em}
+.ends span{position:absolute;top:0;white-space:nowrap;font-size:.85em}
+.endsin{position:absolute;left:.75em;right:.75em;top:0;height:100%}
+#eMin{left:0}
+#eMax{right:0}
+#eZero{transform:translateX(-50%)}
+.btns{display:flex;flex-wrap:wrap;gap:.6em 1em;align-items:center;margin-top:.5em}
+.arow{display:flex;align-items:center;gap:.7em;margin-left:auto;min-width:0}
+.arow input{width:9em}
+.arow label{font-weight:500}
+.arow .out{font-size:1.1em;min-width:3.6em}
+button.act{padding:.5em .9em;border-radius:.55em;border-color:var(--fg);font-weight:600}
+
+/* fenêtres sécante et tangente */
+.lead{margin:0 0 .3em;color:var(--muted);font-size:.92em}
+.math{font-family:var(--font-math);font-size:1.18em}
+.line{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .6em;margin:.3em 0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle}
+.frac>span{padding:0 .35em;line-height:1.3;white-space:nowrap}
+.frac>span:first-child{border-bottom:1.5px solid currentColor}
+.value{font-family:var(--font-ui);font-weight:600;font-size:2.3em;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.value.s{color:var(--secant)}
+.value.t{color:var(--tangent)}
+.value.inline{font-size:1.8em}
+.cap{margin:.15em 0 .6em;color:var(--muted);font-size:.9em}
+.note{margin:.6em 0 0;padding-top:.6em;border-top:1px solid var(--line);font-size:.92em}
+.note b{font-variant-numeric:tabular-nums}
+.zero{font-family:var(--font-ui);font-size:.95em;color:var(--muted)}
+
+@media (max-width:840px){
+  .app{height:auto;min-height:0;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:none!important;grid-template-areas:none!important;align-content:start}
+  header,#fig,.side{grid-area:auto!important}
+  /* flex:none (au lieu de flex:1 1 0 avec min-height:0) : sur mobile #fig a une hauteur "auto"
+     (pas de hauteur fixe comme sur desktop), donc flex-grow n'a rien à distribuer et min-height:0
+     écrase le contenu à 0px ; flex:none laisse .figbody prendre sa hauteur naturelle de contenu */
+  .figbody{flex-direction:column;flex:none!important;min-height:0}
+  .toggles{flex-direction:row;flex-wrap:wrap;max-width:none}
+  .toggles .hd{display:none}
+  .plotbox,body.pgfig .plotbox{flex:none;width:100%!important;height:min(78vw,70vh)!important;position:static!important;left:auto!important;top:auto!important;resize:none!important;margin:0 0 10px}
+  .p6bar{touch-action:auto!important;cursor:default!important}
+  /* barre de boutons p10/p12/p16/p18 (choix de a) : sur mobile elle ne doit pas rester sur une
+     seule ligne non coupée (flex-wrap:nowrap) ni rester une fenêtre à glisser/redimensionner */
+  .p10abtn{flex-wrap:wrap!important;width:auto!important;max-width:100%!important;resize:none!important;cursor:default!important;touch-action:auto!important}
+  .chips{margin-left:0}
+  /* html,body avaient une hauteur fixée à 100% (OK sur desktop où tout tient dans l'écran) :
+     sur mobile le contenu empilé est souvent plus haut que l'écran, donc il faut que html/body
+     grandissent avec le contenu pour que la page défile correctement jusqu'au bout */
+  html,body{height:auto!important}
+  /* la pastille Précédent/Suivant est fixée en bas de l'écran : on laisse assez de place
+     en bas de page pour qu'aucun contenu (ex. bouton "Recommencer") ne se retrouve caché dessous */
+  body{padding-bottom:64px}
+  /* pages "intro" (.p1, plein écran avec défilement interne) : même raison, il faut assez de
+     marge basse à l'intérieur du conteneur pour que son dernier bouton ne soit pas sous la pastille */
+  .p1{padding-bottom:64px!important}
+  /* sur petit écran, les fenêtres flottantes (curseur, sécante, tangente, valeur de h, phrase)
+     et la figure s'affichent l'une après l'autre dans le flux de la page au lieu de flotter/se chevaucher */
+  #ctrl,#w-sec,#w-tan,#hwin,#swin{
+    position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+    width:100%!important;max-width:100%!important;max-height:none!important;
+    margin:10px 0!important;box-shadow:none!important
+  }
+  #ctrl .bar,#w-sec .bar,#w-tan .bar,#hwin .bar,#swin .bar{cursor:default!important;touch-action:auto!important;user-select:auto!important}
+  #ctrl,#w-sec,#w-tan{cursor:default!important;touch-action:auto!important}
+  #ctrl{resize:none!important}
+  /* boîtes "étapes de calcul" (p10res/p12res/p10box/p12box) : sur desktop elles sont
+     redimensionnables/déplaçables à la souris avec leur propre défilement interne limité par
+     max-height ; sur mobile ça empêche de faire défiler la page normalement (le glisser-déposer
+     intercepte le balayage tactile), donc on les laisse prendre toute leur hauteur de contenu */
+  body .p10res,body .p12res,body.nofig .p12res,body .p10box,body .p12box,
+  body .p2side .p2txt,body .p2side .p2ans{
+    resize:none!important;cursor:default!important;width:100%!important;max-width:100%!important;
+    max-height:none!important;overflow:visible!important
+  }
+  /* lignes de calcul trop longues pour tenir sur une seule ligne non coupée (ex. page inverse,
+     "Vérifions : ... = ...") : autoriser le retour à la ligne sur mobile */
+  .p13line{flex-wrap:wrap}
+  .p13m{white-space:normal!important}
+  /* pages "intro/calcul" (.p1, ex. page 8) : display:grid;place-items:safe center force la carte
+     à rester dans la hauteur de l'écran (793px) même quand son contenu a besoin de plus (988px) —
+     le surplus déborde visuellement mais la page ne le voit pas comme "scrollable", donc impossible
+     de dérouler jusqu'au bout. En bloc simple, la carte prend toute sa hauteur de contenu et la
+     page (overflow-y:auto) peut alors défiler jusqu'au bout */
+  .p1{display:block!important;padding-top:24px}
+  .p1card{margin:0 auto}
+  /* .p8card (et toute carte .p1card similaire) a son PROPRE défilement interne limité à 94vh sur
+     desktop ; sur mobile ça crée un double défilement (page + carte) qui coince l'utilisateur :
+     on supprime le second niveau, seule la page (.p1) défile */
+  .p1card{max-height:none!important;overflow:visible!important}
+  /* page 6 : la ligne numérique "(f(1+h)-f(1))/h = … = résultat" est un flex-container
+     flex-wrap:nowrap (+ sa boîte .p6live en width:fit-content) : ça ne passait pas à la ligne
+     et débordait hors de l'écran sur mobile quand h a beaucoup de chiffres (ex. h = 0,02) */
+  #p6e{white-space:normal!important;flex-wrap:wrap!important}
+  .p4live,.p6live{width:100%!important;max-width:100%!important}
+}
+#ctrl{width:min(270px,calc(100vw - 16px));padding:5px 10px 7px;font-size:calc(11px * var(--zf,1))}
+#ctrl .bar h2{font-size:1.1em;margin:0}
+#ctrl .hgrid{grid-template-columns:auto minmax(0,1fr);gap:.1em .6em}
+#ctrl #hout{display:block;grid-column:2;text-align:center;font-size:2.3em;font-weight:600;margin-top:-.1em}
+#ctrl .ends{grid-column:2;height:1.3em}
+#ctrl .hgrid>span{display:none}
+#ctrl .btns{margin-top:.3em;gap:.4em .6em}
+#ctrl .arow{margin-left:0;gap:.5em}
+#ctrl .arow input{width:6em}
+#ctrl .arow .out{font-size:1em;min-width:2.6em}
+#ctrl button.act{padding:.3em .7em}
+#ctrl .wb{transform:scale(.8);margin:-3px}
+.side{display:contents}
+#w-sec,#w-tan{position:fixed;z-index:28;left:auto;top:120px;width:min(350px,calc(100vw - 16px));max-height:calc(100vh - 16px);box-shadow:0 8px 28px rgba(0,0,0,.2)}
+#w-sec .bar,#w-tan .bar{cursor:move;touch-action:none;user-select:none}
+#w-sec,#w-tan{cursor:move;touch-action:none}
+#w-sec button,#w-tan button{cursor:pointer}
+#ctrl,#hwin,#swin,#w-sec,#w-tan{background:color-mix(in srgb,var(--surface) 42%,transparent);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.tl{font-size:1.05em;margin:.5em 0;color:var(--fg)}
+button.rv{font:inherit;font-weight:700;min-width:1.5em;padding:0 .2em;margin:0 .1em;border:2px dashed var(--muted);background:transparent;color:var(--fg);border-radius:.4em;vertical-align:baseline;line-height:1.3}
+button.rv.t[aria-pressed=true]{color:var(--tangent)}
+button.rv[aria-pressed=true]{border-style:solid;border-color:transparent;background:transparent}
+button.rv .rvv:empty::before{content:"…"}
+button.rvall{font-size:.85em;padding:.25em .7em}
+#w-tan{--red:#c40000}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #w-tan{--red:#ff6b6b}}
+:root[data-theme="dark"] #w-tan{--red:#ff6b6b}
+#w-tan .tl,#w-tan button.rv,#w-tan button.rv.t,#w-tan button.rv.t[aria-pressed=true],#w-tan button.rvall{color:var(--red)}
+#w-tan button.rv{border-color:var(--red)}
+#w-tan button.rv[aria-pressed=true]{border-color:transparent}
+#w-tan .tl{font-weight:500}
+#ctrl .ends{height:1.9em}
+#ctrl .ends span{font-size:1em}
+#ctrl .ends input{width:3.6em;font:inherit;font-weight:600;padding:.1em .2em;border:1px solid var(--line);border-radius:.35em;background:var(--surface);color:var(--fg);text-align:center}
+#ctrl #eMin,#ctrl #eMax{font-size:.9em}
+#ctrl #eZero{top:.25em}
+.endsin{pointer-events:none}
+#ctrl .ends input{position:relative;z-index:2}
+#ctrl .arow{flex-wrap:wrap}
+#ctrl .astep{padding:.15em .55em;font-weight:600;border-radius:.4em}
+.p1{position:fixed;inset:0;z-index:500;background:var(--bg);display:grid;place-items:safe center;overflow-y:auto;padding:24px}
+.p1[hidden]{display:none!important}
+.p1card{max-width:980px;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(24px,4vw,56px);box-shadow:0 10px 40px rgba(0,0,0,.12)}
+.p1tag{font-size:clamp(.85rem,1.3vw,1.05rem);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.p1card h2{font-family:var(--font-math);font-size:clamp(2rem,5vw,3.6rem);margin:.2em 0 .5em;color:var(--fg)}
+.p1txt{font-family:var(--font-math);font-size:clamp(1.4rem,3.2vw,2.4rem);margin:0 0 .7em;color:var(--fg)}
+.p1obj{font-family:var(--font-math);font-size:clamp(1.5rem,3.6vw,2.7rem);line-height:1.3;margin:0 0 1.2em;padding:.6em .8em;border-left:6px solid var(--tangent);background:color-mix(in srgb,var(--tangent) 8%,transparent);color:var(--fg);border-radius:0 12px 12px 0}
+.p1btn{font:inherit;font-weight:600;font-size:clamp(1.1rem,2vw,1.6rem);padding:.7em 1.4em;border-radius:12px;border:2px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer}
+.chips,.toggles,#fig .wbs,#btnEnonce{display:none!important}
+.p2txt{font-family:var(--font-math);font-size:clamp(1rem,1.9vw,1.5rem);line-height:1.25;margin:2px 4px 6px;color:var(--fg);padding:.35em .7em;border-left:6px solid var(--tangent);background:color-mix(in srgb,var(--tangent) 8%,transparent);border-radius:0 10px 10px 0}
+.p2ans{margin:0 4px 8px;padding:.3em .7em;border-left:6px solid #c40000;border-radius:0 10px 10px 0;background:color-mix(in srgb,#c40000 6%,transparent);display:flex;flex-wrap:wrap;align-items:center;gap:.1em 1.4em}
+.p2ans p{margin:.15em 0;font-family:var(--font-math);font-size:clamp(1rem,1.9vw,1.5rem);color:#c40000;flex:1 1 100%}
+.p2ans .hv{display:inline-block;min-width:2.2em;padding:0 .3em;border:2px dashed #c40000;border-radius:.35em;font-weight:700;text-align:center;line-height:1.25}
+.p2ans .hv.on{border-color:transparent}
+.p2ans .hv:empty::before{content:"…"}
+.p2btn{font:inherit;font-weight:600;font-size:clamp(.9rem,1.5vw,1.15rem);padding:.35em 1em;border-radius:10px;border:2px solid #c40000;background:var(--surface);color:#c40000;cursor:pointer;margin:.2em 0}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .p2ans p,:root:not([data-theme="light"]) .p2btn{color:#ff7b7b}:root:not([data-theme="light"]) .p2ans .hv{border-color:#ff7b7b}}
+.p2side{flex:0 0 clamp(210px,23vw,310px);display:flex;flex-direction:column;gap:8px;overflow:auto;align-self:flex-start;max-height:100%}
+.p2side .p2txt{margin:0;font-size:clamp(1rem,1.5vw,1.25rem);padding:.45em .6em;border:1px solid var(--tangent);border-left-width:5px;border-radius:8px;line-height:1.3}
+.p2side .p2ans{margin:0;display:block;padding:.45em .6em;border:1px solid #c40000;border-left-width:5px;border-radius:8px}
+.p2side .p2ans p{font-size:clamp(1rem,1.5vw,1.25rem);margin:.2em 0;line-height:1.35}
+.p2side .p2ans .hv{min-width:1.6em;border-width:1.5px}
+.p2side .p2btn{font-size:clamp(.9rem,1.2vw,1.1rem);padding:.4em .9em;margin:.35em 0 0}
+.p2side{flex:0 0 auto!important;overflow:visible!important;max-height:none!important}
+.p2side .p2txt,.p2side .p2ans{resize:both;overflow:auto;width:340px;min-width:200px;max-width:72vw;box-sizing:border-box;font-size:19px}
+.p2side .p2ans p{font-size:1em!important}
+.p2side .p2btn{font-size:.9em!important}
+.p2side .p2ans .hv{border-width:2px}
+.pnav{position:fixed;right:14px;bottom:12px;z-index:700;display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--line);box-shadow:0 4px 20px rgba(0,0,0,.25);font-family:var(--font-ui);color:var(--muted);font-size:.95rem}
+.pnav button{font:inherit;font-weight:600;padding:.35em .9em;border-radius:999px;border:1px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer}
+.pnav button:disabled{opacity:.3;cursor:default}
+.p4live{border-color:var(--secant)!important;background:color-mix(in srgb,var(--secant) 8%,transparent)}
+.p4live p{margin:.15em 0;font-size:1em!important;color:var(--secant);font-weight:600}
+.p4live p b{font-size:1.2em}
+body.pg4:not(.tanrev) #tan{opacity:.75;stroke-width:1.3px;stroke-dasharray:6 5}
+body.pg6 #tan,body.pg10 #tan{opacity:.45;stroke-width:1.3px;stroke-dasharray:6 5}
+body.pg6 #ctrl{display:none!important}
+body.pg4 #ctrl .arow,body.pg4 #ctrl #eMin,body.pg4 #ctrl #eMax{display:none!important}
+body.pg4 #ctrl .ends{height:1.3em}
+#noSec{position:absolute;left:50%;top:10px;transform:translateX(-50%);z-index:30;background:#fff;border:2px solid var(--secant);color:var(--secant);font:600 clamp(20px,2.2vw,28px)/1.3 "STIX Two Text",serif;padding:12px 24px;border-radius:14px;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none;text-align:center;max-width:94%;width:max-content}
+@media (prefers-color-scheme:dark){#noSec{background:#1d2530}}
+.p2ans p.p4lim{color:#1d5fb8}
+@media (prefers-color-scheme:dark){.p2ans p.p4lim{color:#7db4ff}}
+.fr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:0 .2em;text-align:center}
+.fr>span:first-child{padding:0 .45em .08em;border-bottom:1.5px solid currentColor;white-space:nowrap}
+.fr>span:last-child{padding-top:.08em;white-space:nowrap}
+.bfr{display:inline-flex;flex-direction:column;align-items:stretch;vertical-align:middle;margin:0 .2em;text-align:center;position:relative;top:-.85em}
+.bfr>span:first-child{padding:0 .45em .12em;border-bottom:2px solid currentColor;white-space:nowrap}
+.bfr>span:last-child{padding-top:.12em;white-space:nowrap}
+.eqrow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.15em .4em;font-family:var(--font-math);margin:.6em 0;line-height:1.3}
+.eqtab{border-collapse:collapse;margin:.6em auto;font-family:var(--font-math);line-height:1.3}
+.eqtab .eqn{text-align:center;border-bottom:1.5px solid;padding:0 .3em .1em}
+.eqtab .eqd{text-align:center;padding:.1em .3em 0}
+.eqtab .eqop{vertical-align:bottom;padding:0 .5em;line-height:1}
+.eqtab .eqop span{display:inline-block;transform:translateY(50%)}
+.bfr .fr>span:first-child{border-bottom-width:1px}
+.p6f{font-size:1.05em!important}
+.p6fhi{font-size:1.25em!important;color:#1d5fb8!important;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .p6fhi{color:#7db4ff!important}}
+.p6bar{display:none}
+body.pgfig .plotbox{position:fixed!important;resize:both;overflow:hidden;z-index:450;background:var(--surface);border:1px solid var(--line,#9aa7b5);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.25);min-width:240px;min-height:200px}
+body.pgfig .p6bar{display:flex;position:absolute;left:0;right:0;top:0;height:26px;align-items:center;justify-content:space-between;padding:0 8px;background:color-mix(in srgb,var(--fg) 10%,transparent);cursor:move;z-index:40;font:600 13px "IBM Plex Sans",sans-serif;touch-action:none}
+.p6bar button{border:0;background:transparent;font-size:18px;cursor:pointer;color:inherit;line-height:1}
+body.pgfig.nofig .plotbox{display:none!important}
+/* sur petit écran, la figure doit suivre le flux de la page (pas de position fixe qui la fait
+   se superposer au reste) ; cette règle doit rester APRES la règle "position:fixed!important"
+   ci-dessus pour l'emporter dans la cascade (même sélecteur, même spécificité) */
+@media (max-width:840px){
+  /* position:relative (pas static) : ça reste dans le flux de la page, mais ça garde un contexte
+     de positionnement pour le <svg> absolu à l'intérieur, qui sinon se recale sur tout l'écran */
+  body.pgfig .plotbox{position:relative!important;left:auto!important;top:auto!important;right:auto!important;bottom:auto!important;resize:none!important;width:100%!important;height:min(78vw,70vh)!important;margin:0 0 10px;min-width:0;min-height:0}
+  body.pgfig .p6bar{position:absolute!important;cursor:default!important;touch-action:auto!important}
+}
+.p6live p{font-size:1em!important}
+.p6mini{margin:.5em 0 .4em;padding:.5em .8em;background:color-mix(in srgb,var(--secant) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--secant) 30%,transparent);border-radius:.6em;display:flex;flex-direction:column;gap:.3em}
+.p6mini label{font-size:.95em;font-style:italic;color:var(--fg)}
+.p6mini input[type=range]{--thumb:var(--secant);width:100%;accent-color:var(--secant)}
+.p6mini output{font-size:.9em;font-weight:600;color:var(--secant);text-align:center}
+#p6e{color:var(--fg)!important;font-weight:600;display:flex!important;flex-wrap:wrap;align-items:center;gap:.15em .3em;flex:1 1 100%}
+#p6e .fr{font-weight:600}
+body.pgfig #ctrl{z-index:600!important}
+.p8card{max-height:94vh;overflow:auto;padding-top:.8em!important;padding-bottom:.8em!important}
+.p8card h2{font-size:clamp(26px,3.2vw,38px)!important;margin:.1em 0 .2em!important}.p8card .p1tag{margin-bottom:.2em}
+.p8intro{font:500 clamp(20px,2.4vw,30px)/1.3 "STIX Two Text",serif;margin:.2em 0 .8em}
+.cstep{display:flex;align-items:center;gap:16px;margin:.35em 0;padding:.35em .6em;border-radius:10px;background:color-mix(in srgb,var(--fg) 5%,transparent);animation:cin .35s ease}
+@keyframes cin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.clab{flex:0 0 13em;font:700 clamp(17px,2vw,24px) "IBM Plex Sans",sans-serif;color:#fff;border-radius:999px;padding:.3em .8em;text-align:center}
+.c0{background:#1d5fb8}.c1{background:#c24a08}.c2{background:#6b3fa0}.c3{background:#0f7a5a}.c4{background:#c40000}.c5{background:#1d5fb8}.c6{background:#475569}
+.cexp{font:clamp(26px,3vw,36px) "STIX Two Text",serif}
+.cexp b{color:#0f7a5a}
+@media (max-width:640px){.cstep{flex-direction:column;align-items:flex-start}.clab{flex:none}}
+.p10live p{font-size:1em!important;margin:.1em 0}
+.p10c{border-color:var(--tangent)!important;background:color-mix(in srgb,var(--tangent) 8%,transparent)}
+.p10c p{color:var(--tangent)!important;font-size:1em!important;margin:.1em 0}
+body.pg10 #ctrl .arow{display:none!important}
+.p10res{margin:0 4px .5em;padding:.6em 1em;border:1px solid var(--tangent);border-left-width:5px;border-radius:8px;background:color-mix(in srgb,var(--tangent) 6%,transparent);font-family:var(--font-math);font-size:calc(clamp(1.2rem,2vw,1.6rem) * var(--p10rzf,1));line-height:1.4;resize:both;overflow:auto;width:540px;min-width:200px;max-width:72vw;min-height:2em;position:relative;cursor:move;z-index:455;align-self:flex-start}
+.p10res b{color:var(--tangent)}
+.p10box{border-color:#475569!important;background:color-mix(in srgb,#475569 5%,transparent)!important;overflow:auto!important;max-height:calc(100vh - 100px);font-size:calc(28px * var(--p10zf,1))!important;position:relative;padding:16px 20px!important;resize:both!important;width:600px;min-width:200px;max-width:72vw;cursor:move;z-index:455;align-self:flex-start}
+.p10box .p10hint{color:var(--muted)!important;font-size:.72em!important;margin:.1em 0}
+.p10box .p10live{color:var(--secant)!important;font-weight:600;font-size:.82em!important;margin:.25em 0}
+.p10box .p10concl{color:var(--tangent)!important;font-weight:600;font-size:.88em!important;margin:.3em 0 .2em;border-top:1px solid color-mix(in srgb,var(--fg) 20%,transparent);padding-top:.35em}
+.p10box .p10steps{margin:.3em 0}
+.p10box .cstep{flex-direction:column;align-items:flex-start;gap:3px;margin:.25em 0;padding:.3em .55em}
+.p10box .clab{flex:none;font-size:.72em;padding:.15em .8em}
+.p10box .cexp{font:1.15em "STIX Two Text",serif}
+.p10bar{display:flex;gap:8px;flex-wrap:wrap;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:50;background:var(--surface);padding:6px 16px;border:1px solid var(--line);border-radius:.7em;box-shadow:0 -2px 8px rgba(0,0,0,.1)}
+.p10barin{position:static;transform:none;margin-top:.6em;padding:6px 0 0;border:none;border-top:1px solid var(--line);border-radius:0;box-shadow:none;background:none;z-index:auto}
+.p10boxtitle{font-weight:700;font-size:1.15em;margin-bottom:.5em;font-family:var(--font-math)}
+.p10abtn{display:flex;align-items:center;justify-content:center;flex-wrap:nowrap;gap:.5em;margin:.2em 0 .5em;padding:.55em .8em;background:var(--surface);border:1px solid var(--line);border-radius:.7em;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:calc(20px * var(--p10azf,1));position:relative;overflow:auto!important;resize:horizontal;cursor:move;z-index:10;align-self:flex-start}
+.p10alabel{font-size:1em;font-family:var(--font-math);font-style:italic;color:var(--muted);white-space:nowrap;margin-right:.3em}
+.p10a{font-family:var(--font-math);font-size:1.25em;padding:.35em 1.1em;border:1.5px solid var(--line);border-radius:.5em;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
+.p10a.act10,.p12f.act12,.p12a.act12{background:var(--tangent);color:#fff;border-color:var(--tangent);font-weight:700}
+.p12f,.p12a{font-family:var(--font-math);font-size:1.25em;padding:.35em 1.1em;border:1.5px solid var(--line);border-radius:.5em;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
+/* page 12 : cacher figure, toggles, header chips ; panneau seul */
+body.pg12 .plotbox,body.pg12 .toggles,body.pg12 #ctrl,body.pg12 #fig>.bar{display:none!important}
+body.pg12 .chips{display:none!important}
+body.pg12 header{display:none!important}
+body.pg12 .figbody{display:flex;flex-direction:column;align-items:flex-start;padding:12px}
+.p10step{margin:.25em 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:.15em .4em;font-family:var(--font-math);font-size:.9em}
+.p10step[hidden]{display:none!important}
+.p10concl2{color:var(--tangent)!important;font-weight:700;border-top:1px solid color-mix(in srgb,var(--fg) 15%,transparent);padding-top:.4em;margin-top:.3em}
+.p10bar .p2btn{margin:0}
+body.pg15 .plotbox,body.pg15 .toggles,body.pg15 #ctrl,body.pg15 #fig>.bar{display:none!important}
+body.pg15 .chips{display:none!important}
+body.pg15 header{display:none!important}
+body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;padding:12px}
+.p13f{font-family:var(--font-math);font-size:1.25em;padding:.35em 1.1em;border:1.5px solid var(--line);border-radius:.5em;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
+.actva{background:var(--tangent);color:#fff;border-color:var(--tangent);font-weight:700}
+.nofig .app{grid-template-columns:1fr!important;grid-template-areas:"head" "fig" "ctrl"!important}
+.nofig #fig{background:transparent!important;border:none!important;border-radius:0!important;padding:0!important}
+.nofig .p2side{max-width:750px;margin:0 auto;padding:0 1.5em;align-items:center;flex:1 1 auto!important;width:100%!important}
+.nofig .p13box{width:min(600px,94vw);max-height:none}
+.nofig .p13ex{overflow-x:auto}
+.nofig .p13concl{max-width:100%;box-sizing:border-box}
+.nofig .p10res{width:min(540px,94vw)}
+#p16abtn,#p18abtn{width:min(460px,94vw);max-width:72vw}
+.nofig .p12res{width:540px!important;min-width:200px!important;max-width:72vw!important;resize:both!important;cursor:move!important;border:1px solid var(--tangent)!important;border-left-width:5px!important;border-radius:8px!important;background:color-mix(in srgb,var(--tangent) 6%,transparent)!important;margin:0 4px .5em!important;align-self:flex-start!important}
+.p13ex{font-family:var(--font-math);line-height:1.7;font-size:calc(28px * var(--p10zf,1))}
+.p13ex .exstep{margin-bottom:.7em}
+.p13ex .exlab{font-weight:700;font-size:.85em;display:inline-block;padding:.12em .5em;border-radius:.4em;margin-bottom:.15em}
+.p13ex .c0{background:#e3f0ff;color:#1a5dab}
+.p13ex .c2{background:#fff3e0;color:#b45309}
+.p13ex .c3{background:#e8f5e9;color:#2e7d32}
+.p13ex .c4{background:#ede7f6;color:#5e35b1}
+.p13ex .c5{background:#fce4ec;color:#c62828}
+.p13line{display:flex;align-items:baseline;gap:.8em;margin-bottom:.35em;line-height:1.8}
+.cstep[hidden]{display:none!important}
+.p13m{flex:1 1 auto;font-family:var(--font-math);white-space:normal}
+.p15n{font-size:.82em;color:var(--tangent);white-space:nowrap;opacity:.85;font-style:italic}
+.p13concl{display:block;margin-top:.7em;padding:.6em .8em;background:rgba(106,27,154,.1);border-radius:.5em;border:2px solid var(--tangent);font-family:var(--font-math);line-height:1.8;font-size:clamp(13px,calc(18px * var(--p10zf,1)),30px);align-self:stretch}
+
+</style>
+
+<div class="app">
+  <header>
+    <h1>Tangente à la courbe de <i>f</i>(<i>x</i>) = <i>x</i>²</h1>
+    <div class="chips" role="group" aria-label="Fenêtres affichées">
+      <button type="button" class="chip" id="btnEnonce" aria-pressed="false" title="Revenir à l’énoncé">← Énoncé</button>
+      <span>Fenêtres :</span>
+      <button type="button" class="chip" data-act="chip" data-k="fig" aria-pressed="true">Courbe</button>
+      <button type="button" class="chip" data-act="chip" data-k="ctrl" aria-pressed="true">Curseur</button>
+      <button type="button" class="chip" data-act="chip" data-k="sec" aria-pressed="true">Taux de variation</button>
+      <button type="button" class="chip" data-act="chip" data-k="tan" aria-pressed="true">Nombre dérivé</button>
+    </div>
+  </header>
+
+  <section class="win" id="fig" aria-labelledby="t0">
+    <div class="bar"><h2 id="t0"><i class="sw c"></i>Courbe de <i>f</i>(<i>x</i>) = <i>x</i>²</h2><span class="wbs" data-k="fig"></span></div>
+    <div class="figbody">
+    <div class="p2side" id="p2side">
+    <p class="p2txt">La tangente est tracée. Pour déterminer <i>f</i>′(1), on lit graphiquement le coefficient directeur de la tangente.</p>
+    <div class="p2ans">
+      <p>Le coefficient directeur de la tangente à la courbe au point d’abscisse 1 est <span class="hv" id="hv1" aria-live="polite"></span>.</p>
+      <p>Donc le nombre dérivé : <i>f</i>′(1) = <span class="hv" id="hv2" aria-live="polite"></span></p>
+      <button type="button" class="p2btn" id="hvBtn">Afficher les valeurs</button>
+    </div>
+    </div>
+    <div class="p2side p4side" id="p4side" hidden>
+      <p class="p2txt">Avec le curseur, fais tendre <i>h</i> vers 0 : observe la sécante (AM) et son coefficient directeur.</p>
+      <div class="p2txt p4live">
+        <p id="p4h"></p>
+        <p id="p4m"></p>
+      </div>
+      <div class="p2ans">
+        <p>Quand <i>h</i> tend vers 0, la sécante (AM) prend pour position limite la tangente à la courbe au point A.</p>
+        <p class="p4lim">Son coefficient directeur tend donc vers celui de la tangente, c’est-à-dire vers <span class="hv" id="hv4" aria-live="polite"></span> :</p>
+        <p><i>f</i>′(1) = <span class="hv" id="hv3" aria-live="polite"></span></p>
+        <button type="button" class="p2btn" id="p4Btn">Afficher la réponse</button>
+      </div>
+    </div>
+    <div class="p2side p6side" id="p6side" hidden>
+      <div class="p2ans p6a">
+        <p>Le coefficient directeur de la sécante (AM) est</p>
+        <p class="p6f"><span class="fr"><span><i>y</i><sub>M</sub> − <i>y</i><sub>A</sub></span><span><i>x</i><sub>M</sub> − <i>x</i><sub>A</sub></span></span> = <span class="fr"><span><i>f</i>(1 + <i>h</i>) − <i>f</i>(1)</span><span>1 + <i>h</i> − 1</span></span> = <span class="fr p6fhi"><span><i>f</i>(1 + <i>h</i>) − <i>f</i>(1)</span><span><i>h</i></span></span></p>
+        <p>C’est également le <b>taux de variation</b> de <i>f</i> entre 1 et 1 + <i>h</i>.</p>
+      </div>
+      <div class="p2txt p4live p6live">
+        <p id="p6e"></p>
+      </div>
+      <div class="p6mini">
+        <label for="p6sl">On fait tendre <i>h</i> vers 0</label>
+        <input type="range" id="p6sl" min="-100" max="100" step="1" value="100">
+        <output id="p6slout">h = 1</output>
+      </div>
+      <div class="p2ans p6c">
+        <p class="p4lim">On retrouve que le taux de variation de <i>f</i> tend vers 2 lorsque <i>h</i> tend vers 0, donc :</p>
+        <p><i>f</i>′(1) = 2</p>
+      </div>
+      <button type="button" class="p2btn" id="p6fig">Afficher / masquer la figure</button>
+    </div>
+    <div class="p2side p10side" id="p10side" hidden>
+      <div class="p10abtn" id="p10abtn">
+        <span class="p10alabel">Choisir <i>a</i> :</span>
+        <button type="button" class="p10a act10" data-a="2">a = 2</button>
+        <button type="button" class="p10a" data-a="0">a = 0</button>
+        <button type="button" class="p10a" data-a="0.5">a = 0,5</button>
+        <button type="button" class="p10a" data-a="-1">a = −1</button>
+        <button type="button" class="p10a" data-a="-2">a = −2</button>
+      </div>
+      <div class="p2ans p10box" id="p10box">
+        <div class="p10boxtitle" id="p10boxtitle">Calcul de <i>f</i>′(2)</div>
+        <div id="p10steps"></div>
+        <div class="p10bar p10barin">
+          <button type="button" class="p2btn" id="p10btn">Étape suivante →</button>
+          <button type="button" class="p2btn" id="p10fig">Afficher / masquer la figure</button>
+        </div>
+      </div>
+      <div class="p10res" id="p10res"></div>
+    </div>
+    <!-- PAGE 12 : exemples interactifs -->
+    <div class="p2side p12side" id="p12side" hidden>
+      <div class="p10abtn p12fbtn" id="p12fbtn" style="align-self:flex-start">
+        <span class="p10alabel">Fonction :</span>
+        <button type="button" class="p12f act12" data-fn="0"><i>f</i>(<i>x</i>) = −<i>x</i>² + <i>x</i></button>
+        <button type="button" class="p12f" data-fn="1"><i>f</i>(<i>x</i>) = 2<i>x</i>² + 1</button>
+        <button type="button" class="p12f" data-fn="2"><i>f</i>(<i>x</i>) = 3<i>x</i></button>
+        <button type="button" class="p12f" data-fn="3"><i>f</i>(<i>x</i>) = <i>x</i>³</button>
+      </div>
+      <div class="p10abtn p12abtn" id="p12abtn" style="align-self:flex-start">
+        <span class="p10alabel">Valeur de <i>a</i> :</span>
+        <button type="button" class="p12a act12" data-a="1"><i>a</i> = 1</button>
+        <button type="button" class="p12a" data-a="2"><i>a</i> = 2</button>
+        <button type="button" class="p12a" data-a="-1"><i>a</i> = −1</button>
+        <button type="button" class="p12a" data-a="0"><i>a</i> = 0</button>
+      </div>
+      <div class="p10res p12res" id="p12res" style="align-self:flex-start"><b>Calculer <i>f</i>′(<i>a</i>) avec le taux de variation</b></div>
+      <div class="p2ans p10box p12box" id="p12box" style="align-self:flex-start">
+        <div id="p12steps"></div>
+        <div class="p10bar p10barin">
+          <button type="button" class="p2btn" id="p12btn">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+    <!-- PAGE 15 : exemple f(x)=1/x, a=1 -->
+    <div class="p2side" id="p15side" hidden>
+      <div class="p10res" id="p15res" style="align-self:flex-start"></div>
+      <div class="p2ans p10box p13box" id="p15box">
+        <div class="p13ex" id="p15ex"></div>
+        <div class="p13concl" id="p15concl" style="align-self:stretch"></div>
+      </div>
+    </div>
+    <!-- PAGE 16 : à vous f(x)=1/x -->
+    <div class="p2side" id="p16side" hidden>
+      <div class="p10res" id="p16res" style="align-self:flex-start">
+        <b>À vous !</b> Calculer <i>f</i> ′(<i>a</i>) pour <i>f</i>(<i>x</i>) = <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.85em"><span>1</span><span><i>x</i></span></span>.
+        <br><b>Astuce :</b> même dénominateur pour simplifier le taux.
+      </div>
+      <div class="p10abtn" id="p16abtn" style="align-self:flex-start">
+        <span class="p10alabel">Choisir <i>a</i> :</span>
+        <button type="button" class="p16a actva" data-a="2"><i>a</i> = 2</button>
+        <button type="button" class="p16a" data-a="3"><i>a</i> = 3</button>
+        <button type="button" class="p16a" data-a="4"><i>a</i> = 4</button>
+        <button type="button" class="p16a" data-a="5"><i>a</i> = 5</button>
+      </div>
+      <div class="p2ans p10box p13box" id="p16box">
+        <div class="p13ex" id="p16steps"></div>
+        <div class="p10bar p10barin">
+          <button type="button" class="p2btn" id="p16btn">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+    <!-- PAGE 17 : exemple g(x)=√x, a=4 -->
+    <div class="p2side" id="p17side" hidden>
+      <div class="p10res" id="p17res" style="align-self:flex-start"></div>
+      <div class="p2ans p10box p13box" id="p17box">
+        <div class="p13ex" id="p17ex"></div>
+      </div>
+    </div>
+    <!-- PAGE 18 : à vous g(x)=√x -->
+    <div class="p2side" id="p18side" hidden>
+      <div class="p10res" id="p18res" style="align-self:flex-start">
+        <b>À vous !</b> Calculer <i>g</i> ′(<i>a</i>) pour <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span>.
+        <br><b>Astuce :</b> multiplier par la <b>quantité conjuguée</b>.
+      </div>
+      <div class="p10abtn" id="p18abtn" style="align-self:flex-start">
+        <span class="p10alabel">Choisir <i>a</i> :</span>
+        <button type="button" class="p18a actva" data-a="1"><i>a</i> = 1</button>
+        <button type="button" class="p18a" data-a="9"><i>a</i> = 9</button>
+        <button type="button" class="p18a" data-a="16"><i>a</i> = 16</button>
+        <button type="button" class="p18a" data-a="25"><i>a</i> = 25</button>
+      </div>
+      <div class="p2ans p10box p13box" id="p18box">
+        <div class="p13ex" id="p18steps"></div>
+        <div class="p10bar p10barin">
+          <button type="button" class="p2btn" id="p18btn">Étape suivante →</button>
+        </div>
+      </div>
+    </div>
+    <!-- PAGE 19 : problème en 0 pour √x -->
+    <div class="p2side" id="p19side" hidden>
+      <div class="p10res" id="p19res" style="align-self:flex-start">
+        <b>Et en 0 ?</b> La fonction <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span> est-elle dérivable en 0 ?
+      </div>
+      <button type="button" class="p2btn" id="p19figbtn" style="margin:.5em 0">Afficher la figure</button>
+      <div id="p19fig" hidden style="margin:.6em 0">
+        <div style="display:flex;justify-content:center">
+          <svg viewBox="0 0 360 280" id="p19svg" style="width:100%;max-width:640px;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:.7em;font-family:var(--font-math)">
+            <g id="p19grid"></g>
+            <path id="p19curve" d="" fill="none" stroke="var(--tangent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <line id="p19sec" class="sec"/>
+            <circle cx="50" cy="230" r="5" class="tA"/>
+            <circle id="p19ptM" r="5" class="tM"/>
+            <text x="40" y="247" class="it tA" text-anchor="end">O</text>
+            <text id="p19labM" class="it tM" style="font-weight:700"></text>
+            <line id="p19harr" class="harr"/>
+            <polygon id="p19hh2" class="harrh"/>
+            <text id="p19labH" class="it" text-anchor="middle"></text>
+          </svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:.8em;margin:.6em auto 0;max-width:640px">
+          <span style="font-size:.8em;opacity:.65">0</span>
+          <input type="range" id="p19hslider" min="0" max="1000" value="950" step="1" style="flex:1;min-width:160px;accent-color:var(--secant)">
+          <span style="font-size:.8em;opacity:.65"><i>h</i> grand</span>
+        </div>
+        <p style="text-align:center;font-family:var(--font-math);margin:.6em 0 0;font-size:clamp(.95em,2vw,1.1em)">
+          <i>h</i>&nbsp;=&nbsp;<b id="p19hval" style="color:var(--secant)"></b>&emsp;Coefficient directeur de (OM)&nbsp;=&nbsp;<b id="p19slope" style="color:var(--secant)"></b>
+        </p>
+      </div>
+      <div class="p2ans p10box p13box" id="p19box">
+        <div class="p13ex" id="p19ex"></div>
+      </div>
+    </div>
+    </div>
+    <div class="toggles" role="group" aria-label="Éléments de la figure">
+      <button type="button" class="tg" data-act="chip" data-k="ctrl" aria-pressed="true" style="--c:var(--secant)"><span class="dot"></span>Curseur <i>h</i></button>
+      <span class="hd">Afficher</span>
+      <button type="button" class="tg" data-tg="A" aria-pressed="true" style="--c:var(--tangent)"><span class="dot"></span>Point A : <i>a</i>, <i>f</i>(<i>a</i>)</button>
+      <button type="button" class="tg" data-tg="M" aria-pressed="true" style="--c:var(--secant)"><span class="dot"></span>Point M : <i>a</i> + <i>h</i>, <i>f</i>(<i>a</i> + <i>h</i>)</button>
+      <button type="button" class="tg" data-tg="tan" aria-pressed="true" style="--c:var(--tangent)"><span class="dot"></span>Tangente</button>
+      <button type="button" class="tg" data-tg="sec" aria-pressed="true" style="--c:var(--secant)"><span class="dot"></span>Sécante</button>
+      <button type="button" class="tg" data-tg="hv" aria-pressed="true" style="--c:var(--fg)"><span class="dot"></span>Flèche <i>h</i></button>
+      <button type="button" class="tg" data-tg="hval" aria-pressed="true" style="--c:var(--fg)"><span class="dot"></span>Affichage <i>h</i> = valeur</button>
+      <button type="button" class="tg" data-tg="sw" aria-pressed="false" style="--c:var(--secant)"><span class="dot"></span>Phrase taux / coeff.</button>
+    </div>
+    <div class="plotbox" id="plotbox">
+      <div class="p6bar" id="p6bar"><span>Figure</span><button type="button" id="p6x" aria-label="Masquer la figure">×</button></div>
+      <div id="noSec" hidden>Pour <i>h</i> = 0, M est confondu avec A : la sécante (AM) n’existe plus.</div>
+      <svg class="plot" id="plot" viewBox="0 0 700 500" role="img" aria-label="Parabole, point A fixe, point M mobile, sécante (AM) et tangente en A. Molette pour zoomer, glisser pour déplacer la vue.">
+        <g id="gridg"></g>
+        <path id="curve" class="curve" d=""/>
+        <line id="sec" class="sec"/>
+        <line id="tan" class="tan"/>
+        <line id="vA" class="vA"/>
+        <line id="vM" class="vM"/>
+        <line id="hlA" class="vA"/>
+        <line id="hlM" class="vM"/>
+        <line id="tfA" class="tickA"/>
+        <line id="tfM" class="tickM"/>
+        <line id="harr" class="harr"/>
+        <polygon id="hh1" class="harrh"/>
+        <polygon id="hh2" class="harrh"/>
+        <path id="ptM" class="crossM" d="M-10 -10L10 10M-10 10L10 -10"/>
+        <path id="ptA" class="crossA" d="M-7 -7L7 7M-7 7L7 -7"/>
+        <text id="labA" class="tA">A</text>
+        <text id="labM" class="tM">M</text>
+        <text id="labH" class="it"></text>
+        <text id="hvalT" class="hvalT"></text>
+        <text id="fA" class="it tA">f(1)</text>
+        <text id="fM" class="it tM">f(1+h)</text>
+        <text id="tkA" class="it tA">1</text>
+        <text id="tkM" class="it tM">1+h</text>
+      </svg>
+    </div>
+    </div>
+  </section>
+
+
+  <div class="side">
+    <section class="win panel" id="w-sec" aria-labelledby="t1">
+      <div class="bar"><h2 id="t1"><i class="sw"></i>Coefficient directeur de la sécante (AM)</h2><span class="wbs" data-k="sec"></span></div>
+      <p class="lead">Taux de variation de <i>f</i> entre <i>a</i> et <i>a</i> + <i>h</i></p>
+      <div class="line math">
+        <span class="frac"><span><i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)</span><span><i>h</i></span></span>
+      </div>
+      <div class="line math" id="calc1"></div>
+      <div class="line math" id="calc2"></div>
+    </section>
+
+    <section class="win panel" id="w-tan" aria-labelledby="t2">
+      <div class="bar"><h2 id="t2" aria-label="Coefficient directeur de la tangente en A"></h2><span class="wbs" data-k="tan"></span></div>
+      <p class="lead tl">Le coefficient directeur de la tangente à la courbe au point d’abscisse <button type="button" class="rv" data-rv="a" aria-pressed="false" title="Afficher / masquer la valeur de a"><span class="rvv" data-v="a"></span></button> est <button type="button" class="rv t" data-rv="m" aria-pressed="false" title="Afficher / masquer le coefficient directeur"><span class="rvv" data-v="m"></span></button>.</p>
+      <p class="lead tl">On peut alors écrire <i>f</i>’(<button type="button" class="rv" data-rv="a" aria-pressed="false" title="Afficher / masquer la valeur de a"><span class="rvv" data-v="a"></span></button>) = <button type="button" class="rv t" data-rv="m" aria-pressed="false" title="Afficher / masquer le coefficient directeur"><span class="rvv" data-v="m"></span></button>.</p>
+      <p class="note"><button type="button" class="rvall" id="rvall">Afficher les valeurs</button></p>
+    </section>
+  </div>
+</div>
+
+  <section class="win" id="hwin" aria-label="Valeur de h">
+    <div class="bar"><span>Valeur de <i>h</i></span><span><button type="button" data-hz="-1" title="Réduire">−</button> <button type="button" data-hz="1" title="Agrandir">+</button> <button type="button" data-hz="0" title="Masquer">×</button></span></div>
+    <div class="hv" id="hwv">h = 1</div>
+  </section>
+  <section class="win" id="swin" aria-label="Taux de variation et coefficient directeur" hidden>
+    <div class="bar"><span>Phrase</span><span><button type="button" data-hz="-1" title="Réduire">−</button> <button type="button" data-hz="1" title="Agrandir">+</button> <button type="button" data-hz="0" title="Masquer">×</button></span></div>
+    <div class="sl" id="swt2"></div>
+  </section>
+  <section class="win" id="ctrl" aria-labelledby="t3">
+    <div class="bar"><h2 id="t3">Curseur de <i>h</i></h2><span class="wbs" data-k="ctrl"></span></div>
+    <div class="hgrid">
+      <label for="p"><i>h</i></label>
+      <input type="range" id="p" min="-100" max="100" step="1" value="100">
+      <output class="out" id="hout" for="p">h = 1</output>
+      <span></span>
+      <div class="ends"><span id="eMin"><i>h</i><sub>min</sub> <input type="number" id="inMin" step="0.5" value="-1" aria-label="Borne minimale de h"></span><div class="endsin"><span id="eZero"><i>h</i> = 0</span></div><span id="eMax"><i>h</i><sub>max</sub> <input type="number" id="inMax" step="0.5" value="1" aria-label="Borne maximale de h"></span></div>
+      <span></span>
+    </div>
+    <div class="btns">
+      <button type="button" class="act" id="zero">Mettre <i>h</i> = 0</button>
+      <div class="arow">
+        <span class="alab">Abscisse de A</span>
+        <button type="button" class="astep" id="aMinus" aria-label="Diminuer a de 0,5">−0,5</button>
+        <output class="out" id="aout">a = 1</output>
+        <button type="button" class="astep" id="aPlus" aria-label="Augmenter a de 0,5">+0,5</button>
+      </div>
+    </div>
+  </section>
+
+<div class="p1" id="p1" role="dialog" aria-labelledby="p1t">
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p1t">Objectif</h2>
+    <p class="p1txt">Soit <i>f</i> la fonction définie sur ℝ par <span style="color:#c40000"><i>f</i>(<i>x</i>) = <i>x</i><sup>2</sup></span>.</p>
+    <p class="p1obj">On souhaite calculer le coefficient directeur de la tangente à la courbe de <i>f</i> au point d’abscisse 1, c’est-à-dire <i>f</i>′(1).</p>
+    <button type="button" class="p1btn" id="p1go">Si la courbe et la tangente sont tracées, alors →</button>
+  </div>
+</div>
+<div class="p1" id="p3" role="dialog" aria-labelledby="p3t" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p3t">Une idée</h2>
+    <p class="p1obj">On peut retrouver ce nombre dérivé grâce à une sécante mobile (AM) à la courbe passant par le point A d’abscisse 1.</p>
+    <button type="button" class="p1btn" id="p3go">Voir la figure dynamique →</button>
+  </div>
+</div>
+<div class="p1" id="p5" role="dialog" aria-labelledby="p5t" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p5t">Calcul</h2>
+    <p class="p1obj">On cherche maintenant à calculer <i>f</i>′(1) sans la figure dynamique.</p>
+  </div>
+</div>
+<div class="p1" id="p7" role="dialog" aria-labelledby="p7t" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p7t">Calcul</h2>
+    <p class="p1obj">On peut calculer le taux de variation de <i>f</i> entre 1 et <span style="white-space:nowrap">1 + <i>h</i></span>, avec <i>h</i> ≠ 0, sans la courbe.</p>
+  </div>
+</div>
+<div class="p1" id="p9intro" role="dialog" aria-labelledby="p9it" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p9it" style="font-size:clamp(1.3rem,2.6vw,1.8rem)">Généralisation, toujours pour <span style="color:#c40000"><i>f</i>(<i>x</i>) = <i>x</i>²</span></h2>
+    <p class="p8intro">On sait calculer <i>f</i>′(1), le coefficient directeur de la tangente au point d'abscisse <b>1</b>.</p>
+    <p class="p8intro">Peut-on faire la même chose en un <b>autre point d'abscisse <i>a</i></b> quelconque ?</p>
+    <p class="p8intro">On va calculer le taux de variation de <i>f</i> entre <i>a</i> et <i>a</i> + <i>h</i>, puis on fait tendre <i>h</i> vers 0 pour obtenir <i>f</i>′(<i>a</i>).</p>
+    <button type="button" class="p1btn" id="p9igo">Calculer f′(a) →</button>
+  </div>
+</div>
+<div class="p1" id="p8" role="dialog" aria-labelledby="p8t" hidden>
+  <div class="p1card p8card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p8t">Calcul du taux de variation, au point d’abscisse 1, pour <span style="color:#c40000"><i>f</i>(<i>x</i>) = <i>x</i>²</span></h2>
+    <div class="csteps" id="csteps">
+<div class="cstep" hidden><span class="clab c0">Je forme le taux</span><span class="cexp"><span class="fr"><span><i>f</i>(1 + <i>h</i>) − <i>f</i>(1)</span><span><i>h</i></span></span> = <span class="fr"><span>(1 + <i>h</i>)² − 1²</span><span><i>h</i></span></span></span></div>
+<div class="cstep" hidden><span class="clab c1">Je développe et je réduis</span><span class="cexp">= <span class="fr"><span>1 + 2<i>h</i> + <i>h</i>² − 1</span><span><i>h</i></span></span> = <span class="fr"><span>2<i>h</i> + <i>h</i>²</span><span><i>h</i></span></span></span></div>
+<div class="cstep" hidden><span class="clab c2">Je factorise</span><span class="cexp">= <span class="fr"><span><i>h</i>(2 + <i>h</i>)</span><span><i>h</i></span></span></span></div>
+<div class="cstep" hidden><span class="clab c3">Je simplifie par <i>h</i></span><span class="cexp">= <b>2 + <i>h</i></b> &nbsp;<small>(car <i>h</i> ≠ 0)</small></span></div>
+    </div>
+    <div class="cstep" hidden><span class="clab c5">On fait tendre <i>h</i> vers 0</span><span class="cexp">Quand <i>h</i> tend vers 0, 2 + <i>h</i> tend vers 2 : le taux de variation tend vers <b>2</b></span></div>
+    <div class="cstep cfin" hidden><span class="clab c4">Je conclus</span><span class="cexp">Le coefficient directeur de la tangente à la courbe au point d’abscisse 1 est <b>2</b>, donc <b><i>f</i>′(1) = 2</b></span></div>
+    <button type="button" class="p1btn" id="p8btn">Étape suivante →</button>
+  </div>
+</div>
+<!-- PAGE 11 : overlay méthode générale -->
+<div class="p1" id="p11intro" role="dialog" aria-labelledby="p11t" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p11t" style="font-size:clamp(1.3rem,2.6vw,1.8rem)">Et si la fonction n'est pas <span style="color:#c40000"><i>f</i>(<i>x</i>) = <i>x</i>²</span> ?</h2>
+    <p class="p8intro">La méthode est <b>exactement la même</b> pour n'importe quelle fonction !</p>
+    <p class="p8intro">Pour calculer <i>f</i>′(<i>a</i>), on suit toujours les mêmes étapes :</p>
+    <ol class="p8intro" style="text-align:left;margin:.5em auto;max-width:32em;line-height:1.6">
+      <li>On forme le <b>taux de variation</b> : <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.9em"><span><i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)</span><span><i>h</i></span></span></li>
+      <li>On <b>simplifie</b> l'expression obtenue</li>
+      <li>On fait <b>tendre <i>h</i> vers 0</b></li>
+      <li>On <b>conclut</b> : si le taux de variation tend vers un nombre noté <span style="white-space:nowrap"><i>f</i>′(<i>a</i>)</span>, on dit que <i>f</i> est <b>dérivable</b> en <i>a</i></li>
+    </ol>
+    <p class="p8intro">Voyons cela sur d'autres fonctions…</p>
+    <button type="button" class="p1btn" id="p11go">Exemples →</button>
+  </div>
+</div>
+<!-- PAGE 13 : introduction f(x) = 1/x -->
+<div class="p1" id="p13intro" role="dialog" aria-labelledby="p13it" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p13it">Nombre dérivé de <span style="color:var(--tangent)"><i>f</i>(<i>x</i>) = <span class="fr"><span>1</span><span><i>x</i></span></span></span></h2>
+    <p class="p8intro">Quand la fonction n'est <b>plus un polynôme</b>, on ne peut plus développer et factoriser comme avant.</p>
+    <p class="p8intro">Pour <i>f</i>(<i>x</i>) = <span class="fr"><span>1</span><span><i>x</i></span></span>, le taux de variation contient une <b>différence de fractions</b> :</p>
+    <table class="eqtab" style="font-size:clamp(1em,2.5vw,1.3em)"><tr>
+      <td class="eqn"><i>f</i>(<i>a</i> + <i>h</i>) − <i>f</i>(<i>a</i>)</td>
+      <td class="eqop"><span>=</span></td>
+      <td class="eqn"><span class="fr" style="font-size:.85em"><span>1</span><span><i>a</i> + <i>h</i></span></span> − <span class="fr" style="font-size:.85em"><span>1</span><span><i>a</i></span></span></td>
+    </tr><tr>
+      <td class="eqd"><i>h</i></td>
+      <td></td>
+      <td class="eqd"><i>h</i></td>
+    </tr></table>
+    <p class="p8intro"><b>L'astuce :</b> on met au <b>même dénominateur</b>, un <i>h</i> apparaît au numérateur, et on simplifie !</p>
+    <button type="button" class="p1btn" id="p13igo">Voir le calcul →</button>
+  </div>
+</div>
+<!-- PAGE 14 : introduction g(x) = √x -->
+<div class="p1" id="p14intro" role="dialog" aria-labelledby="p14it" hidden>
+  <div class="p1card">
+    <div class="p1tag">Dérivation · Étude locale — 2e partie</div>
+    <h2 id="p14it">Nombre dérivé de <span style="color:var(--tangent)"><i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span></span></h2>
+    <p class="p8intro">Pour la racine carrée, le taux de variation contient une <b>différence de racines</b> :</p>
+    <table class="eqtab" style="font-size:clamp(1em,2.5vw,1.3em)"><tr>
+      <td class="eqn"><i>g</i>(<i>a</i> + <i>h</i>) − <i>g</i>(<i>a</i>)</td>
+      <td class="eqop"><span>=</span></td>
+      <td class="eqn">√<span style="text-decoration:overline"><i>a</i> + <i>h</i></span> − √<span style="text-decoration:overline"><i>a</i></span></td>
+    </tr><tr>
+      <td class="eqd"><i>h</i></td>
+      <td></td>
+      <td class="eqd"><i>h</i></td>
+    </tr></table>
+    <p class="p8intro"><b>L'astuce :</b> on multiplie numérateur et dénominateur par la <b>quantité conjuguée</b>.</p>
+    <div style="background:color-mix(in srgb,var(--tangent) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--tangent) 25%,transparent);border-radius:10px;padding:.7em 1em;margin:.5em 0;border-left:3px solid var(--tangent)">
+      <p style="margin:0 0 .4em;font-size:.95em"><b>Qu'est-ce que la quantité conjuguée ?</b></p>
+      <p style="margin:0 0 .2em;font-size:.9em;line-height:1.5">On <b>change le signe</b> entre les deux racines :</p>
+      <table style="margin:.2em auto .4em;font-family:var(--font-math);font-size:clamp(.95em,2vw,1.05em);border-spacing:.3em .15em"><tr>
+        <td>conjuguée de</td>
+        <td>√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> <b>−</b> √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span></td>
+        <td>&nbsp;→&nbsp;</td>
+        <td>√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> <b>+</b> √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span></td>
+      </tr><tr>
+        <td>conjuguée de</td>
+        <td>√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> <b>+</b> √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span></td>
+        <td>&nbsp;→&nbsp;</td>
+        <td>√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> <b>−</b> √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span></td>
+      </tr></table>
+      <p style="margin:0;font-size:.9em;line-height:1.5"><b>Pourquoi ça marche ?</b> Grâce à l'identité remarquable :<br>
+      <span style="font-family:var(--font-math);display:block;text-align:center;margin:.3em 0">(√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> − √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span>)(√<span style="text-decoration:overline">&thinsp;<i>A</i>&thinsp;</span> + √<span style="text-decoration:overline">&thinsp;<i>B</i>&thinsp;</span>) = <i>A</i> − <i>B</i></span>
+      Les racines carrées disparaissent !</p>
+    </div>
+    <p class="p8intro">Ici, la quantité conjuguée de <span style="font-family:var(--font-math)">√<span style="text-decoration:overline"><i>a</i> + <i>h</i></span> − √<span style="text-decoration:overline"><i>a</i></span></span> est :</p>
+    <div style="text-align:center;font-family:var(--font-math);font-weight:500;font-size:clamp(20px,2.4vw,30px);margin:.4em 0;line-height:1.8">
+      √<span style="text-decoration:overline"><i>a</i> + <i>h</i></span> <b>+</b> √<span style="text-decoration:overline"><i>a</i></span>
+    </div>
+    <button type="button" class="p1btn" id="p14igo">Voir le calcul →</button>
+  </div>
+</div>
+<nav class="pnav" id="pnav" aria-label="Pages">
+  <button type="button" id="pPrev" aria-label="Page précédente">◀ Précédent</button>
+  <span id="pNum">1 / 2</span>
+  <button type="button" id="pNext" aria-label="Page suivante">Suivant ▶</button>
+</nav>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var MINUS="−";
+  var st={a:1,h:1};
+  var rv={a:false,m:false};
+  var show={A:true,M:true,tan:true,sec:true,hv:true,hval:true,sw:false};
+  var cfg={hmin:-2,hmax:2};
+
+  function r6(x){return Math.round(x*1e6)/1e6}
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+  function fmtd(x,d){
+    var k=Math.pow(10,d);
+    x=Math.round(x*k)/k; if(x===0) x=0;
+    var s=String(x);
+    if(s.indexOf("e")>=0) s=x.toFixed(d);
+    return s.replace(".",",").replace("-",MINUS);
+  }
+  function fmt(x){ return fmtd(x,6); }
+
+  /* ---------- curseur h : échelle à pas variable, très fin près de 0, passe exactement par 0 ---------- */
+  var vals=[0], zIdx=0;
+  function side(max){
+    var arr=[], i;
+    for(i=1;i<=10;i++) arr.push(r6(i*0.0001));
+    for(i=1;i<=9;i++) arr.push(r6(0.001+i*0.001));
+    for(i=1;i<=9;i++) arr.push(r6(0.01+i*0.01));
+    for(i=1;i<=18;i++) arr.push(r6(0.1+i*0.05));
+    for(i=1;i<=18;i++) arr.push(r6(1+i*0.5));
+    for(i=1;i<=90;i++) arr.push(r6(10+i));
+    arr=arr.filter(function(v){ return v<=max+1e-9; });
+    if(!arr.length || arr[arr.length-1]<max-1e-9) arr.push(r6(max));
+    return arr;
+  }
+  function nearest(h){
+    var best=0, d=Infinity, i, e;
+    for(i=0;i<vals.length;i++){ e=Math.abs(vals[i]-h); if(e<d){ d=e; best=i; } }
+    return best;
+  }
+  function applyRange(){
+    var pos=side(cfg.hmax), neg=side(-cfg.hmin).map(function(v){ return -v; }).reverse();
+    vals=neg.concat([0],pos); zIdx=neg.length;
+    cfg.hmin=vals[0]; cfg.hmax=vals[vals.length-1];
+    var p=$("p"); p.min=0; p.max=vals.length-1; p.step=1;
+    var k=nearest(st.h); st.h=vals[k]; p.value=k;
+    if(document.activeElement!==$("inMin")) $("inMin").value=cfg.hmin;
+    if(document.activeElement!==$("inMax")) $("inMax").value=cfg.hmax;
+    $("eZero").style.left=(100*zIdx/(vals.length-1))+"%";
+  }
+
+  /* ---------- figure : repère en pixels, zoom et déplacement ---------- */
+  var W=700, H=500, FS=20, S0=80;
+  var V={z:1,xc:0,yc:1.55,follow:false};
+  var Smin=12, Smax=150000;
+  function S(){ return S0*V.z; }
+  function X(x){ return W/2+S()*(x-V.xc); }
+  function Y(y){ return H/2-S()*(y-V.yc); }
+  function xOf(px){ return V.xc+(px-W/2)/S(); }
+  function yOf(py){ return V.yc-(py-H/2)/S(); }
+  function baseY(){ return clamp(Y(0),0,H-FS*3.9); }
+  function niceStep(t){
+    var p=Math.pow(10,Math.floor(Math.log10(t))), m=t/p;
+    return (m<=1?1:m<=2?2:m<=5?5:10)*p;
+  }
+  function sizeFig(){
+    var box=$("plotbox"), r=box.getBoundingClientRect();
+    if(r.width<10||r.height<10) return false;
+    W=Math.round(r.width); H=Math.round(r.height);
+    $("plot").setAttribute("viewBox","0 0 "+W+" "+H);
+    FS=clamp(Math.round(Math.min(W/48,H/20)),14,26);
+    $("plot").style.setProperty("--fs",FS+"px");
+    S0=Math.max(30,Math.min(H/5.8,W/7));
+    return true;
+  }
+  function drawStatic(){
+    var s=S(), g="", i, k, x, y, txt;
+    var xmin=xOf(0), xmax=xOf(W), ymax=yOf(0), ymin=yOf(H);
+    var stp=niceStep(70/s);
+    var dec=Math.max(0,-Math.floor(Math.log10(stp)+1e-9));
+    var ax=X(0), ay=Y(0);
+    var rowT=baseY()+FS*1.05;
+    var colT=clamp(ax-9,FS*2.6,W-4);
+    for(k=Math.ceil(xmin/stp);k<=Math.floor(xmax/stp);k++){
+      if(k===0) continue;
+      x=Number((k*stp).toPrecision(12));
+      g+='<line class="grid" x1="'+X(x).toFixed(1)+'" y1="0" x2="'+X(x).toFixed(1)+'" y2="'+H+'"/>';
+    }
+    for(k=Math.ceil(ymin/stp);k<=Math.floor(ymax/stp);k++){
+      if(k===0) continue;
+      y=Number((k*stp).toPrecision(12));
+      g+='<line class="grid" x1="0" y1="'+Y(y).toFixed(1)+'" x2="'+W+'" y2="'+Y(y).toFixed(1)+'"/>';
+    }
+    g+='<line class="axis" x1="0" y1="'+ay.toFixed(1)+'" x2="'+W+'" y2="'+ay.toFixed(1)+'"/>';
+    g+='<line class="axis" x1="'+ax.toFixed(1)+'" y1="0" x2="'+ax.toFixed(1)+'" y2="'+H+'"/>';
+    if(ay>8&&ay<H-8) g+='<polygon class="axfill" points="'+(W-1)+','+ay.toFixed(1)+' '+(W-12)+','+(ay-5).toFixed(1)+' '+(W-12)+','+(ay+5).toFixed(1)+'"/>';
+    if(ax>8&&ax<W-8) g+='<polygon class="axfill" points="'+ax.toFixed(1)+',1 '+(ax-5).toFixed(1)+',12 '+(ax+5).toFixed(1)+',12"/>';
+    for(k=Math.ceil(xmin/stp);k<=Math.floor(xmax/stp);k++){
+      if(k===0) continue;
+      x=Number((k*stp).toPrecision(12));
+      if(ay>0&&ay<H) g+='<line class="tick" x1="'+X(x).toFixed(1)+'" y1="'+(ay-4).toFixed(1)+'" x2="'+X(x).toFixed(1)+'" y2="'+(ay+4).toFixed(1)+'"/>';
+      if(X(x)>FS*1.3&&X(x)<W-FS*1.3) g+='<text x="'+X(x).toFixed(1)+'" y="'+rowT.toFixed(1)+'" text-anchor="middle">'+fmtd(x,dec)+'</text>';
+    }
+    for(k=Math.ceil(ymin/stp);k<=Math.floor(ymax/stp);k++){
+      if(k===0) continue;
+      y=Number((k*stp).toPrecision(12));
+      if(ax>0&&ax<W) g+='<line class="tick" x1="'+(ax-4).toFixed(1)+'" y1="'+Y(y).toFixed(1)+'" x2="'+(ax+4).toFixed(1)+'" y2="'+Y(y).toFixed(1)+'"/>';
+      g+='<text x="'+colT.toFixed(1)+'" y="'+(Y(y)+FS*0.32).toFixed(1)+'" text-anchor="end">'+fmtd(y,dec)+'</text>';
+    }
+    if(ax>FS&&ax<W&&ay>0&&ay<H-FS) g+='<text x="'+(ax-9).toFixed(1)+'" y="'+(ay+FS*1.15).toFixed(1)+'" text-anchor="end">O</text>';
+    if(ay>FS*1.2&&ay<H-FS*2.4) g+='<text class="it" x="'+(W-FS*0.9)+'" y="'+(ay-FS*0.5).toFixed(1)+'" text-anchor="middle">x</text>';
+    if(ax>FS*0.5&&ax<W-FS) g+='<text class="it" x="'+(ax+FS*0.7).toFixed(1)+'" y="'+(FS*1.3)+'" text-anchor="start">y</text>';
+    $("gridg").innerHTML=g;
+    var d="", px, yy;
+    for(px=0;px<=W+2;px+=2){
+      x=xOf(px); yy=clamp(Y(x*x),-1e6,1e6);
+      d+=(px?"L":"M")+px+" "+yy.toFixed(1);
+    }
+    $("curve").setAttribute("d",d);
+  }
+  function setLine(el,x1,y1,x2,y2){
+    el.setAttribute("x1",x1); el.setAttribute("y1",y1);
+    el.setAttribute("x2",x2); el.setAttribute("y2",y2);
+  }
+  function put(el,txt,x,y,anchor){
+    el.textContent=txt; el.setAttribute("x",x); el.setAttribute("y",y);
+    el.setAttribute("text-anchor",anchor||"middle"); el.style.display="";
+  }
+
+  function render(){
+    var a=st.a, h=st.h, zero=(h===0), s=S();
+    var xm=a+h, fa=a*a, fm=xm*xm, m=2*a+h;
+    var slope=zero?0:r6(m);
+    var xl=xOf(-60), xr=xOf(W+60);
+
+    /* figure */
+    setLine($("tan"),X(xl),Y(fa+2*a*(xl-a)),X(xr),Y(fa+2*a*(xr-a)));
+    setLine($("sec"),X(xl),Y(fa+m*(xl-a)),X(xr),Y(fa+m*(xr-a)));
+    var yb=baseY(), rowArr=yb+FS*2.35, rowHt=yb+FS*2.0, rowLab=yb+FS*3.6, endV=yb+FS*2.75;
+    var x1=X(a), x2=X(xm), yA=Y(fa), yM=Y(fm), ax=X(0);
+    setLine($("vA"),x1,yA,x1,endV);
+    setLine($("vM"),x2,yM,x2,endV);
+    $("ptA").setAttribute("transform","translate("+x1+" "+yA+")");
+    $("ptM").setAttribute("transform","translate("+x2+" "+yM+")");
+
+    var right=h>0, off=FS*0.7;
+    put($("labA"),"A",x1+(right?-off:off),yA-off,right?"end":"start");
+    put($("labM"),"M",x2+(right?off:-off),yM-off,right?"start":"end");
+
+    put($("tkA"),fmt(a),x1,rowLab,"middle");
+    if(Math.abs(h)*s<FS*2.6){ $("tkM").style.display="none"; } else { put($("tkM"),fmt(a)+"+h",x2,rowLab,"middle"); }
+
+    /* flèche à deux pointes : h entre a et a+h */
+    var dx=Math.abs(x2-x1), L=Math.min(x1,x2), R=Math.max(x1,x2), hl=$("labH");
+    if(dx>=14){
+      var hd=Math.min(9,dx/2.2);
+      setLine($("harr"),L,rowArr,R,rowArr);
+      $("hh1").setAttribute("points",L+","+rowArr+" "+(L+hd)+","+(rowArr-4)+" "+(L+hd)+","+(rowArr+4));
+      $("hh2").setAttribute("points",R+","+rowArr+" "+(R-hd)+","+(rowArr-4)+" "+(R-hd)+","+(rowArr+4));
+      ["harr","hh1","hh2"].forEach(function(id){ $(id).style.display=""; });
+      (x2>x1?$("hh1"):$("hh2")).style.display="none";
+    } else { ["harr","hh1","hh2"].forEach(function(id){ $(id).style.display="none"; }); }
+    put(hl,"h",(x1+x2)/2,rowArr-FS*0.45,"middle");
+    $("hwv").innerHTML="<i>h</i> = "+fmt(h); $("hwin").hidden=!show.hval;
+    $("swin").hidden=!show.sw;
+    if(zero){
+      $("swt2").innerHTML="Il n’y a pas de sécante (AM) : M est confondu avec A.";
+    } else {
+      $("swt2").innerHTML="Le coefficient directeur de la sécante (AM) est <b>"+fmt(slope)+"</b>";
+    }
+
+    /* f(a) et f(a+h) sur l'axe des ordonnées */
+    setLine($("hlA"),x1,yA,ax,yA);
+    setLine($("hlM"),x2,yM,ax,yM);
+    setLine($("tfA"),ax-5,yA,ax+5,yA);
+    setLine($("tfM"),ax-5,yM,ax+5,yM);
+    var lx, anc;
+    if(ax+8+FS*5>W){ lx=ax-8; anc="end"; } else { lx=Math.max(ax+8,8); anc="start"; }
+    var gp=Math.abs(yA-yM), yFa, yFm;
+    if(zero||gp>=FS*1.4){ yFa=yA-5; yFm=yM-5; }
+    else if(yM<yA){ yFm=yM-5; yFa=yA+FS*0.95; }
+    else { yFa=yA-5; yFm=yM+FS*0.95; }
+    put($("fA"),"f("+fmt(st.a)+")",lx,yFa,anc);
+    put($("fM"),"f("+fmt(st.a)+"+h)",lx,yFm,anc);
+    if(!zero){
+      /* si l'étiquette M gêne celles de l'axe des ordonnées, on la place de l'autre côté */
+      var fw2=FS*4.6, f02=(anc==="start")?lx:lx-fw2, mw=FS*0.9;
+      var m0=right?x2+off:x2-off-mw, my0=yM-off-FS*0.85, my1=yM-off+FS*0.3, clash=false;
+      [yFa,yFm].forEach(function(fy){
+        if(m0<f02+fw2 && m0+mw>f02 && my0<fy+FS*0.3 && my1>fy-FS*0.85) clash=true;
+      });
+      if(clash) put($("labM"),"M",x2+off,yM+FS*1.15,"start");
+    }
+
+
+    /* fenêtre sécante */
+    var c1='<span>=</span><span class="frac"><span><i>f</i>('+fmt(xm)+') '+MINUS+' <i>f</i>('+fmt(a)+')</span><span>'+fmt(h)+'</span></span>';
+    var c2='<span>=</span><span class="frac"><span>'+fmtd(fm,8)+' '+MINUS+' '+fmtd(fa,8)+'</span><span>'+fmt(h)+'</span></span><span>=</span><span class="value s inline">'+fmt(slope)+'</span>';
+    $("calc1").innerHTML=c1; $("calc2").innerHTML=c2;
+
+    /* h = 0 : la sécante disparaît */
+    var gone=["sec","vM","ptM","labM","labH","tkM","hlM","tfM","fM","harr","hh1","hh2"];
+    if(zero){
+      gone.forEach(function(id){ $(id).style.display="none"; });
+      $("calc1").innerHTML='<span class="zero">Pour <i>h</i> = 0, le point M est confondu avec A : il n’y a plus de sécante et le quotient n’est pas défini.</span>';
+      $("calc2").innerHTML="";
+    } else {
+      ["sec","vM","ptM","hlM","tfM"].forEach(function(id){ $(id).style.display=""; });
+      if(show.A) $("hlA").style.display="";
+    }
+
+    ["ptA","labA","tkA","fA","tfA","hlA","vA","tan"].forEach(function(id){ $(id).style.display=""; });
+    /* groupes masqués à la demande */
+    var grp={
+      A:["ptA","labA","tkA","fA","tfA","hlA","vA"],
+      M:["ptM","labM","tkM","fM","tfM","hlM","vM"],
+      tan:["tan"], sec:["sec"], hv:["harr","hh1","hh2","labH"], hval:[]
+    };
+    Object.keys(grp).forEach(function(k){
+      if(!show[k]) grp[k].forEach(function(id){ $(id).style.display="none"; });
+    });
+    if(show.tan&&!show.A) $("ptA").style.display="";
+
+    /* fenêtre tangente */
+    ["a","m"].forEach(function(k){
+      var txt=(k==="a")?fmt(a):fmt(2*a);
+      Array.prototype.forEach.call(document.querySelectorAll('[data-rv="'+k+'"]'),function(b){
+        b.querySelector(".rvv").textContent=(rv[k]?txt:"");
+        b.setAttribute("aria-pressed",String(rv[k]));
+      });
+    });
+    $("rvall").textContent=(rv.a&&rv.m)?"Masquer les valeurs":"Afficher les valeurs";
+
+    /* curseur */
+    $("hout").innerHTML="<i>h</i> = "+fmt(h);
+    $("aout").innerHTML="<i>a</i> = "+fmt(a);
+    $("p").setAttribute("aria-valuetext","h = "+fmt(h));
+  }
+  function redraw(){ drawStatic(); render(); }
+
+  /* zoom et déplacement de la figure */
+  function zoomAt(f,px,py){
+    var bx=xOf(px), by=yOf(py);
+    V.z=clamp(V.z*f,Smin/S0,Smax/S0);
+    V.xc=bx-(px-W/2)/S(); V.yc=by+(py-H/2)/S();
+    redraw();
+  }
+  function centerOnA(){ V.xc=st.a; V.yc=st.a*st.a; V.follow=true; redraw(); }
+  function resetView(){ V.z=1; V.xc=0; V.yc=1.55; V.follow=false; redraw(); }
+
+  var plot=$("plot"), drag=null;
+  plot.addEventListener("wheel",function(e){
+    e.preventDefault();
+    var r=plot.getBoundingClientRect();
+    var dy=e.deltaMode===1?e.deltaY*30:e.deltaY;
+    zoomAt(Math.exp(-dy*0.0015),e.clientX-r.left,e.clientY-r.top);
+  },{passive:false});
+  plot.addEventListener("pointerdown",function(e){
+    if(e.button!==0) return;
+    drag={x:e.clientX,y:e.clientY};
+    try{ plot.setPointerCapture(e.pointerId); }catch(err){}
+    plot.classList.add("drag");
+  });
+  plot.addEventListener("pointermove",function(e){
+    if(!drag) return;
+    var dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+    drag.x=e.clientX; drag.y=e.clientY;
+    V.xc-=dx/S(); V.yc+=dy/S(); V.follow=false;
+    redraw();
+  });
+  function endDrag(){ drag=null; plot.classList.remove("drag"); }
+  plot.addEventListener("pointerup",endDrag);
+  plot.addEventListener("pointercancel",endDrag);
+  plot.addEventListener("dblclick",function(e){
+    var r=plot.getBoundingClientRect();
+    zoomAt(2,e.clientX-r.left,e.clientY-r.top);
+  });
+  if(window.ResizeObserver){
+    new ResizeObserver(function(){ if(sizeFig()) redraw(); }).observe($("plotbox"));
+  }
+  window.addEventListener("resize",function(){ if(sizeFig()) redraw(); if(typeof placeCtrl==="function") placeCtrl(); });
+
+  /* ---------- commandes ---------- */
+  $("zero").addEventListener("click",function(){
+    st.h=0; $("p").value=zIdx; render();
+  });
+  $("p").addEventListener("input",function(e){
+    st.h=vals[+e.target.value];
+    render();
+  });
+  function stepA(d){
+    st.a=clamp(Math.round((st.a+d)*2)/2,-10,10);
+    render();
+  }
+  $("aMinus").addEventListener("click",function(){ stepA(-0.5); });
+  $("aPlus").addEventListener("click",function(){ stepA(0.5); });
+
+  /* ---------- fenêtres : zoom du contenu, agrandir, masquer, rouvrir ---------- */
+  var app=document.querySelector(".app"), sideEl=document.querySelector(".side");
+  var wins={fig:$("fig"),ctrl:$("ctrl"),sec:$("w-sec"),tan:$("w-tan")};
+  var vis={fig:true,ctrl:true,sec:true,tan:true}, mx=null;
+  var zf={ctrl:1,sec:1,tan:1};
+  var SV='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">';
+  var ICON={
+    max:SV+'<rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>',
+    res:SV+'<path d="M5.5 5.5V2.5h8v8h-3M2.5 5.5h8v8h-8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>',
+    x:SV+'<path d="M3 3l10 10M13 3L3 13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+    minus:SV+'<path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
+    plus:SV+'<path d="M3 8h10M8 3v10" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>'
+  };
+  function btn(act,k,title,html,cls){
+    return '<button type="button" class="'+(cls||"wb")+'" data-act="'+act+'" data-k="'+k+'" title="'+title+'" aria-label="'+title+'">'+html+'</button>';
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".wbs"),function(box){
+    var k=box.getAttribute("data-k"), h="";
+    if(k==="fig") h+=btn("center",k,"Centrer la vue sur le point A","Centrer sur A","wt")+btn("reset",k,"Rétablir la vue d’origine","Rétablir","wt");
+    h+=btn("zoomout",k,"Zoom arrière",ICON.minus)+btn("zoomin",k,"Zoom avant",ICON.plus);
+    if(k==="fig") h+=btn("max",k,"Agrandir","");
+    h+=btn("close",k,"Masquer",ICON.x);
+    box.innerHTML=h;
+  });
+
+  var cpos=null;
+  function placeCtrl(){
+    var c=wins.ctrl; if(c.hidden) return;
+    var r=$("plotbox").getBoundingClientRect(), cw=c.offsetWidth, ch=c.offsetHeight, x, y;
+    if(cpos){ x=cpos.x; y=cpos.y; }
+    else if(r.width>10){ x=r.left+8; y=r.top+8; }
+    else { x=16; y=96; }
+    x=clamp(x,4,Math.max(4,window.innerWidth-cw-4)); y=clamp(y,4,Math.max(4,window.innerHeight-ch-4));
+    c.style.left=x+"px"; c.style.top=y+"px";
+  }
+  function layout(){
+    var shown={}, cols, rows, areas, one="minmax(0,1fr)";
+    ["fig","sec","tan"].forEach(function(k){
+      var show=vis[k]&&(k==="fig"||mx===null||mx==="fig");
+      shown[k]=show;
+      wins[k].hidden=!show;
+      wins[k].classList.toggle("big",mx===k);
+    });
+    wins.ctrl.hidden=!vis.ctrl;
+    sideEl.hidden=false;
+    if(shown.fig){ cols=one; areas=[["head"],["fig"]]; }
+    else { cols=one; areas=[["head"]]; }
+    rows=areas.length>1?["auto",one]:["auto"];
+    app.style.gridTemplateColumns=cols;
+    app.style.gridTemplateRows=rows.join(" ");
+    app.style.gridTemplateAreas=areas.map(function(r){ return '"'+r.join(" ")+'"'; }).join(" ");
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="chip"]'),function(c){
+      c.setAttribute("aria-pressed",String(vis[c.getAttribute("data-k")]));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-act="max"]'),function(b){
+      var on=(mx===b.getAttribute("data-k")), t=on?"Réduire":"Agrandir";
+      b.innerHTML=on?ICON.res:ICON.max; b.title=t; b.setAttribute("aria-label",t);
+    });
+    placeCtrl();
+    if(sizeFig()) redraw(); else render();
+  }
+  function zoomWin(k,f){
+    zf[k]=clamp(zf[k]*f,0.6,4);
+    wins[k].style.setProperty("--zf",zf[k]);
+  }
+  document.addEventListener("click",function(e){
+    var rb=e.target.closest&&e.target.closest("[data-rv]");
+    if(rb){ var kk=rb.getAttribute("data-rv"); rv[kk]=!rv[kk]; render(); return; }
+    if(e.target.closest&&e.target.closest("#rvall")){ var on=!(rv.a&&rv.m); rv.a=rv.m=on; render(); return; }
+    var tg=e.target.closest&&e.target.closest("[data-tg]");
+    if(tg){
+      var tk=tg.getAttribute("data-tg");
+      show[tk]=!show[tk]; tg.setAttribute("aria-pressed",String(show[tk]));
+      render(); return;
+    }
+    var b=e.target.closest&&e.target.closest("[data-act]"); if(!b) return;
+    var k=b.getAttribute("data-k"), act=b.getAttribute("data-act");
+    if(k==="ctrl"&&(act==="chip"||act==="close")){ vis.ctrl=(act==="chip")?!vis.ctrl:false; layout(); return; }
+    if(act==="zoomin"||act==="zoomout"){
+      var up=(act==="zoomin");
+      if(k==="fig") zoomAt(up?1.5:1/1.5,W/2,H/2); else zoomWin(k,up?1.2:1/1.2);
+      return;
+    }
+    if(act==="center"){ centerOnA(); return; }
+    if(act==="reset"){ resetView(); return; }
+    if(act==="max"){ mx=(mx===k)?null:k; }
+    else if(act==="close"){ vis[k]=false; if(mx===k) mx=null; }
+    else if(act==="chip"){ vis[k]=!vis[k]; if(vis[k]||mx===k) mx=null; }
+    layout();
+  });
+
+  var cbar=wins.ctrl.querySelector(".bar"), dr=null;
+  cbar.addEventListener("pointerdown",function(e){
+    if(e.target.closest("button")) return;
+    var r=wins.ctrl.getBoundingClientRect(); dr={dx:e.clientX-r.left,dy:e.clientY-r.top};
+    try{ cbar.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  cbar.addEventListener("pointermove",function(e){
+    if(!dr) return;
+    cpos={x:e.clientX-dr.dx,y:e.clientY-dr.dy}; placeCtrl();
+  });
+  function endCdrag(){ dr=null; }
+  cbar.addEventListener("pointerup",endCdrag);
+  cbar.addEventListener("pointercancel",endCdrag);
+
+  function floatWin(id,key,anchor){
+    var w=$(id), d=null, pos=null, z=1;
+    function place(){
+      if(w.hidden) return;
+      var cw=w.offsetWidth, ch=w.offsetHeight, x, y;
+      if(pos){ x=pos.x; y=pos.y; } else { var q=anchor(cw,ch); x=q[0]; y=q[1]; }
+      x=clamp(x,4,Math.max(4,window.innerWidth-cw-4)); y=clamp(y,4,Math.max(4,window.innerHeight-ch-4));
+      w.style.left=x+"px"; w.style.top=y+"px"; w.style.right="auto";
+    }
+    w.addEventListener("pointerdown",function(e){
+      if(e.target.closest("button")) return;
+      var r=w.getBoundingClientRect(); d={dx:e.clientX-r.left,dy:e.clientY-r.top};
+      try{ w.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    w.addEventListener("pointermove",function(e){ if(d){ pos={x:e.clientX-d.dx,y:e.clientY-d.dy}; place(); } });
+    w.addEventListener("pointerup",function(){ d=null; });
+    w.addEventListener("pointercancel",function(){ d=null; });
+    w.addEventListener("click",function(e){
+      var b=e.target.closest("[data-hz]"); if(!b) return;
+      var v=b.getAttribute("data-hz");
+      if(v==="0"){ show[key]=false; var t=document.querySelector('[data-tg="'+key+'"]'); if(t) t.setAttribute("aria-pressed","false"); w.hidden=true; return; }
+      z=clamp(z*(v==="1"?1.25:0.8),0.6,3); w.style.setProperty("--hz",z); place();
+    });
+    window.addEventListener("resize",place);
+    return place;
+  }
+  var placeH=floatWin("hwin","hval",function(cw){ var r=$("plotbox").getBoundingClientRect(); return r.width<10?[window.innerWidth-cw-16,100]:[r.right-cw-12,r.top+10]; });
+  var placeS=floatWin("swin","sw",function(cw,ch){ var r=$("plotbox").getBoundingClientRect(); return r.width<10?[16,200]:[r.left+(r.width-cw)/2,r.bottom-ch-14]; });
+  var placeSec=floatWin("w-sec","_sec",function(cw){ var r=$("plotbox").getBoundingClientRect(); return r.width<10?[16,120]:[r.right-cw-12,r.top+110]; });
+  var placeTan=floatWin("w-tan","_tan",function(cw){ var r=$("plotbox").getBoundingClientRect(), sh=$("w-sec").hidden?0:$("w-sec").offsetHeight+10; return r.width<10?[16,300]:[r.right-cw-12,r.top+110+sh]; });
+  var _r=render; render=function(){ _r(); placeH(); placeS(); placeSec(); placeTan(); };
+  function setBounds(){
+    var lo=parseFloat(String($("inMin").value).replace(",",".")), hi=parseFloat(String($("inMax").value).replace(",","."));
+    if(isFinite(lo)&&lo<0) cfg.hmin=clamp(lo,-100,-0.0001);
+    if(isFinite(hi)&&hi>0) cfg.hmax=clamp(hi,0.0001,100);
+    var keep=st.h; applyRange();
+    $("inMin").value=cfg.hmin; $("inMax").value=cfg.hmax;
+    render();
+  }
+  ["inMin","inMax"].forEach(function(id){
+    $(id).addEventListener("change",setBounds);
+    $(id).addEventListener("input",function(){ var v=parseFloat(String($(id).value).replace(",",".")); if(isFinite(v)&&((id==="inMin"&&v<0)||(id==="inMax"&&v>0))) setBounds(); });
+    $(id).addEventListener("keydown",function(e){ if(e.key==="Enter"){ e.preventDefault(); setBounds(); $(id).blur(); } });
+  });
+  /* --- séquence élèves : état de départ de la page 2 = courbe + tangente en a = 1 --- */
+  st.a=1;
+  show.M=false; show.sec=false; show.hv=false; show.hval=false; show.sw=false;
+  vis.ctrl=false; vis.sec=false; vis.tan=false;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-tg]"),function(b){
+    b.setAttribute("aria-pressed",String(!!show[b.getAttribute("data-tg")]));
+  });
+  var hvOn=false;
+  $("hvBtn").addEventListener("click",function(){
+    hvOn=!hvOn;
+    ["hv1","hv2"].forEach(function(id){ var e=$(id); e.textContent=hvOn?fmt(2*st.a):""; e.classList.toggle("on",hvOn); });
+    $("hv2").textContent=hvOn?fmt(2*st.a)+".":"";
+    $("hvBtn").textContent=hvOn?"Masquer les valeurs":"Afficher les valeurs";
+  });
+  function scaleFrame(el){
+    var ro=new ResizeObserver(function(){ el.style.fontSize=clamp(el.offsetWidth/20.5,10,64)+"px"; });
+    ro.observe(el);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".p2side .p2txt,.p2side .p2ans"),scaleFrame);
+  var p1=$("p1");
+  var page=1, NP=19, revealed4=false, ctrlPlaced=false;
+  function updLive(){
+    var m=r6(2*st.a+st.h);
+    $("noSec").hidden=true;
+    $("p4h").innerHTML="Pour <i>h</i> = <b>"+fmt(st.h)+"</b> :";
+    $("p4m").innerHTML=(st.h===0)
+      ? "M est confondu avec A, il n’y a plus de sécante."
+      : "le coefficient directeur de la sécante (AM) est égal à <b>"+fmt(m)+"</b>.";
+  }
+  var p10selA=2, p10figOn=false;
+  function updP10Res(a){
+    var derv=fmt2(2*a), av=fmt2(a);
+    $("p10res").innerHTML=
+      "<span id='p10secval'></span>"+
+      "Lorsque <i>h</i> tend vers 0, le coefficient directeur de la sécante au point d’abscisse <b>"+av+"</b> tend vers <b>"+derv+"</b><br>"+
+      "Donc <b><i>f</i> ′("+av+") = "+derv+"</b>";
+    updP10Sec();
+  }
+  function updP10Sec(){
+    var a=st.a, h=st.h, el=$("p10secval");
+    if(!el) return;
+    if(h===0){ el.innerHTML="<i>h</i> = 0 : M est confondu avec A, pas de sécante.<br>"; }
+    else{ var m=r6(2*a+h); el.innerHTML="Le coefficient directeur de la sécante est égal à <b>"+fmt(m)+"</b><br>"; }
+  }
+  function fmt2(v){
+    if(v===Math.round(v)) return String(v).replace("-",MINUS);
+    return fmt(v);
+  }
+  function buildP10Steps(a){
+    var F=function(n,d){ return '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>'; };
+    var av=fmt2(a), a2v=fmt2(a*a), derv=fmt2(2*a);
+    var twoA=2*a; // nombre
+    var nega=a<0, azero=a===0;
+    var astr=nega?"("+av+")":av;
+    // --- "Je forme le taux" ---
+    var formLeft=F("<i>f</i>("+av+" + <i>h</i>) − <i>f</i>("+av+")","<i>h</i>");
+    var formRight=F("("+av+" + <i>h</i>)² − "+astr+"²","<i>h</i>");
+    // --- "Je développe et je réduis" ---
+    // développement : a²+2ah+h²  (avec le signe correct devant 2ah)
+    var absTwoA=Math.abs(twoA);
+    var twoAhTerm; // "2h", "−2h", "+4h", "−4h", etc.
+    if(azero){ twoAhTerm=""; }
+    else if(absTwoA===1){ twoAhTerm=(twoA>0?" + ":" − ")+"<i>h</i>"; }
+    else { twoAhTerm=(twoA>0?" + ":" − ")+fmt2(absTwoA)+"<i>h</i>"; }
+    // détail : a²+2×a×h (avec le signe correct)
+    var twoAhDetail;
+    if(azero){ twoAhDetail=""; }
+    else {
+      var absAv=fmt2(Math.abs(a));
+      twoAhDetail=(twoA>0?" + ":" − ")+"2×"+absAv+"×<i>h</i>";
+    }
+    var devLeft=a2v+twoAhDetail+" + <i>h</i>² − "+a2v;
+    // réduit : 2ah+h²
+    var redContent;
+    if(azero){ redContent="<i>h</i>²"; }
+    else if(absTwoA===1){ redContent="<b>"+(twoA>0?"":"−")+"<i>h</i></b> + <i>h</i>²"; }
+    else { redContent="<b>"+(twoA>0?"":"−")+fmt2(absTwoA)+"<i>h</i></b> + <i>h</i>²"; }
+    // --- "Je factorise" ---
+    var facInner;
+    if(azero){ facInner="<i>h</i>"; }
+    else if(absTwoA===1){ facInner=(twoA>0?"":"−")+"1 + <i>h</i>"; }
+    else { facInner=fmt2(twoA)+" + <i>h</i>"; }
+    // --- "Je simplifie" : 2a+h ---
+    var simpExpr;
+    if(azero){ simpExpr="<i>h</i>"; }
+    else if(absTwoA===1){ simpExpr=(twoA>0?"":"−")+"<i>h</i> + <i>h</i>"; /* = h+h mais let's use coeff */ simpExpr=fmt2(twoA)+" + <i>h</i>"; }
+    else { simpExpr=fmt2(twoA)+" + <i>h</i>"; }
+    // si a=0 : simpExpr = "h"
+    if(azero) simpExpr="<i>h</i>";
+    var rows=[
+      { lab:"Je forme le taux", col:"c0",
+        exp: formLeft+" = "+formRight },
+      { lab:"Je développe et je réduis", col:"c1",
+        exp: "= "+F(devLeft,"<i>h</i>")+" = "+F(redContent,"<i>h</i>") },
+      { lab:"Je factorise", col:"c2",
+        exp: azero
+          ? "= "+F("<i>h</i>²","<i>h</i>")+" = "+F("<i>h</i> × <i>h</i>","<i>h</i>")
+          : "= "+F("<i>h</i>("+facInner+")","<i>h</i>") },
+      { lab:"Je simplifie par <i>h</i>", col:"c3",
+        exp: "= <b>"+simpExpr+"</b> &nbsp;<small>(car <i>h</i> ≠ 0)</small>" },
+      { lab:"On fait tendre <i>h</i> vers 0", col:"c5",
+        exp: "Lorsque <i>h</i> tend vers 0, "+simpExpr+" tend vers <b>"+derv+"</b>" },
+      { lab:"Je conclus", col:"c4",
+        exp: "Le coefficient directeur de la tangente au point d’abscisse <b>"+av+"</b> est <b><i>f</i> ′("+av+") = "+derv+"</b>", concl:true }
+    ];
+    var html="";
+    rows.forEach(function(r,i){
+      html+='<div class="p10step cstep'+(r.concl?" p10concl2":"")+(i===0?"":" ")+'" hidden>'
+           +'<span class="clab '+r.col+'">'+r.lab+'</span>'
+           +'<span class="cexp">'+r.exp+'</span></div>';
+    });
+    $("p10steps").innerHTML=html;
+  }
+  function updLive10(){
+    updP10Sec();
+  }
+  function updLive6(){
+    var h=st.h, a=st.a, F=function(n,d){ return '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>'; };
+    if(h===0){
+      $("p6e").innerHTML="Pour <i>h</i> = 0, le taux de variation de <i>f</i> n’est pas défini (division par 0).";
+      return;
+    }
+    var m=r6(2*a+h);
+    $("p6e").innerHTML=F("<i>f</i>(1 + "+(h<0?"("+fmt(h)+")":fmt(h))+") − <i>f</i>(1)",fmt(h))+" = "+F("<i>f</i>("+fmt(r6(a+h))+") − <i>f</i>(1)",fmt(h))+" = <b>"+fmt(m)+"</b>";
+  }
+  var _r2=render; render=function(){ _r2(); if(page===4) updLive(); if(page===6) updLive6(); if(page===10) updLive10(); };
+  function applyPage(n){
+    if(n!==4) $("noSec").hidden=true;
+    document.body.classList.toggle("pg4",n===4||n===6||n===10||n>=12); document.body.classList.toggle("pg6",n===6); document.body.classList.toggle("pg10",n===10); document.body.classList.toggle("pg12",n===12); document.body.classList.toggle("pg15",n>=14); document.body.classList.toggle("pgfig",n===2||n===4||n===6||n===10); document.body.classList.toggle("tanrev",n!==4||revealed4);
+    $("p2side").hidden=(n!==2); $("p6side").hidden=(n!==6); $("p4side").hidden=(n!==4); $("p10side").hidden=(n!==10); $("p12side").hidden=(n!==12); $("p15side").hidden=(n!==14); $("p16side").hidden=(n!==15); $("p17side").hidden=(n!==17); $("p18side").hidden=(n!==18); $("p19side").hidden=(n!==19);
+    if(n!==10&&n!==12) st.a=1;
+    if(n===2){
+      show.A=true; show.M=false; show.sec=false; show.tan=true; show.hv=false; show.hval=false; show.sw=false;
+      vis.ctrl=false;
+    } else if(n===6){
+      show.A=true; show.M=true; show.sec=true; show.tan=true; show.hv=true; show.hval=false; show.sw=false;
+      vis.ctrl=true;
+      if(!ctrlPlaced){ ctrlPlaced=true; $("p").value=vals.length-1; st.h=vals[vals.length-1]; }
+    } else if(n===10){
+      show.A=true; show.M=true; show.sec=true; show.tan=true; show.hv=true; show.hval=false; show.sw=false;
+      vis.ctrl=true;
+      if(!ctrlPlaced){ ctrlPlaced=true; $("p").value=vals.length-1; st.h=vals[vals.length-1]; }
+    } else if(n===4){
+      show.A=true; show.M=true; show.sec=true; show.tan=true; show.hv=true; show.hval=false; show.sw=false;
+      vis.ctrl=true;
+      if(!ctrlPlaced){
+        ctrlPlaced=true;
+        $("p").value=vals.length-1; st.h=vals[vals.length-1];
+      }
+    }
+    if(n===2||n===4||n===6||n===10){
+      var bx=$("plotbox"), L=Math.max(10,Math.min(450,innerWidth*0.42));
+      if(!figPlaced){
+        figPlaced=true;
+        bx.style.left=L+"px"; bx.style.top="64px";
+        bx.style.width=Math.max(240,Math.min(620,innerWidth-L-22))+"px";
+        bx.style.height=Math.max(200,innerHeight-150)+"px";
+      }
+    }
+    if(n===12){
+      show.A=false; show.M=false; show.sec=false; show.tan=false; show.hv=false; show.hval=false; show.sw=false;
+      vis.ctrl=false;
+      document.body.classList.add("nofig");
+      ["p12fbtn","p12abtn","p12res","p12box"].forEach(function(id){ var e=$(id); e.style.left=""; e.style.top=""; });
+      buildP12Steps(); p12n=0; p12show(); updP12Res();
+    }
+    if(n>=14){
+      show.A=false; show.M=false; show.sec=false; show.tan=false; show.hv=false; show.hval=false; show.sw=false;
+      vis.ctrl=false;
+      document.body.classList.add("nofig");
+    }
+    if(n===14){ buildP15Ex(); }
+    if(n===15){ buildP16Steps(p16a); p16n=0; p16show(); }
+    if(n===17){ buildP17Ex(); }
+    if(n===18){ buildP18Steps(p18a); p18n=0; p18show(); }
+    if(n===19){ buildP19(); }
+    if(n===2||n===4||n===6||n===10){
+      Array.prototype.forEach.call(document.querySelectorAll("[data-tg]"),function(b){
+        b.setAttribute("aria-pressed",String(!!show[b.getAttribute("data-tg")]));
+      });
+      layout();
+      if(n===6){ cposSet=true; cpos={x:14,y:Math.max(4,innerHeight-200)}; placeCtrl(); updLive6(); }
+      if(n===10){
+        cposSet=true; cpos={x:Math.max(14,innerWidth-350),y:Math.max(4,innerHeight-240)};
+        $("ctrl").hidden=!p10figOn; $("p10res").hidden=!p10figOn;
+        if(p10figOn) placeCtrl();
+        st.a=p10selA; $("p10boxtitle").innerHTML="Calcul de <i>f</i>′("+fmtd(p10selA,6)+")"; buildP10Steps(p10selA); p10n=0; p10show(); updLive10(); }
+      if(n===4){
+        var r=$("plotbox").getBoundingClientRect(), c=wins.ctrl;
+        if(!cposSet){ cposSet=true; cpos={x:r.left+10,y:Math.max(4,r.bottom-c.offsetHeight-60)}; placeCtrl(); }
+        updLive();
+      }
+    }
+  }
+  var cposSet=false, figPlaced=false;
+  function goPage(n){
+    page=clamp(n,1,NP);
+    p1.hidden=(page!==1);
+    $("p3").hidden=(page!==3);
+    $("p5").hidden=(page!==5);
+    $("p7").hidden=(page!==7);
+    $("p9intro").hidden=(page!==9);
+    $("p8").hidden=(page!==8);
+    $("p11intro").hidden=(page!==11);
+    $("p13intro").hidden=(page!==13);
+    $("p14intro").hidden=(page!==16);
+    if(page===2||page===4||page===6||page===13) document.body.classList.remove("nofig");
+    if(page===10) document.body.classList.toggle("nofig",!p10figOn);
+    $("pNum").textContent=page+" / "+NP;
+    $("pPrev").disabled=(page===1);
+    $("pNext").disabled=(page===NP);
+    applyPage(page);
+    window.dispatchEvent(new Event("resize"));
+  }
+  $("p1go").addEventListener("click",function(){ goPage(2); });
+  $("p3go").addEventListener("click",function(){ goPage(4); });
+  $("p9igo").addEventListener("click",function(){ goPage(10); });
+  $("p4Btn").addEventListener("click",function(){
+    revealed4=!revealed4; show.tan=true; document.body.classList.toggle("tanrev",revealed4);
+    $("hv4").textContent=revealed4?fmt(2*st.a):""; $("hv4").classList.toggle("on",revealed4); $("hv3").textContent=revealed4?fmt(2*st.a)+".":""; $("hv3").classList.toggle("on",revealed4);
+    $("p4Btn").textContent=revealed4?"Masquer la réponse":"Afficher la réponse";
+    render();
+  });
+  $("pPrev").addEventListener("click",function(){ goPage(page-1); });
+  $("pNext").addEventListener("click",function(){ goPage(page+1); });
+  document.addEventListener("keydown",function(e){
+    if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if(e.key==="PageDown"||e.key==="ArrowRight") goPage(page+1);
+    if(e.key==="PageUp"||e.key==="ArrowLeft") goPage(page-1);
+  });
+  /* arrêt obligatoire en h = 0 sur la page 4 : il faut relâcher puis reprendre pour passer de l'autre côté */
+  (function(){
+    var sl=$("p"), prev=null, lock=false;
+    function rel(){ lock=false; }
+    sl.addEventListener("pointerup",rel); sl.addEventListener("pointercancel",rel); sl.addEventListener("keyup",rel); sl.addEventListener("blur",rel);
+    sl.addEventListener("input",function(){
+      var v=+sl.value;
+      if(page===4||page===6||page===10){
+        if(lock){ sl.value=zIdx; v=zIdx; }
+        else if(prev!==null && ((prev<zIdx&&v>zIdx)||(prev>zIdx&&v<zIdx))){ sl.value=zIdx; v=zIdx; lock=true; }
+      }
+      prev=v;
+    },true);
+  })();
+  $("p10fig").addEventListener("click",function(){
+    var hide=document.body.classList.toggle("nofig");
+    /* la figure, le curseur de h et la fenêtre verte (coefficient directeur / conclusion)
+       s'affichent ou disparaissent ensemble ; masquées par défaut à l'arrivée sur la page */
+    p10figOn=!hide;
+    $("ctrl").hidden=hide;
+    $("p10res").hidden=hide;
+    if(!hide) placeCtrl();
+    window.dispatchEvent(new Event("resize"));
+  });
+  $("p6fig").addEventListener("click",function(){ document.body.classList.toggle("nofig"); window.dispatchEvent(new Event("resize")); });
+  $("p6x").addEventListener("click",function(){ document.body.classList.add("nofig"); });
+  (function(){
+    var bar=$("p6bar"), box=$("plotbox"), d=null;
+    bar.addEventListener("pointerdown",function(e){ if(e.target.tagName==="BUTTON") return; var q=box.getBoundingClientRect(); d={dx:e.clientX-q.left,dy:e.clientY-q.top}; bar.setPointerCapture(e.pointerId); e.stopPropagation(); });
+    bar.addEventListener("pointermove",function(e){ if(!d) return; box.style.left=Math.max(0,e.clientX-d.dx)+"px"; box.style.top=Math.max(0,e.clientY-d.dy)+"px"; });
+    bar.addEventListener("pointerup",function(){ d=null; });
+  })();
+  /* mini-slider page 6 — synchronisé avec le slider principal #p */
+  (function(){
+    var main=$("p"), mini=$("p6sl"), out=$("p6slout");
+    function syncFromMain(){
+      mini.min=main.min; mini.max=main.max; mini.step=main.step; mini.value=main.value;
+      out.textContent="h = "+fmt(vals[+main.value]||0);
+    }
+    mini.addEventListener("input",function(){
+      main.value=mini.value;
+      main.dispatchEvent(new Event("input",{bubbles:true}));
+    });
+    mini.addEventListener("pointerup",function(){ main.dispatchEvent(new Event("pointerup")); });
+    mini.addEventListener("pointercancel",function(){ main.dispatchEvent(new Event("pointercancel")); });
+    /* mise à jour de l'affichage du mini à chaque render */
+    var _r3=render; render=function(){ _r3(); if(page===6){ syncFromMain(); } };
+  })();
+  function stepper(page,btn){
+    var cs=Array.prototype.slice.call(document.querySelectorAll("#"+page+" .cstep")), n=0;
+    function show(){
+      cs.forEach(function(e,i){ e.hidden=(i>=n); });
+      $(btn).textContent=(n>=cs.length)?"Recommencer ↺":"Étape suivante →";
+    }
+    $(btn).addEventListener("click",function(){ n=(n>=cs.length)?0:n+1; show(); });
+    show();
+  }
+  stepper("p8","p8btn");
+  /* stepper dynamique page 10 */
+  var p10n=0;
+  function p10show(){
+    var cs=Array.prototype.slice.call($("p10steps").querySelectorAll(".cstep"));
+    cs.forEach(function(e,i){ e.hidden=(i>=p10n); });
+    $("p10btn").textContent=(p10n>=cs.length)?"Recommencer ↺":"Étape suivante →";
+  }
+  $("p10btn").addEventListener("click",function(){
+    var cs=$("p10steps").querySelectorAll(".cstep");
+    p10n=(p10n>=cs.length)?0:p10n+1;
+    p10show();
+  });
+  Array.prototype.forEach.call($("p10abtn").querySelectorAll(".p10a"),function(btn){
+    btn.addEventListener("click",function(){
+      var a=parseFloat(btn.getAttribute("data-a"));
+      st.a=a; p10selA=a;
+      Array.prototype.forEach.call($("p10abtn").querySelectorAll(".p10a"),function(b){ b.classList.remove("act10"); });
+      btn.classList.add("act10");
+      $("p10boxtitle").innerHTML="Calcul de <i>f</i>′("+fmtd(a,6)+")";
+      buildP10Steps(a); p10n=0; p10show(); updP10Res(a);
+      render();
+    });
+  });
+  /* init page 10 */
+  buildP10Steps(p10selA); p10show(); updP10Res(p10selA);
+  /* resize page 10 : natif + zoom proportionnel */
+  (function(){
+    var box=$("p10box"), baseW=600;
+    var res=$("p10res"), resBaseW=res.offsetWidth||400;
+    new ResizeObserver(function(entries){
+      entries.forEach(function(e){
+        var r=e.target.offsetWidth/(e.target===box?baseW:resBaseW);
+        if(r<0.6)r=0.6; if(r>3)r=3;
+        e.target.style.setProperty(e.target===box?"--p10zf":"--p10rzf",r);
+      });
+    }).observe(box);
+    new ResizeObserver(function(entries){
+      entries.forEach(function(e){
+        var r=e.target.offsetWidth/resBaseW;
+        if(r<0.6)r=0.6; if(r>3)r=3;
+        e.target.style.setProperty("--p10rzf",r);
+      });
+    }).observe(res);
+  })();
+  /* drag pour déplacer les fenêtres p10 */
+  var zTop=460;
+  function makeDrag(el){
+    var dx=0,dy=0,sx=0,sy=0;
+    el.addEventListener("mousedown",function(e){
+      /* pas de glisser-déposer sur mobile/tablette : la fenêtre est figée dans le flux de la
+         page (voir @media max-width:840px), inutile et gênant d'essayer de la déplacer */
+      if(innerWidth<=840) return;
+      /* passer au premier plan (au-dessus de la figure flottante, z-index 450) */
+      el.style.zIndex=++zTop;
+      /* ne pas drag depuis la poignée de resize (coin bas-droit) */
+      var r=el.getBoundingClientRect();
+      if(e.clientX>r.right-18 && e.clientY>r.bottom-18) return;
+      /* ne pas drag si clic sur un contrôle interactif (bouton, slider, champ...) */
+      if(/BUTTON|INPUT|TEXTAREA|SELECT|LABEL/.test(e.target.tagName)) return;
+      e.preventDefault();
+      sx=e.clientX; sy=e.clientY;
+      document.addEventListener("mousemove",onMove);
+      document.addEventListener("mouseup",onUp);
+    });
+    el.addEventListener("touchstart",function(e){
+      /* idem : sur petit écran, on laisse le doigt faire défiler la page normalement au lieu
+         de saisir la fenêtre (sinon impossible de faire défiler jusqu'au bas de la fenêtre) */
+      if(innerWidth<=840) return;
+      el.style.zIndex=++zTop;
+      var t=e.touches[0], r=el.getBoundingClientRect();
+      if(t.clientX>r.right-18 && t.clientY>r.bottom-18) return;
+      if(/BUTTON|INPUT|TEXTAREA|SELECT|LABEL/.test(e.target.tagName)) return;
+      sx=t.clientX; sy=t.clientY;
+      document.addEventListener("touchmove",onTMove,{passive:false});
+      document.addEventListener("touchend",onTEnd);
+    });
+    function onMove(e){
+      e.preventDefault();
+      dx=e.clientX-sx; dy=e.clientY-sy;
+      sx=e.clientX; sy=e.clientY;
+      el.style.left=(parseInt(el.style.left||0)+dx)+"px";
+      el.style.top=(parseInt(el.style.top||0)+dy)+"px";
+    }
+    function onUp(){ document.removeEventListener("mousemove",onMove); document.removeEventListener("mouseup",onUp); }
+    function onTMove(e){
+      e.preventDefault();
+      var t=e.touches[0];
+      dx=t.clientX-sx; dy=t.clientY-sy;
+      sx=t.clientX; sy=t.clientY;
+      el.style.left=(parseInt(el.style.left||0)+dx)+"px";
+      el.style.top=(parseInt(el.style.top||0)+dy)+"px";
+    }
+    function onTEnd(){ document.removeEventListener("touchmove",onTMove); document.removeEventListener("touchend",onTEnd); }
+  }
+  makeDrag($("p10abtn"));
+  makeDrag($("p10res"));
+  makeDrag($("p10box"));
+  /* ========== PAGE 11 → 12 ========== */
+  $("p11go").addEventListener("click",function(){ goPage(12); });
+  $("p13igo").addEventListener("click",function(){ goPage(14); });
+  $("p14igo").addEventListener("click",function(){ goPage(17); });
+  /* ========== PAGE 12 : exemples avec d'autres fonctions ========== */
+  var p12fn=0, p12a=1, p12n=0;
+  var P12FUNS=[
+    { name:"f", expr:"−<i>x</i>² + <i>x</i>", fn:function(x){return -x*x+x;}, deriv:function(a){return -2*a+1;} },
+    { name:"f", expr:"2<i>x</i>² + 1", fn:function(x){return 2*x*x+1;}, deriv:function(a){return 4*a;} },
+    { name:"f", expr:"3<i>x</i>", fn:function(x){return 3*x;}, deriv:function(a){return 3;} },
+    { name:"f", expr:"<i>x</i>³", fn:function(x){return x*x*x;}, deriv:function(a){return 3*a*a;} }
+  ];
+  function buildP12Steps(){
+    var F=function(n,d){ return '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>'; };
+    var fi=P12FUNS[p12fn], a=p12a;
+    var av=fmt2(a), derv=fmt2(fi.deriv(a));
+    var fname=fi.name;
+    var nega=a<0, azero=a===0;
+    var astr=nega?"("+av+")":av;
+    var rows=[];
+    if(p12fn===0){
+      /* f(x)=-x^2+x => f'(a)=-2a+1 */
+      var fa=-a*a+a, fav=fmt2(fa);
+      var m2a=-2*a;
+      var a2v=fmt2(a*a);
+      /* developpe (a+h)^2 */
+      var devAH2=a2v;
+      if(2*a!==0){ devAH2+=(2*a>0?" + ":" − ")+fmt2(Math.abs(2*a))+"<i>h</i>"; }
+      devAH2+=" + <i>h</i>²";
+      /* expanded: -(a^2+2ah+h^2)+(a+h) = -a^2-2ah-h^2+a+h */
+      var expanded="−"+a2v;
+      if(m2a!==0){ expanded+=(m2a>0?" + ":" − ")+fmt2(Math.abs(m2a))+"<i>h</i>"; }
+      expanded+=" − <i>h</i>² + "+av+" + <i>h</i>";
+      /* simplified: coefH*h - h^2 + fa */
+      var coefH=-2*a+1;
+      var simpFah=fmt2(fa);
+      if(coefH===1){ simpFah+=" + <i>h</i>"; }
+      else if(coefH===-1){ simpFah+=" − <i>h</i>"; }
+      else if(coefH!==0){ simpFah+=(coefH>0?" + ":" − ")+fmt2(Math.abs(coefH))+"<i>h</i>"; }
+      simpFah+=" − <i>h</i>²";
+      /* 1. chaine f(a+h) = ... = ... = ... */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+" + <i>h</i>)", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+" + <i>h</i>) = −("+av+" + <i>h</i>)² + ("+av+" + <i>h</i>)<br>= −("+devAH2+") + "+av+" + <i>h</i><br>= "+expanded+"<br>= <b>"+simpFah+"</b>" });
+      /* 2. f(a) */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+")", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+") = −"+astr+"² + "+av+" = <b>"+fav+"</b>" });
+      /* 3. taux */
+      /* numerator: simpFah - fa = coefH*h - h^2 */
+      var numSimp="";
+      if(coefH===1){ numSimp="<i>h</i>"; }
+      else if(coefH===-1){ numSimp="−<i>h</i>"; }
+      else if(coefH!==0){ numSimp=fmt2(coefH)+"<i>h</i>"; }
+      numSimp+=(numSimp?" − ":"−")+"<i>h</i>²";
+      rows.push({ lab:"Je forme le taux", col:"c0",
+        exp: F("<i>"+fname+"</i>("+av+" + <i>h</i>) − <i>"+fname+"</i>("+av+")","<i>h</i>")+" = "+F(simpFah+" − "+(fa>=0?"("+fav+")":fav),"<i>h</i>")+" = "+F(numSimp,"<i>h</i>") });
+      /* 4. factorise */
+      var facInner;
+      if(coefH===1){ facInner="1 − <i>h</i>"; }
+      else if(coefH===-1){ facInner="−1 − <i>h</i>"; }
+      else if(coefH===0){ facInner="−<i>h</i>"; }
+      else { facInner=fmt2(coefH)+" − <i>h</i>"; }
+      rows.push({ lab:"Je factorise par <i>h</i>", col:"c2",
+        exp: "= "+F("<i>h</i>("+facInner+")","<i>h</i>") });
+      /* 5. simplifie */
+      rows.push({ lab:"Je simplifie par <i>h</i>", col:"c3",
+        exp: "= <b>"+facInner+"</b> &nbsp;<small>(car <i>h</i> ≠ 0)</small>" });
+      /* 6. limite */
+      rows.push({ lab:"On fait tendre <i>h</i> vers 0", col:"c5",
+        exp: "Lorsque <i>h</i> tend vers 0, "+facInner+" tend vers <b>"+derv+"</b>" });
+      /* 7. conclusion */
+      rows.push({ lab:"Je conclus", col:"c4",
+        exp: "<i>"+fname+"</i> est dérivable en "+av+" et <span style='white-space:nowrap'><i>"+fname+" </i>′("+av+")&nbsp;=&nbsp;"+derv+"</span>.<br>La tangente à la courbe au point d’abscisse "+av+" a pour coefficient directeur <b>"+derv+"</b>.", concl:true });
+    } else if(p12fn===1){
+      /* g(x)=2x^2+1 => g'(a)=4a */
+      var ga=2*a*a+1, gav=fmt2(ga);
+      var fourA=4*a;
+      var a2v=fmt2(a*a);
+      /* developpe (a+h)^2 */
+      var devAH2=a2v;
+      if(2*a!==0){ devAH2+=(2*a>0?" + ":" − ")+fmt2(Math.abs(2*a))+"<i>h</i>"; }
+      devAH2+=" + <i>h</i>²";
+      /* 2(devAH2)+1 expanded */
+      var twoA2v=fmt2(2*a*a);
+      var expanded2=twoA2v;
+      if(fourA!==0){ expanded2+=(fourA>0?" + ":" − ")+fmt2(Math.abs(fourA))+"<i>h</i>"; }
+      expanded2+=" + 2<i>h</i>² + 1";
+      /* simplified: ga + 4ah + 2h^2 */
+      var simpGah=gav;
+      if(fourA!==0){ simpGah+=(fourA>0?" + ":" − ")+fmt2(Math.abs(fourA))+"<i>h</i>"; }
+      simpGah+=" + 2<i>h</i>²";
+      /* 1. chaine g(a+h) = ... = ... = ... */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+" + <i>h</i>)", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+" + <i>h</i>) = 2("+av+" + <i>h</i>)² + 1<br>= 2("+devAH2+") + 1<br>= "+expanded2+"<br>= <b>"+simpGah+"</b>" });
+      /* 2. g(a) */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+")", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+") = 2 × "+astr+"² + 1 = <b>"+gav+"</b>" });
+      /* 3. taux */
+      var numTaux2="";
+      if(fourA!==0){ numTaux2=fmt2(fourA)+"<i>h</i> + 2<i>h</i>²"; }
+      else { numTaux2="2<i>h</i>²"; }
+      rows.push({ lab:"Je forme le taux", col:"c0",
+        exp: F("<i>"+fname+"</i>("+av+" + <i>h</i>) − <i>"+fname+"</i>("+av+")","<i>h</i>")+" = "+F(simpGah+" − "+gav,"<i>h</i>")+" = "+F(numTaux2,"<i>h</i>") });
+      /* 4. factorise */
+      var facInner2;
+      if(azero){ facInner2="2<i>h</i>"; }
+      else { facInner2=fmt2(fourA)+" + 2<i>h</i>"; }
+      rows.push({ lab:"Je factorise par <i>h</i>", col:"c2",
+        exp: "= "+F("<i>h</i>("+facInner2+")","<i>h</i>") });
+      /* 5. simplifie */
+      rows.push({ lab:"Je simplifie par <i>h</i>", col:"c3",
+        exp: "= <b>"+facInner2+"</b> &nbsp;<small>(car <i>h</i> ≠ 0)</small>" });
+      /* 6. limite */
+      rows.push({ lab:"On fait tendre <i>h</i> vers 0", col:"c5",
+        exp: "Lorsque <i>h</i> tend vers 0, "+facInner2+" tend vers <b>"+derv+"</b>" });
+      /* 7. conclusion */
+      rows.push({ lab:"Je conclus", col:"c4",
+        exp: "<i>"+fname+"</i> est dérivable en "+av+" et <span style='white-space:nowrap'><i>"+fname+" </i>′("+av+")&nbsp;=&nbsp;"+derv+"</span>.<br>La tangente à la courbe au point d’abscisse "+av+" a pour coefficient directeur <b>"+derv+"</b>.", concl:true });
+    } else if(p12fn===2){
+      /* p(x)=3x => p'(a)=3 */
+      var pa=3*a, pav=fmt2(pa);
+      /* 1. p(a+h) */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+" + <i>h</i>)", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+" + <i>h</i>) = 3("+av+" + <i>h</i>) = "+pav+" + 3<i>h</i>" });
+      /* 2. p(a) */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+")", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+") = 3 × "+av+" = <b>"+pav+"</b>" });
+      /* 3. taux */
+      rows.push({ lab:"Je forme le taux", col:"c0",
+        exp: F("<i>"+fname+"</i>("+av+" + <i>h</i>) − <i>"+fname+"</i>("+av+")","<i>h</i>")+" = "+F(pav+" + 3<i>h</i> − "+pav,"<i>h</i>")+" = "+F("3<i>h</i>","<i>h</i>") });
+      /* 4. simplifie */
+      rows.push({ lab:"Je simplifie par <i>h</i>", col:"c3",
+        exp: "= <b>3</b> &nbsp;<small>(car <i>h</i> ≠ 0)</small>" });
+      /* 5. limite */
+      rows.push({ lab:"On fait tendre <i>h</i> vers 0", col:"c5",
+        exp: "Lorsque <i>h</i> tend vers 0, 3 reste égal à <b>3</b>" });
+      /* 6. conclusion */
+      rows.push({ lab:"Je conclus", col:"c4",
+        exp: "<i>"+fname+"</i> est dérivable en "+av+" et <span style='white-space:nowrap'><i>"+fname+" </i>′("+av+")&nbsp;=&nbsp;"+derv+"</span>.<br>La tangente à la courbe au point d’abscisse "+av+" a pour coefficient directeur <b>"+derv+"</b>.", concl:true });
+    } else {
+      /* q(x)=x^3 => q'(a)=3a^2 */
+      var a2=a*a, a3=a*a*a;
+      var a3v=fmt2(a3), a2v=fmt2(a2);
+      var t3a2=3*a2, t3a=3*a;
+      /* developpe (a+h)^2 */
+      var devAH2=a2v;
+      if(2*a!==0){ devAH2+=(2*a>0?" + ":" − ")+fmt2(Math.abs(2*a))+"<i>h</i>"; }
+      devAH2+=" + <i>h</i>²";
+      /* (a+h)^3 = (a+h)(a+h)^2 : on multiplie */
+      var mulDetail;
+      if(azero){
+        mulDetail="<i>h</i> × <i>h</i>² = <i>h</i>³";
+      } else {
+        mulDetail=astr+" × ("+devAH2+") + <i>h</i> × ("+devAH2+")";
+      }
+      /* resultat developpe */
+      var devTerms=a3v;
+      if(t3a2!==0){ devTerms+=(t3a2>0?" + ":" − ")+fmt2(Math.abs(t3a2))+"<i>h</i>"; }
+      if(t3a!==0){ devTerms+=(t3a>0?" + ":" − ")+fmt2(Math.abs(t3a))+"<i>h</i>²"; }
+      devTerms+=" + <i>h</i>³";
+      /* 1. chaine q(a+h) = (a+h)^3 = (a+h)(a+h)^2 = ... = resultat */
+      var chainExp="<i>"+fname+"</i>("+av+" + <i>h</i>) = ("+av+" + <i>h</i>)³<br>= ("+av+" + <i>h</i>) × ("+av+" + <i>h</i>)²<br>= ("+av+" + <i>h</i>) × ("+devAH2+")<br>= "+mulDetail+"<br>= <b>"+devTerms+"</b>";
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+" + <i>h</i>)", col:"c0",
+        exp: chainExp });
+      /* 2. q(a) */
+      rows.push({ lab:"Je calcule <i>"+fname+"</i>("+av+")", col:"c0",
+        exp: "<i>"+fname+"</i>("+av+") = "+astr+"³ = <b>"+a3v+"</b>" });
+      /* 3. taux et reduction */
+      var redTerms="";
+      if(t3a2!==0){ redTerms+=fmt2(t3a2)+"<i>h</i>"; }
+      if(t3a!==0){ redTerms+=(t3a>0?" + ":" − ")+fmt2(Math.abs(t3a))+"<i>h</i>²"; }
+      redTerms+=(redTerms?" + ":"")+"<i>h</i>³";
+      if(azero) redTerms="<i>h</i>³";
+      rows.push({ lab:"Je forme le taux et je réduis", col:"c0",
+        exp: F("<i>"+fname+"</i>("+av+" + <i>h</i>) − <i>"+fname+"</i>("+av+")","<i>h</i>")+" = "+F(devTerms+" − "+a3v,"<i>h</i>")+" = "+F(redTerms,"<i>h</i>") });
+      /* 4. factorise */
+      var facInner="";
+      if(azero){ facInner="<i>h</i>²"; }
+      else {
+        facInner=fmt2(t3a2);
+        if(t3a!==0){ facInner+=(t3a>0?" + ":" − ")+fmt2(Math.abs(t3a))+"<i>h</i>"; }
+        facInner+=" + <i>h</i>²";
+      }
+      rows.push({ lab:"Je factorise par <i>h</i>", col:"c2",
+        exp: "= "+F("<i>h</i>("+facInner+")","<i>h</i>") });
+      /* 5. simplifie */
+      rows.push({ lab:"Je simplifie par <i>h</i>", col:"c3",
+        exp: "= <b>"+facInner+"</b> &nbsp;<small>(car <i>h</i> ≠ 0)</small>" });
+      /* 6. limite */
+      rows.push({ lab:"On fait tendre <i>h</i> vers 0", col:"c5",
+        exp: "Lorsque <i>h</i> tend vers 0, "+facInner+" tend vers <b>"+derv+"</b>" });
+      /* 7. conclusion */
+      rows.push({ lab:"Je conclus", col:"c4",
+        exp: "<i>"+fname+"</i> est dérivable en "+av+" et <span style='white-space:nowrap'><i>"+fname+" </i>′("+av+")&nbsp;=&nbsp;"+derv+"</span>.<br>La tangente à la courbe au point d’abscisse "+av+" a pour coefficient directeur <b>"+derv+"</b>.", concl:true });
+    }
+    var html="";
+    rows.forEach(function(r,i){
+      html+='<div class="p10step cstep'+(r.concl?' p10concl2':'')+(i===0?'':' ')+'" hidden>'
+           +'<span class="clab '+r.col+'">'+r.lab+'</span>'
+           +'<span class="cexp">'+r.exp+'</span></div>';
+    });
+    document.getElementById("p12steps").innerHTML=html;
+  }
+  function p12show(){
+    var cs=Array.prototype.slice.call($("p12steps").querySelectorAll(".cstep"));
+    cs.forEach(function(e,i){ e.hidden=(i>=p12n); });
+    $("p12btn").textContent=(p12n>=cs.length)?"Recommencer ↺":"Étape suivante →";
+  }
+  function updP12Res(){
+    /* consigne statique dans p12res, ne rien ecraser */
+  }
+  $("p12btn").addEventListener("click",function(){
+    var cs=$("p12steps").querySelectorAll(".cstep");
+    p12n=(p12n>=cs.length)?0:p12n+1;
+    p12show();
+  });
+  Array.prototype.forEach.call($("p12fbtn").querySelectorAll(".p12f"),function(btn){
+    btn.addEventListener("click",function(){
+      p12fn=parseInt(btn.getAttribute("data-fn"));
+      Array.prototype.forEach.call($("p12fbtn").querySelectorAll(".p12f"),function(b){ b.classList.remove("act12"); });
+      btn.classList.add("act12");
+      buildP12Steps(); p12n=0; p12show(); updP12Res();
+    });
+  });
+  Array.prototype.forEach.call($("p12abtn").querySelectorAll(".p12a"),function(btn){
+    btn.addEventListener("click",function(){
+      p12a=parseFloat(btn.getAttribute("data-a"));
+      Array.prototype.forEach.call($("p12abtn").querySelectorAll(".p12a"),function(b){ b.classList.remove("act12"); });
+      btn.classList.add("act12");
+      buildP12Steps(); p12n=0; p12show(); updP12Res();
+    });
+  });
+  /* init page 12 */
+  buildP12Steps(); p12show(); updP12Res();
+  /* drag + resize p12 */
+  makeDrag($("p12fbtn"));
+  makeDrag($("p12abtn"));
+  makeDrag($("p12res"));
+  makeDrag($("p12box"));
+  (function(){
+    var box=$("p12box"), baseW=600;
+    var res=$("p12res"), resBaseW=420;
+    new ResizeObserver(function(entries){
+      entries.forEach(function(e){
+        var r=e.target.offsetWidth/(e.target===box?baseW:resBaseW);
+        if(r<0.6)r=0.6; if(r>3)r=3;
+        e.target.style.setProperty(e.target===box?"--p10zf":"--p10rzf",r);
+      });
+    }).observe(box);
+    new ResizeObserver(function(entries){
+      entries.forEach(function(e){
+        var r=e.target.offsetWidth/resBaseW;
+        if(r<0.6)r=0.6; if(r>3)r=3;
+        e.target.style.setProperty("--p10rzf",r);
+      });
+    }).observe(res);
+  })();
+  /* ========== PAGE 12 \u2192 13 ========== */
+  $("p12go13") && $("p12go13").addEventListener("click",function(){ goPage(13); });
+  /* ========== PAGES 13-17 : calculs de nombres dérivés ========== */
+  var p16a=2, p16n=0, p18a=1, p18n=0;
+  function _F(n,d){ return '<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>'; }
+  function _BF(n,d){ return '<span class="bfr"><span>'+n+'</span><span>'+d+'</span></span>'; }
+  function _L(m,n){ return '<div class="p13line"><span class="p13m">'+m+'</span>'+(n?'<span class="p15n">'+n+'</span>':'')+'</div>'; }
+  function _Ls(m,n){ return '<div class="p13line cstep" hidden><span class="p13m">'+m+'</span>'+(n?'<span class="p15n">'+n+'</span>':'')+'</div>'; }
+  function _C(m){ return '<div class="p13concl">'+m+'</div>'; }
+  function _Cs(m){ return '<div class="p13concl cstep" hidden>'+m+'</div>'; }
+
+  /* --- PAGE 15 : exemple f(x)=1/x, a=1 --- */
+  function buildP15Ex(){
+    var F=_F, BF=_BF, L=_L, C=_C;
+    var o='';
+    o+=L('<i>f</i>(1) = '+F('1','1')+' = 1','on calcule <i>f</i>(1)');
+    o+=L('<i>f</i>(1+<i>h</i>) = '+F('1','1+<i>h</i>'),'on calcule <i>f</i>(1+<i>h</i>)');
+    o+=L('');
+    o+=L(F('<i>f</i>(1+<i>h</i>) − <i>f</i>(1)','<i>h</i>'),'on forme le taux de variation');
+    o+=L('');
+    o+=L('<i>f</i>(1+<i>h</i>) − <i>f</i>(1) = '+F('1','1+<i>h</i>')+' − 1','on remplace');
+    o+=L('= '+F('1 − (1+<i>h</i>)','1+<i>h</i>'),'même dénominateur');
+    o+=L('= '+F('−<i>h</i>','1+<i>h</i>'));
+    o+=L('');
+    o+=L('Donc '+F('<i>f</i>(1+<i>h</i>) − <i>f</i>(1)','<i>h</i>')+' = '+BF(F('−<i>h</i>','1+<i>h</i>'),'<i>h</i>'));
+    o+=L('= '+F('−<i>h</i>','1+<i>h</i>')+' × '+F('1','<i>h</i>'));
+    o+=L('= '+F('−1','1+<i>h</i>'),'on simplifie par <i>h</i> (<i>h</i> ≠ 0)');
+    o+=L('');
+    o+=L('Lorsque <i>h</i> tend vers 0, '+F('−1','1+<i>h</i>')+' tend vers <b>−1</b>.');
+    var title='<i>f</i>(<i>x</i>) = '+F('1','<i>x</i>')+', avec <i>a</i> = 1';
+    $('p15res').innerHTML='On calcule le nombre dérivé de <i>f</i>(<i>x</i>) = <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.85em"><span>1</span><span><i>x</i></span></span> au point d’abscisse 1.'
+      +'<br><b>Astuce :</b> on met au même dénominateur pour simplifier le taux.';
+    $('p15ex').innerHTML='<div style="margin-bottom:.6em;font-weight:700;font-size:1.05em">'+title+'</div>'+o;
+    $('p15concl').innerHTML='Donc&nbsp;<i>f</i>&nbsp;est dérivable en 1 et <span style="white-space:nowrap"><i>f </i>′(1)&nbsp;=&nbsp;−1</span>.<br>La tangente à la courbe de&nbsp;<i>f</i> au point d’abscisse 1 a pour coefficient directeur&nbsp;−1.';
+  }
+
+  /* --- PAGE 16 : \u00e0 vous f(x)=1/x --- */
+  function buildP16Steps(a){
+    var F=_F, BF=_BF, L=_Ls, C=_Cs;
+    var a2=a*a, o='';
+    o+=L(F('<i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+')','<i>h</i>'),'on forme le taux de variation');
+    o+=L('<i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+') = '+F('1',a+'+<i>h</i>')+' − '+F('1',''+a),'on remplace');
+    o+=L('= '+F(a+' − ('+a+'+<i>h</i>)',a+'('+a+'+<i>h</i>)'),'même dénominateur');
+    o+=L('= '+F('−<i>h</i>',a+'('+a+'+<i>h</i>)'));
+    o+=L('Donc '+F('<i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+')','<i>h</i>')+' = '+BF(F('−<i>h</i>',a+'('+a+'+<i>h</i>)'),'<i>h</i>'));
+    o+=L('= '+F('−<i>h</i>',a+'('+a+'+<i>h</i>)')+' × '+F('1','<i>h</i>'));
+    o+=L('= '+F('−1',a+'('+a+'+<i>h</i>)'),'on simplifie par <i>h</i> (<i>h</i> ≠ 0)');
+    o+=L('Lorsque <i>h</i> tend vers 0, '+F('−1',a+'('+a+'+<i>h</i>)')+' tend vers '+F('−1',a+' × '+a)+' = <b>'+F('−1',''+a2)+'</b>.');
+    o+=C('Donc&nbsp;<i>f</i>&nbsp;est dérivable en '+a+' et <span style="white-space:nowrap"><i>f </i>′('+a+')&nbsp;= '+F('−1',''+a2)+'</span>.<br>La tangente à la courbe de&nbsp;<i>f</i> au point d’abscisse '+a+' a pour coefficient directeur '+F('−1',''+a2)+'.');
+    $('p16steps').innerHTML=o;
+  }
+  function p16show(){
+    var cs=Array.prototype.slice.call($("p16steps").querySelectorAll(".cstep"));
+    cs.forEach(function(e,i){ e.hidden=(i>=p16n); });
+    $("p16btn").textContent=(p16n>=cs.length)?"Recommencer ↺":"Étape suivante →";
+  }
+  $("p16btn").addEventListener("click",function(){
+    var cs=$("p16steps").querySelectorAll(".cstep");
+    p16n=(p16n>=cs.length)?0:p16n+1; p16show();
+  });
+  Array.prototype.forEach.call($("p16abtn").querySelectorAll(".p16a"),function(btn){
+    btn.addEventListener("click",function(){
+      p16a=parseInt(btn.getAttribute("data-a"));
+      Array.prototype.forEach.call($("p16abtn").querySelectorAll(".p16a"),function(b){ b.classList.remove("actva"); });
+      btn.classList.add("actva");
+      buildP16Steps(p16a); p16n=0; p16show();
+    });
+  });
+
+  /* --- PAGE 17 : exemple g(x)=√x, a=4 --- */
+  function buildP17Ex(){
+    var F=_F, L=_L, C=_C;
+    var sq='√<span style="text-decoration:overline">';
+    var o='';
+    o+=L(F('<i>g</i>(4+<i>h</i>) − <i>g</i>(4)','<i>h</i>')+' = '+F(sq+'4+<i>h</i></span> − 2','<i>h</i>'),'on remplace');
+    o+=L('= '+F('('+sq+'4+<i>h</i></span> − 2)('+sq+'4+<i>h</i></span> + 2)','<i>h</i>('+sq+'4+<i>h</i></span> + 2)'),'quantité conjuguée');
+    o+=L('= '+F('(4+<i>h</i>) − 4','<i>h</i>('+sq+'4+<i>h</i></span> + 2)'),'identité remarquable');
+    o+=L('= '+F('<i>h</i>','<i>h</i>('+sq+'4+<i>h</i></span> + 2)'));
+    o+=L('= '+F('1',sq+'4+<i>h</i></span> + 2'),'on simplifie par <i>h</i> (<i>h</i> ≠ 0)');
+    o+=L('');
+    o+=L('Lorsque <i>h</i> tend vers 0, '+F('1',sq+'4+<i>h</i></span> + 2')+' tend vers '+F('1','2 + 2')+' = <b>'+F('1','4')+'</b>.');
+    o+=C('Donc&nbsp;<i>g</i>&nbsp;est dérivable en 4 et <span style="white-space:nowrap"><i>g </i>′(4)&nbsp;= '+F('1','4')+'</span>.<br>La tangente à la courbe de&nbsp;<i>g</i> au point d’abscisse 4 a pour coefficient directeur '+F('1','4')+'.');
+    var title='<i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span>, avec <i>a</i> = 4';
+    $('p17res').innerHTML='On calcule le nombre dérivé de <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span>.'
+      +'<br><b>Astuce :</b> on multiplie par la <b>quantité conjuguée</b> pour lever l’indétermination.';
+    $('p17ex').innerHTML='<div style="margin-bottom:.6em;font-weight:700;font-size:1.05em">'+title+'</div>'+o;
+  }
+
+  /* --- PAGE 18 : à vous g(x)=√x --- */
+  function buildP18Steps(a){
+    var F=_F, L=_Ls, C=_Cs;
+    var r=Math.round(Math.sqrt(a));
+    var sq='√<span style="text-decoration:overline">';
+    var o='';
+    o+=L(F('<i>g</i>('+a+'+<i>h</i>) − <i>g</i>('+a+')','<i>h</i>')+' = '+F(sq+a+'+<i>h</i></span> − '+r,'<i>h</i>'),'on remplace');
+    o+=L('= '+F('('+sq+a+'+<i>h</i></span> − '+r+')('+sq+a+'+<i>h</i></span> + '+r+')','<i>h</i>('+sq+a+'+<i>h</i></span> + '+r+')'),'quantité conjuguée');
+    o+=L('= '+F('('+a+'+<i>h</i>) − '+a,'<i>h</i>('+sq+a+'+<i>h</i></span> + '+r+')'),'identité remarquable');
+    o+=L('= '+F('<i>h</i>','<i>h</i>('+sq+a+'+<i>h</i></span> + '+r+')'));
+    o+=L('= '+F('1',sq+a+'+<i>h</i></span> + '+r),'on simplifie par <i>h</i> (<i>h</i> ≠ 0)');
+    o+=L('Lorsque <i>h</i> tend vers 0, '+F('1',sq+a+'+<i>h</i></span> + '+r)+' tend vers '+F('1',r+' + '+r)+' = <b>'+F('1',''+(2*r))+'</b>.');
+    o+=C('Donc&nbsp;<i>g</i>&nbsp;est dérivable en '+a+' et <span style="white-space:nowrap"><i>g </i>′('+a+')&nbsp;= '+F('1',''+(2*r))+'</span>.<br>La tangente à la courbe de&nbsp;<i>g</i> au point d’abscisse '+a+' a pour coefficient directeur '+F('1',''+(2*r))+'.');
+    $('p18steps').innerHTML=o;
+  }
+  function p18show(){
+    var cs=Array.prototype.slice.call($("p18steps").querySelectorAll(".cstep"));
+    cs.forEach(function(e,i){ e.hidden=(i>=p18n); });
+    $("p18btn").textContent=(p18n>=cs.length)?"Recommencer ↺":"Étape suivante →";
+  }
+  $("p18btn").addEventListener("click",function(){
+    var cs=$("p18steps").querySelectorAll(".cstep");
+    p18n=(p18n>=cs.length)?0:p18n+1; p18show();
+  });
+  Array.prototype.forEach.call($("p18abtn").querySelectorAll(".p18a"),function(btn){
+    btn.addEventListener("click",function(){
+      p18a=parseInt(btn.getAttribute("data-a"));
+      Array.prototype.forEach.call($("p18abtn").querySelectorAll(".p18a"),function(b){ b.classList.remove("actva"); });
+      btn.classList.add("actva");
+      buildP18Steps(p18a); p18n=0; p18show();
+    });
+  });
+
+  /* --- PAGE 19 : problème en 0 pour √x --- */
+  function buildP19(){
+    var F=_F, L=_L, C=_C;
+    var sq='√<span style="text-decoration:overline">';
+    var o='';
+    o+=L('<i>g</i>(0) = '+sq+'0</span> = 0&emsp;et&emsp;<i>g</i>(0+<i>h</i>) = '+sq+'0+<i>h</i></span> = '+sq+'<i>h</i></span>','on calcule les deux valeurs');
+    o+=L('');
+    o+=L(F('<i>g</i>(0+<i>h</i>) − <i>g</i>(0)','<i>h</i>')+' = '+F(sq+'<i>h</i></span> − 0','<i>h</i>')+' = '+F(sq+'<i>h</i></span>','<i>h</i>'),'on forme le taux de variation');
+    o+=L('');
+    o+=L('= '+F(sq+'<i>h</i></span>',sq+'<i>h</i></span> × '+sq+'<i>h</i></span>')+' = '+F('1',sq+'<i>h</i></span>'),'car <i>h</i> = '+sq+'<i>h</i></span> × '+sq+'<i>h</i></span>');
+    o+=L('');
+    o+=L('Lorsque <i>h</i> tend vers 0 en restant positif, '+sq+'<i>h</i></span> tend vers 0,');
+    o+=L('donc '+F('1',sq+'<i>h</i></span>')+' tend vers <b>+∞</b>.');
+    o+=L('');
+    o+=C('<i>g</i> n’est <b>pas dérivable</b> en 0.<br>La tangente en 0 est <b>verticale</b> : elle n’a pas de coefficient directeur.');
+    $('p19ex').innerHTML=o;
+  }
+  /* --- PAGE 19 : figure interactive (quadrillage + sécante mobile (OM) pilotée par un curseur) --- */
+  function buildP19Fig(){
+    var ox=50, oy=230, SX=110, xMax=2.6, yMax=1.8;
+    function px(x){ return ox+x*SX; }
+    function py(y){ return oy-y*SX; }
+    var g='';
+    [0.5,1,1.5,2,2.5].forEach(function(gx){
+      g+='<line class="grid" x1="'+px(gx).toFixed(1)+'" y1="'+py(0).toFixed(1)+'" x2="'+px(gx).toFixed(1)+'" y2="'+py(yMax).toFixed(1)+'"/>';
+    });
+    [0.5,1,1.5].forEach(function(gy){
+      g+='<line class="grid" x1="'+px(0).toFixed(1)+'" y1="'+py(gy).toFixed(1)+'" x2="'+px(xMax).toFixed(1)+'" y2="'+py(gy).toFixed(1)+'"/>';
+    });
+    g+='<line class="axis" x1="'+px(0).toFixed(1)+'" y1="'+py(0).toFixed(1)+'" x2="'+px(xMax+0.12).toFixed(1)+'" y2="'+py(0).toFixed(1)+'"/>';
+    g+='<line class="axis" x1="'+px(0).toFixed(1)+'" y1="'+py(0).toFixed(1)+'" x2="'+px(0).toFixed(1)+'" y2="'+py(yMax+0.12).toFixed(1)+'"/>';
+    g+='<polygon class="axfill" points="'+(px(xMax+0.12)+7).toFixed(1)+','+py(0).toFixed(1)+' '+(px(xMax+0.12)-3).toFixed(1)+','+(py(0)-5).toFixed(1)+' '+(px(xMax+0.12)-3).toFixed(1)+','+(py(0)+5).toFixed(1)+'"/>';
+    g+='<polygon class="axfill" points="'+px(0).toFixed(1)+','+(py(yMax+0.12)-7).toFixed(1)+' '+(px(0)-5).toFixed(1)+','+(py(yMax+0.12)+3).toFixed(1)+' '+(px(0)+5).toFixed(1)+','+(py(yMax+0.12)+3).toFixed(1)+'"/>';
+    [1,2].forEach(function(gx){
+      g+='<line class="tick" x1="'+px(gx).toFixed(1)+'" y1="'+(py(0)-4).toFixed(1)+'" x2="'+px(gx).toFixed(1)+'" y2="'+(py(0)+4).toFixed(1)+'"/>';
+      g+='<text x="'+px(gx).toFixed(1)+'" y="'+(py(0)+18).toFixed(1)+'" text-anchor="middle" style="--fs:12px">'+gx+'</text>';
+    });
+    g+='<line class="tick" x1="'+(px(0)-4).toFixed(1)+'" y1="'+py(1).toFixed(1)+'" x2="'+(px(0)+4).toFixed(1)+'" y2="'+py(1).toFixed(1)+'"/>';
+    g+='<text x="'+(px(0)-8).toFixed(1)+'" y="'+(py(1)+4).toFixed(1)+'" text-anchor="end" style="--fs:12px">1</text>';
+    g+='<text x="'+(px(xMax+0.12)+14).toFixed(1)+'" y="'+(py(0)+4).toFixed(1)+'" class="it" style="--fs:13px">x</text>';
+    g+='<text x="'+(px(0)-10).toFixed(1)+'" y="'+(py(yMax+0.12)-8).toFixed(1)+'" class="it" style="--fs:13px">y</text>';
+    $('p19grid').innerHTML=g;
+
+    var d='', N=60, i, x, yv;
+    for(i=0;i<=N;i++){
+      x=xMax*Math.pow(i/N,1.6);
+      yv=Math.sqrt(x);
+      d+=(i?'L':'M')+px(x).toFixed(1)+' '+py(yv).toFixed(1);
+    }
+    $('p19curve').setAttribute('d',d);
+
+    var LOG_MAX=Math.log(2.5), LOG_MIN=Math.log(1e-10), LOG_RANGE=LOG_MAX-LOG_MIN;
+    function fmtH(v){
+      if(v>=0.01) return v.toFixed(v<0.1?4:v<1?3:2).replace('.',',');
+      var e=Math.floor(Math.log(v)/Math.LN10);
+      var m=v/Math.pow(10,e);
+      return m.toFixed(1).replace('.',',')+'×10<sup>'+e+'</sup>';
+    }
+    function fmtSlope(v){
+      if(v<10) return v.toFixed(2).replace('.',',');
+      if(v<1000) return v.toFixed(1).replace('.',',');
+      return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+    }
+    function updP19(){
+      var t=+$('p19hslider').value/1000;
+      var h=Math.exp(LOG_MIN+t*LOG_RANGE);
+      var sq=Math.sqrt(h), slope=sq/h;
+      var Mx=px(Math.min(h,xMax)), My=py(Math.min(sq,yMax));
+      $('p19ptM').setAttribute('cx',Mx.toFixed(1));
+      $('p19ptM').setAttribute('cy',My.toFixed(1));
+      $('p19labM').setAttribute('x',(Mx+8).toFixed(1));
+      $('p19labM').setAttribute('y',(My-7).toFixed(1));
+      $('p19labM').textContent='M';
+      var ex,ey, yAtXmax=slope*xMax;
+      if(yAtXmax<=yMax){ ex=xMax; ey=yAtXmax; } else { ex=yMax/slope; ey=yMax; }
+      $('p19sec').setAttribute('x1',px(0).toFixed(1)); $('p19sec').setAttribute('y1',py(0).toFixed(1));
+      $('p19sec').setAttribute('x2',px(ex).toFixed(1)); $('p19sec').setAttribute('y2',py(ey).toFixed(1));
+      /* flèche simple : h entre O et M, une seule pointe côté M */
+      var rowArr=py(0)+34, dx=Mx-px(0);
+      if(dx>=10){
+        var hd=Math.min(7,dx/2.2);
+        $('p19harr').setAttribute('x1',px(0).toFixed(1)); $('p19harr').setAttribute('y1',rowArr.toFixed(1));
+        $('p19harr').setAttribute('x2',Mx.toFixed(1)); $('p19harr').setAttribute('y2',rowArr.toFixed(1));
+        $('p19hh2').setAttribute('points',Mx.toFixed(1)+','+rowArr.toFixed(1)+' '+(Mx-hd).toFixed(1)+','+(rowArr-4).toFixed(1)+' '+(Mx-hd).toFixed(1)+','+(rowArr+4).toFixed(1));
+        ['p19harr','p19hh2'].forEach(function(id){ $(id).style.display=''; });
+      } else {
+        ['p19harr','p19hh2'].forEach(function(id){ $(id).style.display='none'; });
+      }
+      $('p19labH').setAttribute('x',((px(0)+Mx)/2).toFixed(1));
+      $('p19labH').setAttribute('y',(rowArr-7).toFixed(1));
+      $('p19labH').textContent='h';
+      $('p19hval').innerHTML=fmtH(h);
+      $('p19slope').textContent=fmtSlope(slope);
+    }
+    $('p19hslider').addEventListener('input',updP19);
+    updP19();
+  }
+  $("p19figbtn").addEventListener("click",function(){
+    var fig=$("p19fig");
+    fig.hidden=!fig.hidden;
+    $("p19figbtn").textContent=fig.hidden?"Afficher la figure":"Masquer la figure";
+  });
+
+  /* init pages 13-17 */
+  buildP15Ex(); buildP16Steps(p16a); p16show();
+  buildP17Ex(); buildP18Steps(p18a); p18show(); buildP19(); buildP19Fig();
+
+  /* fenêtres ajustables (pages 15-19) : même mécanisme que la page 10 */
+  function makeZoomWindow(el,baseW,varName){
+    if(!el) return;
+    makeDrag(el);
+    if(baseW==null) baseW=el.offsetWidth||400;
+    new ResizeObserver(function(entries){
+      entries.forEach(function(e){
+        var r=e.target.offsetWidth/baseW;
+        if(r<0.6)r=0.6; if(r>3)r=3;
+        e.target.style.setProperty(varName,r);
+      });
+    }).observe(el);
+  }
+  makeZoomWindow($("p15res"),540,"--p10rzf");
+  makeZoomWindow($("p15box"),600,"--p10zf");
+  makeZoomWindow($("p16res"),540,"--p10rzf");
+  makeZoomWindow($("p16box"),600,"--p10zf");
+  makeZoomWindow($("p17res"),540,"--p10rzf");
+  makeZoomWindow($("p17box"),600,"--p10zf");
+  makeZoomWindow($("p18res"),540,"--p10rzf");
+  makeZoomWindow($("p18box"),600,"--p10zf");
+  makeZoomWindow($("p19res"),540,"--p10rzf");
+  makeZoomWindow($("p19box"),600,"--p10zf");
+  makeZoomWindow($("p16abtn"),460,"--p10azf");
+  makeZoomWindow($("p18abtn"),460,"--p10azf");
+
+  goPage(1);
+  applyRange();
+  layout();
+  render();
+})();
+</script>
