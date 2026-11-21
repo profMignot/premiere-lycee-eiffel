@@ -510,7 +510,7 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
     <div class="p2side" id="p15side" hidden>
       <div style="display:flex;flex-wrap:wrap;gap:8px;width:100%">
         <div class="p10res" id="p15res" style="align-self:flex-start;flex:1 1 280px"></div>
-        <div class="p10res" id="p15dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction inverse <i>f</i>(<i>x</i>) = <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.85em"><span>1</span><span><i>x</i></span></span> est définie sur ℝ* = ]−∞&nbsp;;&nbsp;0[&nbsp;∪&nbsp;]0&nbsp;;&nbsp;+∞[, c'est-à-dire pour <i>x</i> ≠ 0.</div>
+        <div class="p10res" id="p15dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction inverse <i>f</i>(<i>x</i>) = <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.85em"><span>1</span><span><i>x</i></span></span> est définie sur ℝ* = ]−∞&nbsp;;&nbsp;0[&nbsp;∪&nbsp;]0&nbsp;;&nbsp;+∞[.</div>
       </div>
       <div class="p2ans p10box p13box" id="p15box">
         <div class="p13ex" id="p15ex"></div>
@@ -524,7 +524,7 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
         <b>À vous !</b> Calculer <i>f</i> ′(<i>a</i>) pour <i>f</i>(<i>x</i>) = <span class="fr" style="display:inline-flex;vertical-align:middle;font-size:.85em"><span>1</span><span><i>x</i></span></span>.
         <br><b>Astuce :</b> même dénominateur pour simplifier le taux.
       </div>
-      <div class="p10res" id="p16dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction inverse est définie sur ℝ* = ]−∞&nbsp;;&nbsp;0[&nbsp;∪&nbsp;]0&nbsp;;&nbsp;+∞[, c'est-à-dire pour <i>x</i> ≠ 0.</div>
+      <div class="p10res" id="p16dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction inverse est définie sur ℝ* = ]−∞&nbsp;;&nbsp;0[&nbsp;∪&nbsp;]0&nbsp;;&nbsp;+∞[.</div>
       </div>
       <div class="p10abtn" id="p16abtn" style="align-self:flex-start">
         <span class="p10alabel">Choisir <i>a</i> :</span>
@@ -544,7 +544,7 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
     <div class="p2side" id="p17side" hidden>
       <div style="display:flex;flex-wrap:wrap;gap:8px;width:100%">
         <div class="p10res" id="p17res" style="align-self:flex-start;flex:1 1 280px"></div>
-        <div class="p10res" id="p17dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction racine carrée <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span> est définie sur [0&nbsp;;&nbsp;+∞[, c'est-à-dire pour <i>x</i> ≥ 0.</div>
+        <div class="p10res" id="p17dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction racine carrée <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span> est définie sur [0&nbsp;;&nbsp;+∞[.</div>
       </div>
       <div class="p2ans p10box p13box" id="p17box">
         <div class="p13ex" id="p17ex"></div>
@@ -557,7 +557,7 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
         <b>À vous !</b> Calculer <i>g</i> ′(<i>a</i>) pour <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span>.
         <br><b>Astuce :</b> multiplier par la <b>quantité conjuguée</b>.
       </div>
-      <div class="p10res" id="p18dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction racine carrée <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span> est définie sur [0&nbsp;;&nbsp;+∞[, c'est-à-dire pour <i>x</i> ≥ 0.</div>
+      <div class="p10res" id="p18dom" style="align-self:flex-start;flex:1 1 220px"><b>Ensemble de définition :</b> la fonction racine carrée <i>g</i>(<i>x</i>) = √<span style="text-decoration:overline"><i>x</i></span> est définie sur [0&nbsp;;&nbsp;+∞[.</div>
       </div>
       <div class="p10abtn" id="p18abtn" style="align-self:flex-start">
         <span class="p10alabel">Choisir <i>a</i> :</span>
@@ -1670,6 +1670,10 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
   makeDrag($("p10abtn"));
   makeDrag($("p10res"));
   makeDrag($("p10box"));
+  makeDrag($("p15dom"));
+  makeDrag($("p16dom"));
+  makeDrag($("p17dom"));
+  makeDrag($("p18dom"));
   /* ========== PAGE 11 → 12 ========== */
   $("p11go").addEventListener("click",function(){ goPage(12); });
   $("p13igo").addEventListener("click",function(){ goPage(14); });
