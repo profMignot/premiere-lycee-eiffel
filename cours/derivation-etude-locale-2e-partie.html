@@ -1934,6 +1934,8 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
     o+=L('');
     o+=L(F('<i>f</i>(1+<i>h</i>) − <i>f</i>(1)','<i>h</i>'),'on forme le taux de variation');
     o+=L('');
+    o+=L('Pour cela, on calcule d\'abord la différence <i>f</i>(1+<i>h</i>) − <i>f</i>(1) :');
+    o+=L('');
     o+=L('<i>f</i>(1+<i>h</i>) − <i>f</i>(1) = '+F('1','1+<i>h</i>')+' − 1','on remplace');
     o+=L('= '+F('1 − (1+<i>h</i>)','1+<i>h</i>'),'même dénominateur');
     o+=L('= '+F('−<i>h</i>','1+<i>h</i>'));
@@ -1955,6 +1957,7 @@ body.pg15 .figbody{display:flex;flex-direction:column;align-items:flex-start;pad
     var F=_F, BF=_BF, L=_Ls, C=_Cs;
     var a2=a*a, o='';
     o+=L(F('<i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+')','<i>h</i>'),'on forme le taux de variation');
+    o+=L('Pour cela, on calcule d\'abord la différence <i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+') :');
     o+=L('<i>f</i>('+a+'+<i>h</i>) − <i>f</i>('+a+') = '+F('1',a+'+<i>h</i>')+' − '+F('1',''+a),'on remplace');
     o+=L('= '+F(a+' − ('+a+'+<i>h</i>)',a+'('+a+'+<i>h</i>)'),'même dénominateur');
     o+=L('= '+F('−<i>h</i>',a+'('+a+'+<i>h</i>)'));
